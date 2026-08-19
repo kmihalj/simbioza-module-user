@@ -85,6 +85,7 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
                 ? ($override !== '' ? $override : $defaultMode)
                 : '';
         }
+
         usort($follows, static function (array $left, array $right): int {
             $leftFollowed = (bool)($left['following'] ?? false);
             $rightFollowed = (bool)($right['following'] ?? false);

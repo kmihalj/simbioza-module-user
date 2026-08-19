@@ -132,6 +132,6 @@ final readonly class UserPreferenceService
         }
 
         return is_scalar($value)
-            && in_array(strtolower(trim((string)$value)), ['1', 'true', 'yes', 'on'], true);
+            && in_array(strtolower(trim($value)), ['1', 'true', 'yes', 'on'], true);
     }
 }

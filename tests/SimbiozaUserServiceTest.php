@@ -95,16 +95,16 @@ final class SimbiozaUserServiceTest extends TestCase
         $follows = new FollowService($this->database, $this->targets, $preferences);
         $saved = $follows->follow(7, 'page', '42', ['document_id' => 'doc-42']);
 
-        self::assertTrue((bool)$saved['accessible']);
-        self::assertSame('Target 42', $saved['label']);
-        self::assertTrue($follows->isFollowing(7, 'page', '42'));
-        self::assertCount(1, $follows->listForUser(7));
-        self::assertCount(1, $follows->matchingFollows('page', '42', 12, 42));
+        $this->assertTrue((bool)$saved['accessible']);
+        $this->assertSame('Target 42', $saved['label']);
+        $this->assertTrue($follows->isFollowing(7, 'page', '42'));
+        $this->assertCount(1, $follows->listForUser(7));
+        $this->assertCount(1, $follows->matchingFollows('page', '42', 12, 42));
 
         $this->setTargetAccess(false);
-        self::assertFalse((bool)$follows->listForUser(7)[0]['accessible']);
-        self::assertTrue($follows->unfollow(7, 'page', '42'));
-        self::assertFalse($follows->isFollowing(7, 'page', '42'));
+        $this->assertFalse((bool)$follows->listForUser(7)[0]['accessible']);
+        $this->assertTrue($follows->unfollow(7, 'page', '42'));
+        $this->assertFalse($follows->isFollowing(7, 'page', '42'));
     }
 
     /**
@@ -120,8 +120,8 @@ final class SimbiozaUserServiceTest extends TestCase
 
         $matched = $follows->matchingFollows('task_list', 'list-a', 12, 42);
 
-        self::assertCount(1, $matched);
-        self::assertSame(7, (int)$matched[0]['user_id']);
+        $this->assertCount(1, $matched);
+        $this->assertSame(7, (int)$matched[0]['user_id']);
     }
 
     /**
@@ -131,12 +131,12 @@ final class SimbiozaUserServiceTest extends TestCase
     public function testPersonalPreferencesAreStoredPerUser(): void
     {
         $preferences = new UserPreferenceService($this->database);
-        self::assertSame('off', $preferences->forUser(3)['email_mode']);
+        $this->assertSame('off', $preferences->forUser(3)['email_mode']);
 
         $saved = $preferences->save(3, 'daily', true);
-        self::assertSame('daily', $saved['email_mode']);
-        self::assertTrue($saved['notify_own_changes']);
-        self::assertSame('off', $preferences->forUser(4)['email_mode']);
+        $this->assertSame('daily', $saved['email_mode']);
+        $this->assertTrue($saved['notify_own_changes']);
+        $this->assertSame('off', $preferences->forUser(4)['email_mode']);
     }
 
     /**
@@ -170,28 +170,28 @@ final class SimbiozaUserServiceTest extends TestCase
         $follows = new FollowService($this->database, $this->targets, $preferences);
         $synchronizer = new CalendarSubscriptionSynchronizer($this->database, $follows);
 
-        self::assertSame(1, $synchronizer->syncUser(7));
-        self::assertTrue($follows->isFollowing(7, 'calendar', '73'));
-        self::assertFalse($follows->isFollowing(7, 'calendar', '74'));
+        $this->assertSame(1, $synchronizer->syncUser(7));
+        $this->assertTrue($follows->isFollowing(7, 'calendar', '73'));
+        $this->assertFalse($follows->isFollowing(7, 'calendar', '74'));
 
-        self::assertTrue($follows->excludeAutomaticFollow(7, 'calendar', '73', 'calendar_subscription'));
-        self::assertTrue($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
-        self::assertSame(0, $synchronizer->syncUser(7));
-        self::assertFalse($follows->isFollowing(7, 'calendar', '73'));
-        self::assertNotNull($follows->availableTarget(7, 'calendar', '73'));
+        $this->assertTrue($follows->excludeAutomaticFollow(7, 'calendar', '73', 'calendar_subscription'));
+        $this->assertTrue($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
+        $this->assertSame(0, $synchronizer->syncUser(7));
+        $this->assertFalse($follows->isFollowing(7, 'calendar', '73'));
+        $this->assertNotNull($follows->availableTarget(7, 'calendar', '73'));
 
         $follows->follow(7, 'calendar', '73');
-        self::assertFalse($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
-        self::assertTrue($follows->isFollowing(7, 'calendar', '73'));
+        $this->assertFalse($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
+        $this->assertTrue($follows->isFollowing(7, 'calendar', '73'));
 
         $this->database->table(ModuleCalendar::TABLE_CALENDAR_FOLLOWERS)
             ->where('calendar_id', '=', 73)
             ->where('user_id', '=', 7)
             ->update(['is_subscribed' => false, 'updated_at' => $now]);
 
-        self::assertSame(1, $synchronizer->syncCalendar(73));
-        self::assertFalse($follows->isFollowing(7, 'calendar', '73'));
-        self::assertFalse($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
+        $this->assertSame(1, $synchronizer->syncCalendar(73));
+        $this->assertFalse($follows->isFollowing(7, 'calendar', '73'));
+        $this->assertFalse($follows->isAutomaticFollowExcluded(7, 'calendar', '73'));
     }
 
     /**
@@ -239,17 +239,17 @@ final class SimbiozaUserServiceTest extends TestCase
             dedupIdentity: 'calendar:900:updated',
         );
 
-        self::assertSame(1, $delivery->process($activity));
-        self::assertSame(1, $delivery->process($activity));
+        $this->assertSame(1, $delivery->process($activity));
+        $this->assertSame(1, $delivery->process($activity));
         $inbox = $notifications->inbox(21);
-        self::assertSame(1, $inbox['total']);
-        self::assertSame('Calendar changed on followed page', $inbox['items'][0]['title'] ?? null);
-        self::assertSame('/target/55', $inbox['items'][0]['link_url'] ?? null);
+        $this->assertSame(1, $inbox['total']);
+        $this->assertSame('Calendar changed on followed page', $inbox['items'][0]['title'] ?? null);
+        $this->assertSame('/target/55', $inbox['items'][0]['link_url'] ?? null);
         $pending = $this->database->table(ModuleSimbiozaUser::TABLE_PENDING_DELIVERIES)->first();
-        self::assertIsArray($pending);
-        self::assertSame('page', $pending['target_type'] ?? null);
-        self::assertSame('55', $pending['target_id'] ?? null);
-        self::assertSame('/target/55', $pending['link_url'] ?? null);
+        $this->assertIsArray($pending);
+        $this->assertSame('page', $pending['target_type'] ?? null);
+        $this->assertSame('55', $pending['target_id'] ?? null);
+        $this->assertSame('/target/55', $pending['link_url'] ?? null);
     }
 
     /**
@@ -291,13 +291,13 @@ final class SimbiozaUserServiceTest extends TestCase
             documentId: 'doc-55',
         );
 
-        self::assertSame(1, $delivery->process($activity));
-        self::assertSame(1, $delivery->process($activity));
-        self::assertSame(1, $notifications->inbox(11)['total']);
+        $this->assertSame(1, $delivery->process($activity));
+        $this->assertSame(1, $delivery->process($activity));
+        $this->assertSame(1, $notifications->inbox(11)['total']);
 
         $this->setTargetAccess(false);
-        self::assertSame(0, $notifications->inbox(11)['total']);
-        self::assertSame(0, $notifications->unreadCount(11));
+        $this->assertSame(0, $notifications->inbox(11)['total']);
+        $this->assertSame(0, $notifications->unreadCount(11));
     }
 
     /**
@@ -329,7 +329,7 @@ final class SimbiozaUserServiceTest extends TestCase
             new NullLogger(),
         );
 
-        self::assertSame(1, $delivery->process(new FollowActivity(
+        $this->assertSame(1, $delivery->process(new FollowActivity(
             eventKey: 'workspace.publication_changed',
             targetType: 'page',
             targetId: '72',
@@ -342,17 +342,17 @@ final class SimbiozaUserServiceTest extends TestCase
         $this->database->table(ModuleSimbiozaUser::TABLE_PENDING_DELIVERIES)
             ->update(['deliver_after' => '2000-01-01 00:00:00']);
 
-        self::assertSame(0, $delivery->dispatchDueDigests());
+        $this->assertSame(0, $delivery->dispatchDueDigests());
         $pending = $this->database->table(ModuleSimbiozaUser::TABLE_PENDING_DELIVERIES)->first();
-        self::assertIsArray($pending);
-        self::assertNull($pending['delivered_at'] ?? null);
+        $this->assertIsArray($pending);
+        $this->assertNull($pending['delivered_at'] ?? null);
     }
 
     /** HR: Izvršava jednu migraciju kao u aplikaciji. EN: Runs one migration as the application does. */
     private function runMigration(string $path): void
     {
         $migration = require $path;
-        self::assertInstanceOf(ReversibleMigrationInterface::class, $migration);
+        $this->assertInstanceOf(ReversibleMigrationInterface::class, $migration);
         $migration->up($this->database);
     }
 

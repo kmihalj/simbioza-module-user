@@ -103,6 +103,7 @@ final readonly class SimbiozaUserController
             } else {
                 $this->follows->unfollow($userId, $type, $id);
             }
+
             $this->dispatch(new UserFollowChanged($userId, 'unfollowed', $type, $id));
             $message = __('Sadržaj više ne pratite.');
         } else {
@@ -199,6 +200,7 @@ final readonly class SimbiozaUserController
                     if ($this->follows->setEmailMode($userId, $type, $id, substr($action, 6))) {
                         ++$changed;
                     }
+
                     break;
                 }
             }

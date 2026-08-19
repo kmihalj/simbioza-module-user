@@ -204,7 +204,7 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
      */
     private function calendarDescriptor(int $calendarId, int $userId, array $empty): array
     {
-        $service = 'AaiEduHr\\HeartPhrameModuleCalendar\\Service\\CalendarManagerInterface';
+        $service = \AaiEduHr\HeartPhrameModuleCalendar\Service\CalendarManagerInterface::class;
         if ($calendarId <= 0 || !interface_exists($service)) {
             return $empty;
         }

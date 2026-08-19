@@ -44,7 +44,7 @@ final readonly class FollowDeliveryService
 {
     private const SOURCE_MODULE = 'simbioza-user';
 
-    private const EMAIL_SERVICE = 'AaiEduHr\\HeartPhrameModuleEmail\\Service\\EmailService';
+    private const EMAIL_SERVICE = \AaiEduHr\HeartPhrameModuleEmail\Service\EmailService::class;
 
     /**
      * HR: Prima generičke kanale i servise specifične za Simbioza pravila.

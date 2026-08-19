@@ -97,6 +97,7 @@ final readonly class SimbiozaUserResourceController
         if ($type === FollowTargetService::TYPE_CALENDAR) {
             $this->calendarSubscriptions?->syncUser($identity->userId());
         }
+
         $removed = $this->follows->isFollowing($identity->userId(), $type, $id)
             && ($type === FollowTargetService::TYPE_CALENDAR
                 ? $this->follows->excludeAutomaticFollow(

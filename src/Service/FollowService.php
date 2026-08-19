@@ -157,13 +157,11 @@ final readonly class FollowService
             return false;
         }
 
-        $updated = $this->database->table(ModuleSimbiozaUser::TABLE_FOLLOWS)
+        return $this->database->table(ModuleSimbiozaUser::TABLE_FOLLOWS)
             ->where('user_id', '=', $userId)
             ->where('target_type', '=', strtolower(trim($targetType)))
             ->where('target_id', '=', trim($targetId))
             ->delete() > 0;
-
-        return $updated;
     }
 
     /**

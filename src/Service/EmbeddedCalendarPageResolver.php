@@ -88,6 +88,7 @@ final readonly class EmbeddedCalendarPageResolver
                 'title' => is_scalar($node['title'] ?? null) ? trim((string)$node['title']) : '',
             ];
         }
+
         if ($nodes === []) {
             return [];
         }

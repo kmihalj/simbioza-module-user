@@ -3,11 +3,15 @@
 declare(strict_types=1);
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
+use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged;
+use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged;
 use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAuthenticatedUserMiddleware;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
+use AaiEduHr\HeartPhrameModuleComment\Event\CommentChanged;
 use AaiEduHr\HeartPhrameModuleNotification\Account\NotificationAccountSectionProvider;
 use AaiEduHr\HeartPhrameModuleNotification\ModuleNotification;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged;
 use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspaceContentChanged;
 use AaiEduHr\HeartPhrameModuleWorkspace\ModuleWorkspace;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
@@ -170,10 +174,10 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
             new EventListener(WorkspaceContentChanged::class, WorkspaceFollowActivityListener::class),
         ];
         $optional = [
-            'AaiEduHr\\HeartPhrameModuleComment\\Event\\CommentChanged' => CommentFollowActivityListener::class,
-            'AaiEduHr\\HeartPhrameModuleTask\\Event\\TaskChanged' => TaskFollowActivityListener::class,
-            'AaiEduHr\\HeartPhrameModuleCalendar\\Event\\CalendarEventChanged' => CalendarFollowActivityListener::class,
-            'AaiEduHr\\HeartPhrameModuleCalendar\\Event\\CalendarFollowChanged' => CalendarFollowChangedListener::class,
+            CommentChanged::class => CommentFollowActivityListener::class,
+            TaskChanged::class => TaskFollowActivityListener::class,
+            CalendarEventChanged::class => CalendarFollowActivityListener::class,
+            CalendarFollowChanged::class => CalendarFollowChangedListener::class,
         ];
         foreach ($optional as $event => $listener) {
             if (class_exists($event)) {

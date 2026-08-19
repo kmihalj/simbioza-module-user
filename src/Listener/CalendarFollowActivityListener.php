@@ -149,7 +149,7 @@ final readonly class CalendarFollowActivityListener
             }
         }
 
-        return implode(', ', array_map(static fn(string $label): string => trim($label), array_unique($labels)));
+        return implode(', ', array_map(trim(...), array_unique($labels)));
     }
 
     /** HR: Formatira jednodnevni ili višednevni termin u aktivnom jeziku. EN: Formats a single-day or multi-day schedule in the active language. */
@@ -171,6 +171,7 @@ final readonly class CalendarFollowActivityListener
         if ($dateFormat === 'calendar_notification_date_format') {
             $dateFormat = 'j. n. Y.';
         }
+
         if ($allDay) {
             $value = $starts->format($dateFormat);
             if ($starts->format('Y-m-d') !== $ends->format('Y-m-d')) {
@@ -184,6 +185,7 @@ final readonly class CalendarFollowActivityListener
         if ($timeFormat === 'calendar_notification_time_format') {
             $timeFormat = 'H:i';
         }
+
         $value = $starts->format($dateFormat . ' ' . $timeFormat);
         $value .= $starts->format('Y-m-d') === $ends->format('Y-m-d')
             ? '–' . $ends->format($timeFormat)
