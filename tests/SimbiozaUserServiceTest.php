@@ -26,6 +26,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
+use ReflectionClass;
 use ReflectionProperty;
 
 #[CoversClass(FollowService::class)]
@@ -62,8 +63,7 @@ final class SimbiozaUserServiceTest extends TestCase
         $this->runMigration(
             dirname(__DIR__) . '/resources/migrations/initial_simbioza_user_schema.php',
         );
-        $notificationMigration = dirname(__DIR__, 2)
-            . '/heartphrame-module-notification/resources/migrations/initial_notification_schema.php';
+        $notificationMigration = $this->resolveNotificationMigrationPath('initial_notification_schema.php');
         $this->runMigration($notificationMigration);
         $this->targets = new class implements FollowTargetResolverInterface {
             public bool $accessible = true;
@@ -359,6 +359,25 @@ final class SimbiozaUserServiceTest extends TestCase
         $migration = require $path;
         $this->assertInstanceOf(ReversibleMigrationInterface::class, $migration);
         $migration->up($this->database);
+    }
+
+    /** HR: Vraća putanju migracije ovisnog modula neovisno o načinu instalacije. EN: Returns migration path of a dependency module regardless of install source. */
+    private function resolveNotificationMigrationPath(string $file): string
+    {
+        $class = new ReflectionClass(NotificationPreferenceService::class);
+        $path = dirname($class->getFileName(), 3)
+            . '/resources/migrations/' . $file;
+
+        if (is_file($path)) {
+            return $path;
+        }
+
+        $fallback = dirname(__DIR__, 2) . '/heartphrame-module-notification/resources/migrations/' . $file;
+        if (is_file($fallback)) {
+            return $fallback;
+        }
+
+        throw new RuntimeException('Notification migration not found: ' . $file);
     }
 
     /** HR: Mijenja kontroliranu ACL odluku testnog resolvera. EN: Changes the controlled ACL decision of the test resolver. */
