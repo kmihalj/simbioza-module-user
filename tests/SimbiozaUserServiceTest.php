@@ -146,9 +146,8 @@ final class SimbiozaUserServiceTest extends TestCase
      */
     public function testCalendarSubscriptionsAreReconciledWithoutASecondFollowControl(): void
     {
-        $this->runMigration(
-            dirname(__DIR__, 2) . '/heartphrame-module-calendar/resources/migrations/initial_calendar_schema.php',
-        );
+        $calendarMigration = $this->resolveCalendarMigrationPath('initial_calendar_schema.php');
+        $this->runMigration($calendarMigration);
         $now = '2026-08-18 12:00:00';
         $this->database->table(ModuleCalendar::TABLE_CALENDAR_FOLLOWERS)->insert([
             'calendar_id' => 73,
@@ -379,6 +378,25 @@ final class SimbiozaUserServiceTest extends TestCase
         }
 
         throw new RuntimeException('Notification migration not found: ' . $file);
+    }
+
+    /** HR: Vraća putanju migracije kalendarskog modula neovisno o načinu instalacije. EN: Returns migration path for Calendar module regardless of installation source. */
+    private function resolveCalendarMigrationPath(string $file): string
+    {
+        $class = new ReflectionClass(ModuleCalendar::class);
+        $path = dirname($class->getFileName(), 3)
+            . '/resources/migrations/' . $file;
+
+        if (is_file($path)) {
+            return $path;
+        }
+
+        $fallback = dirname(__DIR__, 2) . '/heartphrame-module-calendar/resources/migrations/' . $file;
+        if (is_file($fallback)) {
+            return $fallback;
+        }
+
+        throw new RuntimeException('Calendar migration not found: ' . $file);
     }
 
     /** HR: Mijenja kontroliranu ACL odluku testnog resolvera. EN: Changes the controlled ACL decision of the test resolver. */
