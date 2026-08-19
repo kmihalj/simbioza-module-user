@@ -204,11 +204,13 @@ final class SimbiozaUserServiceTest extends TestCase
     {
         $preferences = new UserPreferenceService($this->database);
         $preferences->save(21, 'daily', false);
+
         $follows = new FollowService($this->database, $this->targets, $preferences);
         $follows->follow(21, 'page', '55', ['document_id' => 'doc-55']);
 
         $notificationPreferences = new NotificationPreferenceService($this->database);
         $notificationPreferences->saveEmailEnabled(21, true);
+
         $notifications = new NotificationService(
             $this->database,
             new NotificationEmailBridge($this->emptyContainer(), $notificationPreferences),
@@ -265,6 +267,7 @@ final class SimbiozaUserServiceTest extends TestCase
         $notificationPreferences = new NotificationPreferenceService($this->database);
         $visibility = new NotificationVisibilityRegistry();
         $visibility->register(new SimbiozaNotificationVisibilityProvider($this->targets));
+
         $notifications = new NotificationService(
             $this->database,
             new NotificationEmailBridge($this->emptyContainer(), $notificationPreferences),
@@ -313,6 +316,7 @@ final class SimbiozaUserServiceTest extends TestCase
 
         $notificationPreferences = new NotificationPreferenceService($this->database);
         $notificationPreferences->saveEmailEnabled(12, true);
+
         $notifications = new NotificationService(
             $this->database,
             new NotificationEmailBridge($this->emptyContainer(), $notificationPreferences),
