@@ -1,0 +1,360 @@
+.simbioza-user-card {
+    --simbioza-user-border: var(--hph-card-border-color, var(--bs-border-color));
+    --simbioza-user-surface: var(--hph-card-bg, var(--bs-body-bg));
+    background: var(--simbioza-user-surface);
+    border-color: var(--simbioza-user-border);
+    color: var(--hph-body-color, var(--bs-body-color));
+}
+
+.simbioza-user-card .accordion-item,
+.simbioza-user-card .accordion-button {
+    background: var(--simbioza-user-surface);
+    border-color: var(--simbioza-user-border);
+    color: inherit;
+}
+
+.simbioza-user-card .accordion-button:not(.collapsed) {
+    background: color-mix(in srgb, var(--bs-primary) 12%, var(--simbioza-user-surface));
+    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--simbioza-user-border);
+}
+
+.simbioza-follow-button-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+/*
+ * HR: U alatnoj traci praćenje je zadnja, jasno odvojena osobna akcija.
+ * EN: In the document toolbar, following is the final, clearly separated personal action.
+ */
+.simbioza-follow-button-form--toolbar {
+    align-items: center;
+    border-inline-start: 1px solid var(--hph-document-action-border, var(--bs-border-color));
+    margin-inline-start: .35rem;
+    order: 99;
+    padding-inline-start: .7rem;
+}
+
+.simbioza-follow-button {
+    align-items: center;
+    display: inline-flex;
+    gap: .4rem;
+    opacity: .88;
+}
+
+.simbioza-follow-button:hover,
+.simbioza-follow-button:focus-visible,
+.simbioza-follow-button.is-following {
+    opacity: 1;
+}
+
+.simbioza-follow-button.is-following {
+    background: var(--hph-document-action-active-bg, var(--bs-secondary));
+    border-color: var(--hph-document-action-active-bg, var(--bs-secondary));
+    color: var(--hph-document-action-active-text, var(--bs-white));
+}
+
+.simbioza-follow-button svg {
+    fill: none;
+    height: 1rem;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    width: 1rem;
+}
+
+.simbioza-follow-button--compact {
+    background: var(--hph-document-action-bg, var(--bs-body-bg));
+    border-color: var(--hph-document-action-border, var(--bs-border-color));
+    color: var(--hph-document-action-text, var(--bs-secondary));
+    justify-content: center;
+    min-height: 2rem;
+    min-width: 0;
+    padding: .25rem .65rem;
+    width: auto;
+}
+
+.simbioza-follow-button--compact:hover,
+.simbioza-follow-button--compact:focus-visible {
+    background: var(--hph-document-action-hover-bg, var(--bs-secondary));
+    border-color: var(--hph-document-action-hover-bg, var(--bs-secondary));
+    color: var(--hph-document-action-hover-text, var(--bs-white));
+}
+
+.simbioza-follow-button--compact.is-following,
+.simbioza-follow-button--compact.is-following:hover,
+.simbioza-follow-button--compact.is-following:focus-visible {
+    background: var(--hph-document-action-active-bg, var(--bs-secondary));
+    border-color: var(--hph-document-action-active-bg, var(--bs-secondary));
+    color: var(--hph-document-action-active-text, var(--bs-white));
+}
+
+.simbioza-user-follow-toolbar {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: minmax(12rem, 1fr) minmax(13rem, 18rem);
+}
+
+.simbioza-user-follow-table-wrap {
+    border: 1px solid var(--simbioza-user-border);
+    border-radius: var(--bs-border-radius);
+}
+
+.simbioza-user-follow-table > :not(caption) > * > * {
+    background: var(--simbioza-user-surface);
+    border-color: var(--simbioza-user-border);
+    color: inherit;
+}
+
+.simbioza-user-follow-table thead th {
+    background: color-mix(in srgb, var(--bs-primary) 8%, var(--simbioza-user-surface));
+    font-size: .78rem;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+}
+
+.simbioza-user-icon-action,
+.simbioza-user-mode-choice-content {
+    align-items: center;
+    display: inline-flex;
+    gap: .35rem;
+    justify-content: center;
+}
+
+.simbioza-user-icon-action svg,
+.simbioza-user-mode-choice-content svg {
+    fill: none;
+    height: 1rem;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    width: 1rem;
+}
+
+.simbioza-user-delivery-help {
+    background: color-mix(in srgb, var(--bs-primary) 6%, var(--simbioza-user-surface));
+    border: 1px solid var(--simbioza-user-border);
+    border-radius: var(--bs-border-radius);
+    padding: .85rem 1rem;
+}
+
+.simbioza-user-delivery-help dl {
+    display: grid;
+    gap: .55rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.simbioza-user-delivery-help dl > div {
+    min-width: 0;
+}
+
+.simbioza-user-delivery-help dd {
+    color: var(--bs-secondary-color);
+    margin: .1rem 0 0;
+}
+
+.simbioza-user-mode-form,
+.simbioza-user-mode-form fieldset {
+    margin: 0;
+}
+
+.simbioza-user-mode-options {
+    display: grid;
+    gap: .35rem;
+    grid-template-columns: repeat(2, minmax(8.75rem, 1fr));
+}
+
+.simbioza-user-mode-choice {
+    cursor: pointer;
+    display: block;
+    margin: 0;
+}
+
+.simbioza-user-mode-choice-content {
+    background: transparent;
+    border: 1px solid var(--hph-document-action-border, var(--simbioza-user-border));
+    border-radius: var(--bs-border-radius-sm);
+    box-shadow: 0 .14rem .25rem color-mix(in srgb, var(--bs-body-color) 16%, transparent);
+    color: var(--hph-document-action-text, inherit);
+    display: flex;
+    font-size: .78rem;
+    justify-content: flex-start;
+    line-height: 1.15;
+    min-height: 2.35rem;
+    min-width: 0;
+    padding: .4rem .55rem;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+    width: 100%;
+}
+
+.simbioza-user-mode-choice:hover .simbioza-user-mode-choice-content {
+    background: var(--hph-document-action-hover-bg, color-mix(in srgb, var(--bs-primary) 10%, var(--simbioza-user-surface)));
+    border-color: var(--hph-document-action-hover-bg, var(--bs-primary));
+    color: var(--hph-document-action-hover-text, var(--bs-body-color));
+}
+
+.simbioza-user-mode-input:focus-visible + .simbioza-user-mode-choice-content {
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--bs-primary) 30%, transparent);
+    outline: 0;
+}
+
+.simbioza-user-mode-input:checked + .simbioza-user-mode-choice-content {
+    background: var(--hph-document-action-active-bg, var(--bs-primary));
+    border-color: var(--hph-document-action-active-bg, var(--bs-primary));
+    box-shadow: inset 0 .16rem .32rem color-mix(in srgb, #000 28%, transparent);
+    color: var(--hph-document-action-active-text, var(--bs-white));
+    font-weight: 700;
+}
+
+.simbioza-user-mode-description {
+    border-inline-start: .18rem solid var(--hph-document-action-active-bg, var(--bs-primary));
+    line-height: 1.35;
+    padding-inline-start: .55rem;
+}
+
+.simbioza-user-mode-form.is-saving {
+    opacity: .62;
+    pointer-events: none;
+}
+
+.simbioza-user-mode-form fieldset:disabled .simbioza-user-mode-choice {
+    cursor: not-allowed;
+    opacity: .48;
+}
+
+/*
+ * HR: Pozadinske promjene koriste tematski toast bez pomicanja profilnog sadržaja.
+ * EN: Background changes use a themed toast without moving profile content.
+ */
+.simbioza-user-toast-container {
+    z-index: 1080;
+}
+
+.simbioza-user-toast {
+    --bs-toast-bg: var(--hph-surface-bg, var(--bs-body-bg));
+    --bs-toast-color: var(--hph-surface-text, var(--bs-body-color));
+    --bs-toast-border-color: var(--hph-border, var(--bs-border-color));
+    background: var(--bs-toast-bg);
+    border: 1px solid var(--bs-toast-border-color) !important;
+    color: var(--bs-toast-color);
+    min-width: min(24rem, calc(100vw - 2rem));
+}
+
+.simbioza-user-toast .toast-header {
+    border-bottom: 1px solid var(--bs-toast-border-color);
+    color: #fff;
+}
+
+.simbioza-user-toast .toast-header.is-success {
+    background: var(--hph-alert-success-bg, var(--bs-success));
+    color: var(--hph-alert-success-text, #fff);
+}
+
+.simbioza-user-toast .toast-header.is-danger {
+    background: var(--hph-alert-danger-bg, var(--bs-danger));
+    color: var(--hph-alert-danger-text, #fff);
+}
+
+.simbioza-user-toast .toast-body {
+    background: var(--bs-toast-bg);
+    color: var(--bs-toast-color);
+}
+
+@media (max-width: 767.98px) {
+    /*
+     * HR: Uklanja zbrojene uvlake ugniježđenih profilnih accordiona.
+     * EN: Removes accumulated padding from nested profile accordions.
+     */
+    #auth-account-personal > .accordion-body {
+        padding-inline: .5rem;
+    }
+
+    .simbioza-user-card > .card-body {
+        padding-inline: .75rem !important;
+    }
+
+    .simbioza-user-card #simbioza-user-items > .accordion-body {
+        padding-inline: .5rem;
+    }
+
+    .simbioza-user-follow-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .simbioza-user-delivery-help dl {
+        grid-template-columns: 1fr;
+    }
+
+    .simbioza-user-follow-table-wrap {
+        border: 0;
+        overflow: visible;
+    }
+
+    .simbioza-user-follow-table thead {
+        display: none;
+    }
+
+    .simbioza-user-follow-table,
+    .simbioza-user-follow-table tbody,
+    .simbioza-user-follow-table tr,
+    .simbioza-user-follow-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .simbioza-user-follow-table tr {
+        border: 1px solid var(--simbioza-user-border);
+        border-radius: var(--bs-border-radius);
+        margin-bottom: .8rem;
+        overflow: hidden;
+    }
+
+    .simbioza-user-follow-table td {
+        align-items: center;
+        border-bottom: 1px solid var(--simbioza-user-border);
+        display: grid;
+        gap: .75rem;
+        grid-template-columns: minmax(6.5rem, 34%) minmax(0, 1fr);
+        text-align: left !important;
+    }
+
+    .simbioza-user-follow-table td::before {
+        color: var(--bs-secondary-color);
+        content: attr(data-label);
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+    }
+
+    .simbioza-user-follow-table td:first-child {
+        display: block;
+    }
+
+    .simbioza-user-follow-table td:first-child::before {
+        display: none;
+    }
+
+    .simbioza-user-follow-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .simbioza-user-mode-actions {
+        min-width: 0;
+    }
+
+    .simbioza-user-follow-table td[data-simbioza-delivery-cell] {
+        display: block;
+    }
+
+    .simbioza-user-follow-table td[data-simbioza-delivery-cell]::before {
+        display: block;
+        margin-bottom: .55rem;
+    }
+
+    .simbioza-user-mode-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

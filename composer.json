@@ -1,0 +1,132 @@
+{
+    "name": "aaieduhr/simbioza-module-user",
+    "description": "Personal following and notification orchestration for the Simbioza knowledge application",
+    "type": "heartphrame-module",
+    "license": "EUPL-1.2",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-framework.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-API.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-audit.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-auth.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-backup.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-calendar.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-comment.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-email.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-notification.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-orm.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-task.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kmihalj/heartphrame-module-workspace.git"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "aaieduhr/heartphrame-framework": "dev-main",
+        "aaieduhr/heartphrame-module-auth": "dev-main",
+        "aaieduhr/heartphrame-module-notification": "dev-main",
+        "aaieduhr/heartphrame-module-orm": "dev-main",
+        "aaieduhr/heartphrame-module-workspace": "dev-main"
+    },
+    "suggest": {
+        "aaieduhr/heartphrame-module-api": "Exposes the authenticated user's follows and notification preferences.",
+        "aaieduhr/heartphrame-module-audit": "Records follow and preference changes in the business audit log.",
+        "aaieduhr/heartphrame-module-backup": "Includes follows and personal preferences in user backups.",
+        "aaieduhr/heartphrame-module-calendar": "Adds calendar following and event-change notifications.",
+        "aaieduhr/heartphrame-module-comment": "Adds comment and reply notifications for followed pages.",
+        "aaieduhr/heartphrame-module-email": "Delivers immediate and daily e-mail copies.",
+        "aaieduhr/heartphrame-module-task": "Adds task-list following and task-change notifications.",
+        "aaieduhr/heartphrame-module-theme": "Applies the active light or dark theme to the profile controls."
+    },
+    "require-dev": {
+        "aaieduhr/heartphrame-module-api": "dev-main",
+        "aaieduhr/heartphrame-module-audit": "dev-main",
+        "aaieduhr/heartphrame-module-backup": "dev-main",
+        "aaieduhr/heartphrame-module-calendar": "dev-main",
+        "aaieduhr/heartphrame-module-comment": "dev-main",
+        "aaieduhr/heartphrame-module-email": "dev-main",
+        "aaieduhr/heartphrame-module-task": "dev-main",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10 || ^11",
+        "rector/rector": "^2.0",
+        "squizlabs/php_codesniffer": "^3",
+        "slevomat/coding-standard": "^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "AaiEduHr\\SimbiozaModuleUser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AaiEduHr\\SimbiozaModuleUser\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Krešimir Mihalj"
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "cache-dir": "build/composer",
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        },
+        "optimize-autoloader": true,
+        "composer-runtime-api": "^2.1"
+    },
+    "scripts": {
+        "pre-commit": [
+            "vendor/bin/phpcbf",
+            "vendor/bin/rector --clear-cache",
+            "vendor/bin/phpcs -p",
+            "vendor/bin/phpstan --memory-limit=1024M",
+            "vendor/bin/phpstan analyze -c phpstan-dev.neon --memory-limit=1024M",
+            "vendor/bin/phpunit"
+        ],
+        "on-commit": [
+            "vendor/bin/phpcs -p",
+            "vendor/bin/rector --dry-run --clear-cache",
+            "vendor/bin/phpstan --memory-limit=1024M",
+            "vendor/bin/phpstan analyze -c phpstan-dev.neon --memory-limit=1024M",
+            "vendor/bin/phpunit"
+        ]
+    }
+}
