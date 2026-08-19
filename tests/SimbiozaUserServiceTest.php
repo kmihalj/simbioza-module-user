@@ -311,6 +311,7 @@ final class SimbiozaUserServiceTest extends TestCase
     {
         $preferences = new UserPreferenceService($this->database);
         $preferences->save(12, 'daily', false);
+
         $follows = new FollowService($this->database, $this->targets, $preferences);
         $follows->follow(12, 'page', '72', ['document_id' => 'doc-72']);
 
