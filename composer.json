@@ -36,6 +36,10 @@
         },
         {
             "type": "vcs",
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-html-editor.git"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/kmihalj/heartphrame-module-email.git"
         },
         {
