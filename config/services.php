@@ -231,9 +231,10 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                                 'namespaces' => [
                                     'workspace' => 'workspace.workspace',
                                     'page' => 'workspace.node',
-                                    'calendar' => 'calendar.calendar',
+                                    'calendar' => ['calendar.calendar', 'calendar-workspace.calendar'],
                                 ],
                                 'passthrough' => ['task_list'],
+                                'skip_if_missing' => true,
                             ],
                         ],
                     ],
@@ -253,9 +254,10 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                                 'namespaces' => [
                                     'workspace' => 'workspace.workspace',
                                     'page' => 'workspace.node',
-                                    'calendar' => 'calendar.calendar',
+                                    'calendar' => ['calendar.calendar', 'calendar-workspace.calendar'],
                                 ],
                                 'passthrough' => ['task_list'],
+                                'skip_if_missing' => true,
                             ],
                         ],
                     ],
