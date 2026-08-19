@@ -28,6 +28,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 use ReflectionClass;
 use ReflectionProperty;
+use RuntimeException;
 
 #[CoversClass(FollowService::class)]
 #[CoversClass(UserPreferenceService::class)]
