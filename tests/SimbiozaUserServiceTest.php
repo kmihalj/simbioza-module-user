@@ -364,39 +364,30 @@ final class SimbiozaUserServiceTest extends TestCase
     /** HR: Vraća putanju migracije ovisnog modula neovisno o načinu instalacije. EN: Returns migration path of a dependency module regardless of install source. */
     private function resolveNotificationMigrationPath(string $file): string
     {
-        $class = new ReflectionClass(NotificationPreferenceService::class);
-        $path = dirname($class->getFileName(), 3)
-            . '/resources/migrations/' . $file;
-
-        if (is_file($path)) {
-            return $path;
-        }
-
-        $fallback = dirname(__DIR__, 2) . '/heartphrame-module-notification/resources/migrations/' . $file;
-        if (is_file($fallback)) {
-            return $fallback;
-        }
-
-        throw new RuntimeException('Notification migration not found: ' . $file);
+        return $this->resolveModuleMigrationPath(NotificationPreferenceService::class, $file);
     }
 
     /** HR: Vraća putanju migracije kalendarskog modula neovisno o načinu instalacije. EN: Returns migration path for Calendar module regardless of installation source. */
     private function resolveCalendarMigrationPath(string $file): string
     {
-        $class = new ReflectionClass(ModuleCalendar::class);
-        $path = dirname($class->getFileName(), 3)
-            . '/resources/migrations/' . $file;
+        return $this->resolveModuleMigrationPath(ModuleCalendar::class, $file);
+    }
 
-        if (is_file($path)) {
-            return $path;
+    /** HR: Pronalaženje migracije u direktoriju ovisnog modula kroz putanju klase. EN: Finds migration by walking up class file path. */
+    private function resolveModuleMigrationPath(string $className, string $file): string
+    {
+        $basePath = (new ReflectionClass($className))->getFileName();
+
+        for ($i = 0; $i < 6; ++$i) {
+            $basePath = dirname($basePath);
+            $path = $basePath . '/resources/migrations/' . $file;
+
+            if (is_file($path)) {
+                return $path;
+            }
         }
 
-        $fallback = dirname(__DIR__, 2) . '/heartphrame-module-calendar/resources/migrations/' . $file;
-        if (is_file($fallback)) {
-            return $fallback;
-        }
-
-        throw new RuntimeException('Calendar migration not found: ' . $file);
+        throw new RuntimeException(sprintf('Module migration not found: %s', $file));
     }
 
     /** HR: Mijenja kontroliranu ACL odluku testnog resolvera. EN: Changes the controlled ACL decision of the test resolver. */
