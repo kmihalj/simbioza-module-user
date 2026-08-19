@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
-use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged;
-use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged;
 use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAuthenticatedUserMiddleware;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
+use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged;
+use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged;
 use AaiEduHr\HeartPhrameModuleComment\Event\CommentChanged;
 use AaiEduHr\HeartPhrameModuleNotification\Account\NotificationAccountSectionProvider;
 use AaiEduHr\HeartPhrameModuleNotification\ModuleNotification;
