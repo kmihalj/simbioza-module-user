@@ -12,6 +12,7 @@ use AaiEduHr\SimbiozaModuleUser\Event\UserFollowChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
 use JsonException;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -41,6 +42,7 @@ final readonly class SimbiozaUserResourceController
         private FollowService $follows,
         private UserPreferenceService $preferences,
         private NotificationPreferenceService $notificationPreferences,
+        private PersonalWorkspaceService $personalWorkspaces,
         private ?CalendarSubscriptionSynchronizer $calendarSubscriptions = null,
         private ?EventDispatcherInterface $events = null,
     ) {
@@ -167,6 +169,28 @@ final readonly class SimbiozaUserResourceController
             $this->dispatch(new UserFollowChanged($userId, 'preferences_updated'));
 
             return [...$saved, 'email_enabled' => $emailEnabled];
+        });
+    }
+
+    /** HR: Vraća osobno područje vlasnika API ključa bez tuđih podataka. EN: Returns the API-key owner's personal Workspace without other users' data. */
+    public function getPersonalWorkspace(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->execute($request, 'workspaces:read', function (int $userId): array {
+            $mapping = $this->personalWorkspaces->forUser($userId);
+            $workspace = is_array($mapping['workspace'] ?? null) ? $mapping['workspace'] : null;
+
+            return [
+                'exists' => is_array($workspace),
+                'deleted' => (bool)($mapping['is_deleted'] ?? false),
+                'automatic_creation_enabled' => $this->personalWorkspaces->automaticCreationEnabled()
+                    && $this->personalWorkspaces->automaticCreationEnabledForUser($userId),
+                'workspace' => is_array($workspace) ? [
+                    'id' => is_numeric($workspace['id'] ?? null) ? (int)$workspace['id'] : null,
+                    'slug' => $this->scalar($workspace['slug'] ?? null),
+                    'name' => $this->scalar($workspace['name'] ?? null),
+                    'visibility' => $this->scalar($workspace['visibility'] ?? null),
+                ] : null,
+            ];
         });
     }
 

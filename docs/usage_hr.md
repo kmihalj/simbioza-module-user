@@ -1,5 +1,18 @@
 # Korištenje praćenja
 
+## Osobna područja
+
+Nakon uspješne prijave dopušteni korisnik dobiva jedno obično ograničeno Workspace područje. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik je vlasnik i zato ima sva prava područja. Administratori zadržavaju uobičajeni sistemski pristup, a svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava.
+
+Administrator pod **Postavke → Područja → Osobna područja** može:
+
+- uključiti ili isključiti automatsku izradu nakon prve prijave;
+- skupno izraditi područja svim dopuštenim postojećim aktivnim korisnicima;
+- isključiti ili ponovno uključiti automatsku izradu pojedinom korisniku;
+- ručno izraditi osobno područje koje nedostaje.
+
+Isključivanje izrade nikada ne briše postojeće područje. Soft-obrisano osobno područje ostaje mapirano i vraća se kroz uobičajeni pregled obrisanih područja; sustav neće potajno izraditi zamjensko područje i razdvojiti korisnikov sadržaj.
+
 ## Početak i prestanak praćenja
 
 Prijavljeni čitatelj može pratiti sadržaj samo dok vlasnički modul potvrđuje pravo čitanja. Dostupne kontrole su:

@@ -184,4 +184,48 @@ return [
     'API ključ nema potreban scope "%s".' => 'The API key does not have the required "%s" scope.',
     'JSON tijelo mora biti objekt.' => 'The JSON body must be an object.',
     'Identifikator praćenja nije valjan.' => 'The follow identifier is invalid.',
+    'Osobna područja' => 'Personal Workspaces',
+    'Osobno područje' => 'Personal Workspace',
+    'Moje osobno područje' => 'My personal Workspace',
+    'Otvori osobno područje' => 'Open personal Workspace',
+    'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
+        'Your private Workspace is visible only to you, administrators, and people you explicitly grant access to.',
+    'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
+        'A personal Workspace is an ordinary restricted Workspace: its owner has full permissions, and others see it only when explicitly granted access.',
+    'Automatski izradi osobno područje pri prvoj prijavi' =>
+        'Automatically create a personal Workspace on first sign-in',
+    'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
+        'The change applies to future sign-ins; existing users can be processed with a separate action.',
+    'Postojeći korisnici' => 'Existing users',
+    'Korisnik' => 'User',
+    'Radnje' => 'Actions',
+    'Spremi' => 'Save',
+    'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.' =>
+        'The mapping is separate from ownership, so the same user may own other ordinary Workspaces.',
+    'Izradi osobna područja postojećim korisnicima' => 'Create personal Workspaces for existing users',
+    'Automatska izrada' => 'Automatic creation',
+    'Dopusti automatsku izradu' => 'Allow automatic creation',
+    'Nije izrađeno' => 'Not created',
+    'Izradi sada' => 'Create now',
+    'Obrisano — moguće ga je vratiti u postavkama područja' =>
+        'Deleted — it can be restored in Workspace settings',
+    'Nema aktivnih korisnika.' => 'There are no active users.',
+    'Postavke osobnih područja su spremljene.' => 'Personal Workspace settings were saved.',
+    'Postavka korisnika je spremljena.' => 'The user setting was saved.',
+    'Osobno područje je izrađeno.' => 'The personal Workspace was created.',
+    'Osobno područje nije moguće izraditi.' => 'The personal Workspace cannot be created.',
+    'Osobno područje nije moguće povezati s korisnikom.' =>
+        'The personal Workspace cannot be mapped to the user.',
+    'Migracija osobnih područja nije primijenjena.' => 'The personal Workspace migration has not been applied.',
+    'Korisnik nije pronađen.' => 'The user was not found.',
+    'Prijavljeni administrator nije pronađen.' => 'The signed-in administrator was not found.',
+    'Korisnik %d' => 'User %d',
+    'Područje od: %s' => 'Workspace of: %s',
+    'Osobno područje korisnika %s.' => 'Personal Workspace of user %s.',
+    'Izrađeno: %1$d; već postoji: %2$d; isključeno: %3$d; neuspjelo: %4$d.' =>
+        'Created: %1$d; already existed: %2$d; disabled: %3$d; failed: %4$d.',
+    'Predložak migracije osobnih područja nije pronađen.' =>
+        'The personal Workspace migration template was not found.',
+    'Nije moguće kopirati migraciju osobnih područja.' =>
+        'The personal-space migration cannot be copied.',
 ];

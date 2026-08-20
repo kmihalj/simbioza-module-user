@@ -109,6 +109,35 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         }
 
         $workspaceIds = array_keys($workspaces);
+        if ($this->database->schema()->hasTable(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)) {
+            foreach (
+                $this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)
+                    ->whereIn('workspace_id', $workspaceIds)
+                    ->orderBy('id')
+                    ->get() as $mapping
+            ) {
+                if (!is_array($mapping)) {
+                    continue;
+                }
+
+                $workspaceId = $this->positiveInteger($mapping['workspace_id'] ?? null);
+                $workspace = $workspaces[$workspaceId] ?? null;
+                $user = $this->identities->userKeyForId($mapping['user_id'] ?? null);
+                if (!is_array($workspace) || $user === null) {
+                    throw new BackupException('Unable to serialize a personal Workspace mapping.');
+                }
+
+                $writer->writeRecord($this->id, 'personal-workspaces', [
+                    'user' => $user,
+                    'source_workspace_id' => $workspaceId,
+                    'workspace_slug' => BackupValue::string($workspace['slug'], 'workspace.slug'),
+                    'created_automatically' => $mapping['created_automatically'] ?? true,
+                    'created_at' => $mapping['created_at'] ?? null,
+                    'updated_at' => $mapping['updated_at'] ?? null,
+                ]);
+            }
+        }
+
         $pages = $this->sourcePages($workspaceIds);
         $written = [];
         $direct = $this->database->table(ModuleSimbiozaUser::TABLE_FOLLOWS)
@@ -170,7 +199,15 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
             }
         }
 
-        foreach (['follows', 'follow-exclusions'] as $dataset) {
+        if (
+            $this->datasetCount($reader, 'personal-workspaces') > 0
+            && !$this->database->schema()->hasTable(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)
+        ) {
+            $errors[] = 'Required Simbioza User table is missing: '
+                . ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES;
+        }
+
+        foreach (['follows', 'follow-exclusions', 'personal-workspaces'] as $dataset) {
             foreach ($reader->records($this->id, $dataset) as $row) {
                 $user = is_scalar($row['user'] ?? null) ? trim((string)$row['user']) : '';
                 if ($user === '' || $this->identities->userIdForKey($user) === null) {
@@ -186,6 +223,7 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
             [
                 'delegated.records' => $this->datasetCount($reader, 'delegated'),
                 'scope.records' => $this->datasetCount($reader, 'scope'),
+                'personal-workspaces.records' => $this->datasetCount($reader, 'personal-workspaces'),
                 'follows.records' => $this->datasetCount($reader, 'follows'),
                 'follow-exclusions.records' => $this->datasetCount($reader, 'follow-exclusions'),
             ],
@@ -205,6 +243,40 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         }
 
         $this->clearDirectFollowsForReplace($context, $reader);
+
+        foreach ($reader->records($this->id, 'personal-workspaces') as $row) {
+            $userId = $this->importUser($row['user'] ?? null);
+            $workspaceId = $this->importWorkspaceId($row, $context);
+            $existing = $this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)
+                ->where('user_id', '=', $userId)
+                ->first();
+            if (
+                $context->conflictMode === BackupImportContext::CONFLICT_COPY
+                && is_array($existing)
+                && (int)($existing['workspace_id'] ?? 0) !== $workspaceId
+            ) {
+                // HR: Korisnik može imati samo jedno osobno područje. Kod copy
+                //     importa postojeće mapiranje ima prednost, a kopija ostaje
+                //     obično privatno područje istog vlasnika.
+                // EN: A user can have only one personal Workspace. During copy
+                //     import the existing mapping wins and the copy remains an
+                //     ordinary private Workspace owned by the same user.
+                continue;
+            }
+
+            $now = date('Y-m-d H:i:s');
+            $this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)->upsert(
+                [[
+                    'user_id' => $userId,
+                    'workspace_id' => $workspaceId,
+                    'created_automatically' => $row['created_automatically'] ?? true,
+                    'created_at' => $row['created_at'] ?? $now,
+                    'updated_at' => $row['updated_at'] ?? $now,
+                ]],
+                ['user_id'],
+                ['workspace_id', 'created_automatically', 'updated_at'],
+            );
+        }
 
         foreach ($reader->records($this->id, 'follows') as $row) {
             $userId = $this->importUser($row['user'] ?? null);
@@ -462,6 +534,28 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
             'page_id' => $pageId,
             'document_id' => $documentId !== '' ? $documentId : null,
         ];
+    }
+
+    /**
+     * HR: Mapira područje osobnog zapisa nakon ranijeg Workspace providera.
+     * EN: Maps a personal-space Workspace after the preceding Workspace provider.
+     *
+     * @param array<string,mixed> $row
+     */
+    private function importWorkspaceId(array $row, BackupImportContext $context): int
+    {
+        $sourceWorkspaceId = BackupValue::integer(
+            $row['source_workspace_id'],
+            'personal_workspace.source_workspace_id',
+        );
+
+        return BackupValue::integer(
+            $context->state->require(
+                $context->scope->type === BackupScope::WORKSPACE ? 'workspace.id' : 'workspace.workspace',
+                $sourceWorkspaceId,
+            ),
+            'personal_workspace.workspace_id',
+        );
     }
 
     /**

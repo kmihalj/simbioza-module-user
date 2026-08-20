@@ -17,6 +17,8 @@ declare(strict_types=1);
  * @var string $modePath
  * @var string $profileFollowingPath
  * @var string $assetsCssPath
+ * @var array<string,mixed>|null $personalWorkspace
+ * @var string|null $personalWorkspacePath
  */
 
 $preferences = is_array($preferences ?? null) ? $preferences : [];
@@ -78,6 +80,24 @@ $icon = static function (string $name): string {
         <p class="text-body-secondary mb-3">
             <?= __('Odredite kako želite primati promjene i upravljajte sadržajem koji pratite.') ?>
         </p>
+
+        <?php if (is_string($personalWorkspacePath ?? null) && $personalWorkspacePath !== '') : ?>
+            <?php $personalWorkspaceRow = is_array($personalWorkspace['workspace'] ?? null) ? $personalWorkspace['workspace'] : []; ?>
+            <?php $personalWorkspaceName = is_scalar($personalWorkspaceRow['name'] ?? null)
+                ? (string)$personalWorkspaceRow['name']
+                : __('Otvori osobno područje'); ?>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border rounded p-3 mb-3">
+                <div>
+                    <h3 class="h6 mb-1"><?= $this->escape(__('Moje osobno područje')) ?></h3>
+                    <p class="text-body-secondary small mb-0">
+                        <?= $this->escape(__('Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.')) ?>
+                    </p>
+                </div>
+                <a class="btn btn-secondary" href="<?= $this->escape($personalWorkspacePath) ?>">
+                    <?= $this->escape($personalWorkspaceName) ?>
+                </a>
+            </div>
+        <?php endif; ?>
 
         <div class="alert alert-info simbioza-user-follow-explanation" role="note">
             <h3 class="h6 alert-heading mb-2"><?= __('Kako rade praćenje i obavijesti?') ?></h3>

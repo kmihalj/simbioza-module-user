@@ -1,6 +1,6 @@
 # Simbioza User guide
 
-Simbioza User is an application-level coordinator. It does not duplicate Workspace, Calendar, Comment, Task, Notification, or E-mail business logic. Owning modules publish neutral events; this module resolves personal follows, applies current ACL, and selects a delivery channel.
+Simbioza User is an application-level coordinator. It does not duplicate Workspace, Calendar, Comment, Task, Notification, or E-mail business logic. Owning modules publish neutral events; this module provisions personal Workspaces, resolves personal follows, applies current ACL, and selects a delivery channel.
 
 ## Reading path
 
@@ -12,11 +12,14 @@ The Croatian documentation is available in [index_hr.md](index_hr.md).
 
 ## Data ownership
 
-The module owns four portable tables:
+The module owns seven portable tables:
 
 - `simbioza_user_preferences`: one default delivery policy per user;
 - `simbioza_user_follows`: durable polymorphic follows;
 - `simbioza_user_follow_exclusions`: explicit opt-outs from automatic follows, currently used for subscribed calendars;
 - `simbioza_user_pending_deliveries`: transient daily-digest queue.
+- `simbioza_user_settings`: administrator provisioning settings;
+- `simbioza_user_personal_workspaces`: stable one-to-one mapping between a user and their personal Workspace;
+- `simbioza_user_personal_workspace_policies`: per-user automatic-creation exceptions.
 
 Notification text is stored by the generic Notification module. E-mail messages are passed to the optional E-mail module. The digest queue is operational state and is neither exposed as knowledge content nor archived in backup.

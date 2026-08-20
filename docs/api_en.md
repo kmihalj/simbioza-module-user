@@ -6,6 +6,18 @@ Scopes:
 
 - `follows:read`
 - `follows:write`
+- `workspaces:read` for the personal-space status endpoint
+
+## Personal space status
+
+This read-only endpoint never creates a Workspace and returns only the API-key owner's mapping:
+
+```bash
+curl -H 'Authorization: Bearer hp_live_REPLACE_ME' \
+  'https://example.test/api/v1/me/personal-workspace'
+```
+
+The response reports whether the space exists or was soft-deleted, whether automatic creation currently applies to the user, and the mapped Workspace ID, slug, name, and restricted visibility.
 
 Allowed target types are `workspace`, `page`, `calendar`, and `task_list`.
 `task_list` uses the stable list UUID returned by the Task API and requires

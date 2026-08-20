@@ -46,6 +46,8 @@ final readonly class HpSimbiozaUserCommand
                 array_values(array_slice($arguments, 1)),
                 $options,
             ),
+            'install-personal-workspaces', 'install-personal-workspaces-migration' =>
+                $this->installPersonalWorkspacesMigration($options),
             'dispatch', 'digest', 'dispatch-digests' => $this->dispatchDigests($arguments, $options),
             'help', '--help', '-h' => $this->help(),
             default => 1,
@@ -84,6 +86,36 @@ final readonly class HpSimbiozaUserCommand
     }
 
     /**
+     * HR: Kopira nadogradnju osobnih područja u postojeću aplikaciju.
+     * EN: Copies the personal-space upgrade into an existing application.
+     *
+     * @param array<string,mixed> $options
+     */
+    public function installPersonalWorkspacesMigration(array $options = []): int
+    {
+        $directory = $this->targetDirectory($options);
+        $template = dirname(__DIR__, 2) . '/resources/migrations/add_personal_workspaces.php';
+        if (!is_file($template)) {
+            throw new RuntimeException(__('Predložak migracije osobnih područja nije pronađen.'));
+        }
+
+        if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
+            throw new RuntimeException(__('Nije moguće kreirati direktorij migracija.'));
+        }
+
+        $target = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+            . date('YmdHis') . '_add_simbioza_user_personal_workspaces.php';
+        $content = file_get_contents($template);
+        if (!is_string($content) || file_put_contents($target, $content) === false) {
+            throw new RuntimeException(__('Nije moguće kopirati migraciju osobnih područja.'));
+        }
+
+        echo __('Kreirana je migracija: ') . $target . PHP_EOL;
+
+        return 0;
+    }
+
+    /**
      * HR: Pokreće ograničenu obradu dospjelih dnevnih sažetaka.
      * EN: Dispatches a bounded batch of due daily digests.
      *
@@ -103,6 +135,7 @@ final readonly class HpSimbiozaUserCommand
     public function help(): int
     {
         echo 'vendor/bin/hph simbioza-user:install-migration' . PHP_EOL;
+        echo 'vendor/bin/hph simbioza-user:install-personal-workspaces-migration' . PHP_EOL;
         echo 'vendor/bin/hph simbioza-user:dispatch --limit=500' . PHP_EOL;
 
         return 0;

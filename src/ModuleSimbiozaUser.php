@@ -22,6 +22,12 @@ final class ModuleSimbiozaUser
 
     public const TABLE_PENDING_DELIVERIES = 'simbioza_user_pending_deliveries';
 
+    public const TABLE_SETTINGS = 'simbioza_user_settings';
+
+    public const TABLE_PERSONAL_WORKSPACES = 'simbioza_user_personal_workspaces';
+
+    public const TABLE_PERSONAL_WORKSPACE_POLICIES = 'simbioza_user_personal_workspace_policies';
+
     /** HR: Statički katalog nije moguće instancirati. EN: The static catalog cannot be instantiated. */
     private function __construct()
     {

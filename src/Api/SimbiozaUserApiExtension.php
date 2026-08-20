@@ -47,6 +47,7 @@ final readonly class SimbiozaUserApiExtension implements ApiExtensionInterface
             ['DELETE', '/api/v1/me/follows/{type}/{targetId}', 'deleteFollow', 'api.v1.me.follows.delete'],
             ['GET', '/api/v1/me/follow-preferences', 'getPreferences', 'api.v1.me.follow-preferences.get'],
             ['PATCH', '/api/v1/me/follow-preferences', 'updatePreferences', 'api.v1.me.follow-preferences.update'],
+            ['GET', '/api/v1/me/personal-workspace', 'getPersonalWorkspace', 'api.v1.me.personal-workspace.get'],
         ];
     }
 }

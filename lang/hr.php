@@ -190,4 +190,48 @@ return [
     'API ključ nema potreban scope "%s".' => 'API ključ nema potreban scope "%s".',
     'JSON tijelo mora biti objekt.' => 'JSON tijelo mora biti objekt.',
     'Identifikator praćenja nije valjan.' => 'Identifikator praćenja nije valjan.',
+    'Osobna područja' => 'Osobna područja',
+    'Osobno područje' => 'Osobno područje',
+    'Moje osobno područje' => 'Moje osobno područje',
+    'Otvori osobno područje' => 'Otvori osobno područje',
+    'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
+        'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.',
+    'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
+        'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.',
+    'Automatski izradi osobno područje pri prvoj prijavi' =>
+        'Automatski izradi osobno područje pri prvoj prijavi',
+    'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
+        'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.',
+    'Postojeći korisnici' => 'Postojeći korisnici',
+    'Korisnik' => 'Korisnik',
+    'Radnje' => 'Radnje',
+    'Spremi' => 'Spremi',
+    'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.' =>
+        'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.',
+    'Izradi osobna područja postojećim korisnicima' => 'Izradi osobna područja postojećim korisnicima',
+    'Automatska izrada' => 'Automatska izrada',
+    'Dopusti automatsku izradu' => 'Dopusti automatsku izradu',
+    'Nije izrađeno' => 'Nije izrađeno',
+    'Izradi sada' => 'Izradi sada',
+    'Obrisano — moguće ga je vratiti u postavkama područja' =>
+        'Obrisano — moguće ga je vratiti u postavkama područja',
+    'Nema aktivnih korisnika.' => 'Nema aktivnih korisnika.',
+    'Postavke osobnih područja su spremljene.' => 'Postavke osobnih područja su spremljene.',
+    'Postavka korisnika je spremljena.' => 'Postavka korisnika je spremljena.',
+    'Osobno područje je izrađeno.' => 'Osobno područje je izrađeno.',
+    'Osobno područje nije moguće izraditi.' => 'Osobno područje nije moguće izraditi.',
+    'Osobno područje nije moguće povezati s korisnikom.' =>
+        'Osobno područje nije moguće povezati s korisnikom.',
+    'Migracija osobnih područja nije primijenjena.' => 'Migracija osobnih područja nije primijenjena.',
+    'Korisnik nije pronađen.' => 'Korisnik nije pronađen.',
+    'Prijavljeni administrator nije pronađen.' => 'Prijavljeni administrator nije pronađen.',
+    'Korisnik %d' => 'Korisnik %d',
+    'Područje od: %s' => 'Područje od: %s',
+    'Osobno područje korisnika %s.' => 'Osobno područje korisnika %s.',
+    'Izrađeno: %1$d; već postoji: %2$d; isključeno: %3$d; neuspjelo: %4$d.' =>
+        'Izrađeno: %1$d; već postoji: %2$d; isključeno: %3$d; neuspjelo: %4$d.',
+    'Predložak migracije osobnih područja nije pronađen.' =>
+        'Predložak migracije osobnih područja nije pronađen.',
+    'Nije moguće kopirati migraciju osobnih područja.' =>
+        'Nije moguće kopirati migraciju osobnih područja.',
 ];

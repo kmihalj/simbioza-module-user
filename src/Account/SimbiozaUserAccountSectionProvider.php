@@ -6,9 +6,12 @@ namespace AaiEduHr\SimbiozaModuleUser\Account;
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceValue;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
 use HeartPhrame\Routing\UrlGenerator;
 
@@ -28,6 +31,8 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
         private NotificationPreferenceService $notificationPreferences,
         private UrlGenerator $urls,
         private ?CalendarSubscriptionSynchronizer $calendarSubscriptions = null,
+        private ?PersonalWorkspaceService $personalWorkspaces = null,
+        private ?WorkspacePresentationRegistry $workspacePresentations = null,
     ) {
     }
 
@@ -99,6 +104,30 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
             return strcasecmp($leftLabel, $rightLabel);
         });
 
+        $personalWorkspace = $this->personalWorkspaces?->forUser($userId);
+        $personalWorkspaceRow = is_array($personalWorkspace['workspace'] ?? null)
+            ? WorkspaceValue::stringKeyArray($personalWorkspace['workspace'])
+            : null;
+        if (
+            is_array($personalWorkspaceRow)
+            && $this->workspacePresentations instanceof WorkspacePresentationRegistry
+        ) {
+            $personalWorkspaceRow = $this->workspacePresentations->one($personalWorkspaceRow);
+            $personalWorkspace['workspace'] = $personalWorkspaceRow;
+        }
+
+        $personalWorkspacePath = null;
+        if (
+            is_array($personalWorkspaceRow)
+            && !(bool)($personalWorkspace['is_deleted'] ?? false)
+            && is_scalar($personalWorkspaceRow['slug'] ?? null)
+        ) {
+            $slug = trim((string)$personalWorkspaceRow['slug']);
+            $personalWorkspacePath = $this->urls->namedRouteExists('workspace.show')
+                ? $this->urls->getPathFor('workspace.show', ['workspaceSlug' => $slug])
+                : rtrim($this->urls->getBasePath(), '/') . '/workspace/' . rawurlencode($slug);
+        }
+
         return [
             'key' => 'simbioza-following',
             'package' => ModuleSimbiozaUser::PACKAGE_NAME,
@@ -119,6 +148,8 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
                 'profileFollowingPath' => $this->path('auth.account.profile', '/auth/account/profile')
                     . '#simbioza-user-items',
                 'assetsCssPath' => $this->path('simbioza-user.assets.css', '/simbioza-user/assets.css'),
+                'personalWorkspace' => $personalWorkspace,
+                'personalWorkspacePath' => $personalWorkspacePath,
             ],
         ];
     }

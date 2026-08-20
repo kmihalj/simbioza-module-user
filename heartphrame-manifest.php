@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
+use AaiEduHr\HeartPhrameModuleAuth\Event\UserAuthenticated;
+use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAdminOrBootstrapMiddleware;
 use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAuthenticatedUserMiddleware;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged;
@@ -16,14 +18,17 @@ use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspaceContentChanged;
 use AaiEduHr\HeartPhrameModuleWorkspace\ModuleWorkspace;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
+use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
+use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
+use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserMenuIntegration;
 use HeartPhrame\Bridge\ComposerBridge;
 use HeartPhrame\Command\CommandDefinition;
 use HeartPhrame\Config\ConfigInterface;
@@ -93,6 +98,7 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     public function getBaseRoutes(): array
     {
         $authenticated = [RequireAuthenticatedUserMiddleware::class];
+        $admin = [RequireAdminOrBootstrapMiddleware::class];
 
         return [
             [
@@ -137,6 +143,41 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 'simbioza-user.assets.css',
                 [],
             ],
+            [
+                'GET',
+                '/settings/personal-workspaces',
+                PersonalWorkspaceSettingsController::class . '@index',
+                'simbioza-user.personal-workspaces.settings',
+                $admin,
+            ],
+            [
+                'POST',
+                '/settings/personal-workspaces',
+                PersonalWorkspaceSettingsController::class . '@save',
+                'simbioza-user.personal-workspaces.settings.save',
+                $admin,
+            ],
+            [
+                'POST',
+                '/settings/personal-workspaces/provision',
+                PersonalWorkspaceSettingsController::class . '@provision',
+                'simbioza-user.personal-workspaces.provision',
+                $admin,
+            ],
+            [
+                'POST',
+                '/settings/personal-workspaces/user-policy',
+                PersonalWorkspaceSettingsController::class . '@saveUserPolicy',
+                'simbioza-user.personal-workspaces.user-policy',
+                $admin,
+            ],
+            [
+                'POST',
+                '/settings/personal-workspaces/create',
+                PersonalWorkspaceSettingsController::class . '@create',
+                'simbioza-user.personal-workspaces.create',
+                $admin,
+            ],
         ];
     }
 
@@ -144,6 +185,21 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     public function getBootstrapCallables(): array
     {
         return [static function (ContainerInterface $container): void {
+            $workspacePresentations = $container->get(
+                \AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry::class,
+            );
+            $personalWorkspacePresentation = $container->get(
+                \AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider::class,
+            );
+            if (
+                $workspacePresentations instanceof
+                    \AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry
+                && $personalWorkspacePresentation instanceof
+                    \AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider
+            ) {
+                $workspacePresentations->register($personalWorkspacePresentation);
+            }
+
             $registry = $container->get(AuthAccountSectionRegistry::class);
             $provider = $container->get(SimbiozaUserAccountSectionProvider::class);
             if ($registry instanceof AuthAccountSectionRegistry) {
@@ -164,6 +220,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
             ) {
                 $visibility->register($visibilityProvider);
             }
+
+            $menu = $container->get(SimbiozaUserMenuIntegration::class);
+            if ($menu instanceof SimbiozaUserMenuIntegration) {
+                $menu->register();
+            }
         }];
     }
 
@@ -171,6 +232,7 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     public function getEventListeners(): array
     {
         $listeners = [
+            new EventListener(UserAuthenticated::class, CreatePersonalWorkspaceAfterLogin::class),
             new EventListener(WorkspaceContentChanged::class, WorkspaceFollowActivityListener::class),
         ];
         $optional = [
@@ -204,6 +266,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 'simbioza-user:install-migration',
                 'Copy the Simbioza user migration.',
                 [HpSimbiozaUserCommand::class, 'installMigration'],
+            ),
+            new CommandDefinition(
+                'simbioza-user:install-personal-workspaces-migration',
+                'Copy the Simbioza personal-space upgrade migration.',
+                [HpSimbiozaUserCommand::class, 'installPersonalWorkspacesMigration'],
             ),
             new CommandDefinition(
                 'simbioza-user:dispatch',

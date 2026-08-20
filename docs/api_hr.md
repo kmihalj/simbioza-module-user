@@ -6,6 +6,18 @@ Scopeovi:
 
 - `follows:read`
 - `follows:write`
+- `workspaces:read` za stanje osobnog područja
+
+## Stanje osobnog područja
+
+Ova read-only ruta nikada ne izrađuje područje i vraća samo mapiranje vlasnika API ključa:
+
+```bash
+curl -H 'Authorization: Bearer hp_live_ZAMIJENI_ME' \
+  'https://primjer.test/api/v1/me/personal-workspace'
+```
+
+Odgovor navodi postoji li područje ili je soft-obrisano, vrijedi li za korisnika automatska izrada te ID, slug, naziv i ograničenu vidljivost mapiranog Workspacea.
 
 Dopuštene vrste cilja su `workspace`, `page`, `calendar` i `task_list`.
 `task_list` koristi stabilni UUID liste koji vraća Task API te uz zahtjev treba

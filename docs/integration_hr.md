@@ -2,6 +2,8 @@
 
 ## Neutralni događaji
 
+Auth objavljuje `UserAuthenticated` nakon uspješne lokalne, SAML, OIDC, OAuth2 ili CAS prijave i stvaranja sesije. Događaj sadrži samo ID korisnika, provider i opcionalni ključ profila. Simbioza User sluša neutralni događaj i poziva vlastiti servis osobnih područja, pa Auth nema ovisnost o Workspace ni ovom aplikacijskom modulu. Pogreška listenera zapisuje se u tehnički log, ali nikada ne poništava uspješnu prijavu.
+
 Modul sluša događaje u vlasništvu drugih modula:
 
 - Workspace objave te promjene stabla stranica i područja;
@@ -10,6 +12,14 @@ Modul sluša događaje u vlasništvu drugih modula:
 - Calendar kreiranje, izmjenu, promjenu termina, brisanje događaja i promjenu pretplate.
 
 Vlasnički moduli ostaju uporabivi bez Simbioza User modula. Događaje šalju kroz opcionalnu PSR-14 integraciju i nikada ne pozivaju ovaj modul izravno.
+
+## Prikaz osobnog područja
+
+Workspace izlaže generički `WorkspacePresentationRegistry`. Simbioza User pri
+pokretanju modula registrira svoj provider i lokalizira generirani naziv i opis
+osobnog područja prema trenutačnom jeziku sučelja. Prilagodba se radi grupno,
+ne mijenja spremljeni Workspace zapis te čuva naziv ili opis koji vlasnik
+naknadno prilagodi.
 
 ## Integracija korisničkog sučelja
 
@@ -35,9 +45,11 @@ Nazivi u `label_snapshot` služe samo za prikaz. Nakon gubitka ACL prava nikada 
 ## Backup
 
 Backup cijelog sitea i poslovne cjeline **Korisnici** sprema globalne postavke,
-sva praćenja i izričita isključenja automatskog praćenja. Cjelina **Područja** i
+sva praćenja, izričita isključenja automatskog praćenja, korisničke iznimke
+izrade i mapiranja osobnih područja. Cjelina **Postavke** sprema globalno
+pravilo izrade. Cjelina **Područja** i
 backup pojedinog područja spremaju samo praćenja, osobne načine dostave i
-kalendarske iznimke vezane uz obuhvaćena područja. Globalne osobne postavke ne
+kalendarske iznimke te mapiranje osobnog područja vezano uz obuhvaćena područja. Globalne osobne postavke ne
 ulaze u scoped arhiv kako upravitelj područja ne bi mogao izvesti podatke koji
 nisu dio njegova područja.
 
@@ -46,6 +58,8 @@ preko Backup prostora identiteta; UUID liste zadataka ostaje prenosivi
 identifikator. Red dnevnih sažetaka se ne sprema, a normalni worker ponovno
 stvara buduće operativno stanje. Zaostalo praćenje obrisanog korisnika preskače
 se jer bez Auth identiteta ne pripada nijednom računu ciljnog sitea.
+
+Copy import nikada ne zamjenjuje postojeće korisnikovo mapiranje osobnog područja. Uvezena kopija ostaje obično ograničeno područje istog vlasnika, čime se sprječava da se dva područja predstavljaju kao osobno područje istog korisnika.
 
 ## Proširenje domenskog modula
 

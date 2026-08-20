@@ -1,5 +1,18 @@
 # Using follows
 
+## Personal Workspaces
+
+After a successful sign-in, an eligible user receives one ordinary restricted Workspace. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user is the Workspace owner and therefore has all Workspace permissions. Administrators retain their normal system-wide access; every other user or group sees the Workspace only after the owner or an administrator explicitly grants ACL access.
+
+Administrators use **Settings → Workspaces → Personal Workspaces** to:
+
+- enable or disable automatic creation after first sign-in;
+- provision all eligible existing active users in one batch;
+- disable or re-enable automatic creation for an individual user;
+- manually create a missing personal Workspace.
+
+Disabling creation never deletes an existing Workspace. A soft-deleted personal Workspace remains mapped and is restored through the normal deleted-Workspace screen; the system does not silently create a replacement and split the user's content.
+
 ## Follow and unfollow
 
 An authenticated reader can follow content only while its owning module confirms read access. Available controls are:

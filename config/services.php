@@ -3,22 +3,26 @@
 declare(strict_types=1);
 
 use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
+use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceAccessService;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserApiExtension;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
 use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
+use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
+use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
@@ -26,6 +30,10 @@ use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider;
+use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserMenuIntegration;
+use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserModuleViewRenderer;
 use HeartPhrame\Alert\AlertHandler;
 use HeartPhrame\Authn\AuthnHandlerInterface;
 use HeartPhrame\Config\ConfigInterface;
@@ -37,6 +45,48 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 $services = [
+    PersonalWorkspaceService::class => static fn(ContainerInterface $container): PersonalWorkspaceService =>
+        new PersonalWorkspaceService(
+            $container->get(Database::class),
+            $container->get(WorkspaceRepository::class),
+            $container->get(AuthUserService::class),
+            $container->get(EventDispatcherInterface::class),
+        ),
+
+    PersonalWorkspacePresentationProvider::class =>
+        static fn(ContainerInterface $container): PersonalWorkspacePresentationProvider =>
+            new PersonalWorkspacePresentationProvider(
+                $container->get(PersonalWorkspaceService::class),
+                $container->get(\HeartPhrame\Localization\TranslatorInterface::class),
+            ),
+
+    SimbiozaUserModuleViewRenderer::class =>
+        static fn(ContainerInterface $container): SimbiozaUserModuleViewRenderer =>
+            new SimbiozaUserModuleViewRenderer($container->get(ResponseFactory::class)),
+
+    SimbiozaUserMenuIntegration::class =>
+        static fn(ContainerInterface $container): SimbiozaUserMenuIntegration =>
+            new SimbiozaUserMenuIntegration($container, $container->get(ConfigInterface::class)),
+
+    PersonalWorkspaceSettingsController::class =>
+        static fn(ContainerInterface $container): PersonalWorkspaceSettingsController =>
+            new PersonalWorkspaceSettingsController(
+                $container->get(ResponseFactory::class),
+                $container->get(SimbiozaUserModuleViewRenderer::class),
+                $container->get(PersonalWorkspaceService::class),
+                $container->get(AuthnHandlerInterface::class),
+                $container->get(UrlGenerator::class),
+                $container->get(AlertHandler::class),
+                $container->get(WorkspacePresentationRegistry::class),
+            ),
+
+    CreatePersonalWorkspaceAfterLogin::class =>
+        static fn(ContainerInterface $container): CreatePersonalWorkspaceAfterLogin =>
+            new CreatePersonalWorkspaceAfterLogin(
+                $container->get(PersonalWorkspaceService::class),
+                $container->get(LoggerInterface::class),
+            ),
+
     UserPreferenceService::class => static fn(ContainerInterface $container): UserPreferenceService =>
         new UserPreferenceService($container->get(Database::class)),
 
@@ -97,6 +147,8 @@ $services = [
                 $container->get(NotificationPreferenceService::class),
                 $container->get(UrlGenerator::class),
                 $calendarSubscriptions,
+                $container->get(PersonalWorkspaceService::class),
+                $container->get(WorkspacePresentationRegistry::class),
             );
         },
 
@@ -172,6 +224,7 @@ if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterfa
                 $container->get(FollowService::class),
                 $container->get(UserPreferenceService::class),
                 $container->get(NotificationPreferenceService::class),
+                $container->get(PersonalWorkspaceService::class),
                 $container->has(CalendarSubscriptionSynchronizer::class)
                     ? $container->get(CalendarSubscriptionSynchronizer::class)
                     : null,
@@ -277,7 +330,67 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                             ],
                         ],
                     ],
+                    [
+                        'dataset' => 'personal-workspace-policies',
+                        'table' => \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES,
+                        'primary_key' => 'id',
+                        'conflict_keys' => ['user_id'],
+                        'preserve_primary_key' => false,
+                        'foreign_keys' => [
+                            ['column' => 'user_id', 'namespace' => 'auth.user', 'skip_if_missing' => true],
+                            [
+                                'column' => 'updated_by_user_id',
+                                'namespace' => 'auth.user',
+                                'nullable' => true,
+                                'defer' => true,
+                            ],
+                        ],
+                    ],
+                    [
+                        'dataset' => 'personal-workspaces',
+                        'table' => \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES,
+                        'primary_key' => 'id',
+                        'conflict_keys' => ['user_id'],
+                        'preserve_primary_key' => false,
+                        'foreign_keys' => [
+                            ['column' => 'user_id', 'namespace' => 'auth.user', 'skip_if_missing' => true],
+                            [
+                                'column' => 'workspace_id',
+                                'namespace' => 'workspace.workspace',
+                                'skip_if_missing' => true,
+                            ],
+                        ],
+                    ],
                 ],
+            );
+
+    $services['heartphrame.backup.provider.simbioza-user-settings'] =
+        static fn(
+            ContainerInterface $container,
+        ): \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider =>
+            new \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider(
+                $container->get(Database::class),
+                new \AaiEduHr\HeartPhrameModuleBackup\Value\BackupProviderMetadata(
+                    'simbioza-user-settings',
+                    \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::PACKAGE_NAME,
+                    1,
+                    ['hr' => 'Postavke osobnih područja', 'en' => 'Personal-space settings'],
+                    [],
+                    [
+                        \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::SITE,
+                        \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT,
+                    ],
+                    true,
+                    true,
+                    componentGroups: [\AaiEduHr\HeartPhrameModuleBackup\Value\BackupComponentGroup::SETTINGS],
+                ),
+                [[
+                    'dataset' => 'settings',
+                    'table' => \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::TABLE_SETTINGS,
+                    'primary_key' => 'id',
+                    'conflict_keys' => ['setting_key'],
+                    'preserve_primary_key' => false,
+                ]],
             );
 
     $workspaceFollowProvider = static function (
