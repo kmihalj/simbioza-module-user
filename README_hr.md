@@ -21,7 +21,7 @@ Opcionalne integracije otkrivaju se tijekom rada: `heartphrame-module-api`, `hea
 - praćenje pojedinačne Workspace stranice, cijelog područja, kalendara ili cijele ugrađene liste zadataka;
 - automatsko usklađivanje novih i postojećih Calendar pretplata, uz mogućnost isključivanja i ponovnog uključivanja obavijesti bez prekida pretplate;
 - izdvojena akcija praćenja s ikonom i tekstom, stilizirana svijetlim/tamnim Theme tokenima akcija dokumenta;
-- ACL-sigurna tablica u profilu s pretragom, filtrima stanja, prekidačem praćenja po stavci i jasnim gumbima načina dostave bez osvježavanja stranice;
+- ACL-sigurna tablica u profilu s pretragom, filtrima stanja, prekidačem praćenja po stavci i kompaktnim ikon-gumbima načina dostave bez osvježavanja stranice;
 - izbor neposredne e-pošte, dnevnog sažetka, samo važnih promjena ili samo obavijesti u aplikaciji;
 - opcionalno isključivanje obavijesti o vlastitim promjenama;
 - uklanjanje duplikata kod istodobnog praćenja područja i stranice te kod brzih istovrsnih izmjena;
@@ -29,9 +29,11 @@ Opcionalne integracije otkrivaju se tijekom rada: `heartphrame-module-api`, `hea
 - kalendarske obavijesti navode radnju, događaj i termin, uključujući stari i novi termin kada je raspored promijenjen;
 - ponovna ACL provjera prije dostave i pri svakom prikazu ili otvaranju postojeće obavijesti;
 - API pristup vlastitim praćenjima kada je API modul uključen;
-- backup trajnih praćenja i postavki u poslovnoj cjelini Korisnici;
+- backup trajnih praćenja i postavki u cjelini Korisnici te scoped praćenja u backupu područja;
 - audit zapis promjena praćenja i postavki kada je Audit modul uključen.
 
+Backup sitea i cjeline Korisnici vraća globalne osobne postavke, a backup
+područja vraća samo praćenja i načine dostave povezane s tim područjem.
 Privremeni redovi dnevnog sažetka namjerno se ne spremaju u backup.
 
 ## Brzi početak
@@ -42,7 +44,7 @@ php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
-Uključite `aaieduhr/simbioza-module-user` nakon obaveznih modula. Auth profil osnovne podatke računa drži stalno vidljivima, a ostale mogućnosti grupira pod **Sigurnost i pristup** i **Osobne postavke**. Otvorite **Praćenje i obavijesti** kako biste pretražili ili filtrirali tablicu te podesili svaku stavku. Gumbi stranice, područja i zadatka pojavljuju se u prikazima njihovih modula, a Calendar pretplate sinkroniziraju se s jedinstvenim popisom.
+Uključite `aaieduhr/simbioza-module-user` nakon obaveznih modula. Auth profil osnovne podatke računa spaja sa sigurnosnim accordionom, a **Osobne postavke** prikazuje u trajno otvorenoj kartici. **Postavke obavijesti** također su uvijek otvorene, dok se tablica pretražuje i filtrira u accordionu **Praćeni sadržaj**. Gumbi stranice, područja i zadatka pojavljuju se u prikazima njihovih modula, a Calendar pretplate sinkroniziraju se s jedinstvenim popisom.
 
 Dospjele dnevne sažetke pokreće worker ili cron:
 

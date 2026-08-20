@@ -25,13 +25,17 @@ The personal profile lists the target type, current ACL-safe label, follow date,
 optional e-mail override, and a link. Its search field filters by name. The
 state filter offers all items, followed/not followed, in-app only, immediate
 e-mail, daily digest, and important changes only. The bell action changes
-follow state; the delivery-button group visibly exposes exactly one active mode
-per item: inactive buttons are outlined and raised, while the active one is
-filled and pressed. Text below the buttons explains the current choice.
+follow state; the compact delivery icon-button group visibly exposes exactly
+one active mode per item: inactive buttons are outlined and raised, while the
+active one is filled and pressed. The button name is available on hover and to
+screen readers. An italic description beside the buttons explains the current
+choice and moves below them on mobile.
 Changing a delivery mode and saving personal preferences happens in the
-background: the profile is not reloaded, open accordions and scroll position
-remain intact, and a themed toast confirms the result. A target that is no
-longer accessible is never displayed with its old label.
+background: the profile is not reloaded, collapsible-section state and scroll
+position remain intact, and a themed toast confirms the result. Notification
+settings always stay open; only the follows table is placed in the **Followed
+content** accordion. A target that is no longer accessible is never displayed
+with its old label.
 
 A task list is followed as one business unit. Its rows remain individual
 checkboxes, but the list has only one follow button and one latest-change

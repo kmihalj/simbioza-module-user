@@ -21,7 +21,7 @@ Optional integrations are detected at runtime: `heartphrame-module-api`, `heartp
 - follow an individual Workspace page, a complete workspace, a calendar, or a complete embedded task list;
 - automatically reconcile both new and pre-existing Calendar subscriptions, while allowing notifications to be disabled and re-enabled without cancelling the subscription;
 - use a separated icon-and-label follow action styled by light/dark Theme document-action tokens;
-- manage follows in an ACL-safe profile table with search, state filters, a per-item follow toggle, and clear pressed-state delivery buttons saved without a page reload;
+- manage follows in an ACL-safe profile table with search, state filters, a per-item follow toggle, and compact delivery icon buttons saved without a page reload;
 - choose immediate e-mail, a daily digest, important changes only, or in-app notifications only;
 - optionally suppress notifications caused by the user's own changes;
 - de-duplicate overlapping workspace/page follows and bursts of equivalent changes;
@@ -29,9 +29,11 @@ Optional integrations are detected at runtime: `heartphrame-module-api`, `heartp
 - include the action, event, and schedule in calendar notifications, including old and new schedules after rescheduling;
 - re-check ACL both before delivery and whenever an existing notification is displayed or opened;
 - expose the owner's follows through the optional modular API;
-- include durable follows and preferences in the Users backup component;
+- include durable follows and preferences in Users and scoped follows in Workspace backups;
 - record follow and preference changes through the optional Audit module.
 
+Site and Users backups restore global personal preferences, while a Workspace
+backup restores only follows and delivery overrides related to that Workspace.
 Transient daily-digest queue rows are deliberately excluded from backup.
 
 ## Quick start
@@ -42,7 +44,7 @@ php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
-Enable `aaieduhr/simbioza-module-user` after its required modules. The Auth profile keeps basic account data visible and groups the remaining controls under **Security and access** and **Personal settings**. Expand **Following and notifications** to search or filter the table and configure each item. Page/workspace/task-list controls appear automatically where their owning modules render them; Calendar subscriptions are synchronized with the unified list.
+Enable `aaieduhr/simbioza-module-user` after its required modules. The Auth profile joins basic account data to its security accordion and keeps **Personal settings** permanently open in a separate card. **Notification settings** also stay open, while the table is searched and filtered inside the **Followed content** accordion. Page/workspace/task-list controls appear automatically where their owning modules render them; Calendar subscriptions are synchronized with the unified list.
 
 Run due daily digests from a worker or cron job:
 

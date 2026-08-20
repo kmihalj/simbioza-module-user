@@ -39,12 +39,10 @@ return [
         'Obavijest je odmah u aplikaciji, a kopija e-pošte šalje se bez čekanja.',
     'Obavijesti su odmah u aplikaciji, a e-pošta ih objedinjuje u jedan sažetak sljedećeg dana.' =>
         'Obavijesti su odmah u aplikaciji, a e-pošta ih objedinjuje u jedan sažetak sljedećeg dana.',
-    'U aplikaciji su sve promjene, a e-pošta se šalje samo za objave i uklanjanja stranica, '
-        . 'promjene termina ili uklanjanja događaja te dovršavanje, ponovno otvaranje i promjenu '
-        . 'nositelja zadatka.' =>
-        'U aplikaciji su sve promjene, a e-pošta se šalje samo za objave i uklanjanja stranica, '
-        . 'promjene termina ili uklanjanja događaja te dovršavanje, ponovno otvaranje i promjenu '
-        . 'nositelja zadatka.',
+    'Sve promjene su u aplikaciji; e-pošta stiže samo za objave, uklanjanja i važne promjene '
+        . 'događaja ili zadataka.' =>
+        'Sve promjene su u aplikaciji; e-pošta stiže samo za objave, uklanjanja i važne promjene '
+        . 'događaja ili zadataka.',
     'Što znače načini dostave?' => 'Što znače načini dostave?',
     'Bez e-pošte, samo obavijest u aplikaciji' => 'Bez e-pošte, samo obavijest u aplikaciji',
     'Obavještavaj me i o mojim vlastitim promjenama' =>

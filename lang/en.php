@@ -39,11 +39,10 @@ return [
         'The notification appears in the application immediately and its e-mail copy is sent without waiting.',
     'Obavijesti su odmah u aplikaciji, a e-pošta ih objedinjuje u jedan sažetak sljedećeg dana.' =>
         'Notifications appear in the application immediately while e-mail combines them into one digest the next day.',
-    'U aplikaciji su sve promjene, a e-pošta se šalje samo za objave i uklanjanja stranica, '
-        . 'promjene termina ili uklanjanja događaja te dovršavanje, ponovno otvaranje i promjenu '
-        . 'nositelja zadatka.' =>
-        'All changes appear in the application; e-mail is sent only for page publications or removals, '
-        . 'event schedule changes or removals, and task completion, reopening, or assignee changes.',
+    'Sve promjene su u aplikaciji; e-pošta stiže samo za objave, uklanjanja i važne promjene '
+        . 'događaja ili zadataka.' =>
+        'All changes appear in the application; e-mail is sent only for publications, removals, '
+        . 'and important event or task changes.',
     'Što znače načini dostave?' => 'What do the delivery modes mean?',
     'Bez e-pošte, samo obavijest u aplikaciji' => 'No e-mail, in-app notification only',
     'Obavještavaj me i o mojim vlastitim promjenama' => 'Notify me about my own changes too',

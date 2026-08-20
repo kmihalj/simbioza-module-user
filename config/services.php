@@ -11,6 +11,7 @@ use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserApiExtension;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
+use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
@@ -179,10 +180,21 @@ if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterfa
 }
 
 if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider::class)) {
-    $simbiozaUserBackupDependencies = ['auth', 'workspace'];
-    if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar::class)) {
-        $simbiozaUserBackupDependencies[] = 'calendar';
-    }
+    $simbiozaUserBackupDependencies = static function (ContainerInterface $container): array {
+        $dependencies = ['auth', 'workspace'];
+        $config = $container->get(ConfigInterface::class);
+        $enabled = $config instanceof ConfigInterface
+            ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
+            : [];
+        if (
+            in_array('aaieduhr/heartphrame-module-calendar', $enabled, true)
+            && class_exists(\AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar::class)
+        ) {
+            $dependencies[] = 'calendar';
+        }
+
+        return $dependencies;
+    };
 
     $services['heartphrame.backup.provider.simbioza-user'] =
         static fn(
@@ -195,7 +207,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                     \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::PACKAGE_NAME,
                     1,
                     ['hr' => 'Osobna praćenja i postavke', 'en' => 'Personal follows and preferences'],
-                    $simbiozaUserBackupDependencies,
+                    $simbiozaUserBackupDependencies($container),
                     [
                         \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::SITE,
                         \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT,
@@ -211,16 +223,20 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                         'primary_key' => 'id',
                         'conflict_keys' => ['user_id'],
                         'preserve_primary_key' => false,
-                        'foreign_keys' => [['column' => 'user_id', 'namespace' => 'auth.user']],
+                        'foreign_keys' => [[
+                            'column' => 'user_id',
+                            'namespace' => 'auth.user',
+                            'skip_if_missing' => true,
+                        ]],
                     ],
                     [
                         'dataset' => 'follows',
                         'table' => \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::TABLE_FOLLOWS,
                         'primary_key' => 'id',
-                        'conflict_keys' => ['uuid'],
+                        'conflict_keys' => ['user_id', 'target_type', 'target_id'],
                         'preserve_primary_key' => false,
                         'foreign_keys' => [
-                            ['column' => 'user_id', 'namespace' => 'auth.user'],
+                            ['column' => 'user_id', 'namespace' => 'auth.user', 'skip_if_missing' => true],
                             ['column' => 'workspace_id', 'namespace' => 'workspace.workspace', 'nullable' => true],
                             ['column' => 'page_id', 'namespace' => 'workspace.node', 'nullable' => true],
                         ],
@@ -245,7 +261,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                         'conflict_keys' => ['user_id', 'target_type', 'target_id'],
                         'preserve_primary_key' => false,
                         'foreign_keys' => [
-                            ['column' => 'user_id', 'namespace' => 'auth.user'],
+                            ['column' => 'user_id', 'namespace' => 'auth.user', 'skip_if_missing' => true],
                         ],
                         'polymorphic_foreign_keys' => [
                             [
@@ -263,6 +279,55 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                     ],
                 ],
             );
+
+    $workspaceFollowProvider = static function (
+        ContainerInterface $container,
+        string $id,
+        string $scope,
+        string $workspaceDependency,
+        string $calendarDependency,
+    ): SimbiozaUserWorkspaceBackupProvider {
+        $dependencies = [$workspaceDependency];
+        $calendarPages = null;
+        $config = $container->get(ConfigInterface::class);
+        $enabled = $config instanceof ConfigInterface
+            ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
+            : [];
+        if (
+            in_array('aaieduhr/heartphrame-module-calendar', $enabled, true)
+            && class_exists(\AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar::class)
+        ) {
+            $dependencies[] = $calendarDependency;
+            $calendarPages = $container->get(EmbeddedCalendarPageResolver::class);
+        }
+
+        return new SimbiozaUserWorkspaceBackupProvider(
+            $container->get(Database::class),
+            $container->get(\AaiEduHr\HeartPhrameModuleAuth\Backup\AuthBackupIdentityResolver::class),
+            $id,
+            $dependencies,
+            [$scope],
+            $calendarPages instanceof EmbeddedCalendarPageResolver ? $calendarPages : null,
+        );
+    };
+
+    $services['heartphrame.backup.provider.simbioza-user-workspaces'] =
+        static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
+            $container,
+            'simbioza-user-workspaces',
+            \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT,
+            'workspace',
+            'calendar',
+        );
+
+    $services['heartphrame.backup.provider.simbioza-user-workspace'] =
+        static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
+            $container,
+            'simbioza-user-workspace',
+            \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::WORKSPACE,
+            'workspace-scope',
+            'calendar-workspace',
+        );
 }
 
 return $services;

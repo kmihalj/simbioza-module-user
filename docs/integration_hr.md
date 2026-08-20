@@ -34,7 +34,18 @@ Nazivi u `label_snapshot` služe samo za prikaz. Nakon gubitka ACL prava nikada 
 
 ## Backup
 
-Postavke, praćenja i izričita isključenja automatskog praćenja pripadaju poslovnoj cjelini **Korisnici**. ID-evi korisnika, područja, stranice i opcionalnog kalendara pri restoreu koriste Backup prostore identiteta. UUID zadatka je prenosivi identifikator. Red dnevnih sažetaka se ne sprema, a normalni worker ponovno stvara buduće operativno stanje.
+Backup cijelog sitea i poslovne cjeline **Korisnici** sprema globalne postavke,
+sva praćenja i izričita isključenja automatskog praćenja. Cjelina **Područja** i
+backup pojedinog područja spremaju samo praćenja, osobne načine dostave i
+kalendarske iznimke vezane uz obuhvaćena područja. Globalne osobne postavke ne
+ulaze u scoped arhiv kako upravitelj područja ne bi mogao izvesti podatke koji
+nisu dio njegova područja.
+
+Restore ponovno mapira korisnike, područja, stranice i opcionalne kalendare
+preko Backup prostora identiteta; UUID liste zadataka ostaje prenosivi
+identifikator. Red dnevnih sažetaka se ne sprema, a normalni worker ponovno
+stvara buduće operativno stanje. Zaostalo praćenje obrisanog korisnika preskače
+se jer bez Auth identiteta ne pripada nijednom računu ciljnog sitea.
 
 ## Proširenje domenskog modula
 

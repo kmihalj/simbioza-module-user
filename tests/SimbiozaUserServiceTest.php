@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Tests;
 
+use AaiEduHr\HeartPhrameModuleAuth\Backup\AuthBackupIdentityResolver;
+use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
+use AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope;
 use AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationEmailBridge;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
@@ -11,6 +14,7 @@ use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Migration\ReversibleMigrationInterface;
+use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
@@ -35,6 +39,7 @@ use RuntimeException;
 #[CoversClass(FollowDeliveryService::class)]
 #[CoversClass(CalendarSubscriptionSynchronizer::class)]
 #[CoversClass(SimbiozaNotificationVisibilityProvider::class)]
+#[CoversClass(SimbiozaUserWorkspaceBackupProvider::class)]
 #[UsesClass(FollowActivity::class)]
 #[UsesClass(NotificationEmailBridge::class)]
 #[UsesClass(NotificationPreferenceService::class)]
@@ -138,6 +143,36 @@ final class SimbiozaUserServiceTest extends TestCase
         $this->assertSame('daily', $saved['email_mode']);
         $this->assertTrue($saved['notify_own_changes']);
         $this->assertSame('off', $preferences->forUser(4)['email_mode']);
+    }
+
+    /**
+     * HR: Komponentni i pojedinačni Workspace backup moraju imati samo ovisnosti
+     *     koje doista postoje u njihovu opsegu arhiva.
+     * EN: Component and single-Workspace backups must declare only dependencies
+     *     that actually exist in their respective archive scope.
+     */
+    public function testWorkspaceBackupMetadataKeepsScopeDependenciesSeparate(): void
+    {
+        $identities = new AuthBackupIdentityResolver($this->database, new AuthUserService($this->database));
+        $component = new SimbiozaUserWorkspaceBackupProvider(
+            $this->database,
+            $identities,
+            'simbioza-user-workspaces',
+            ['workspace', 'calendar'],
+            [BackupScope::COMPONENT],
+        );
+        $workspace = new SimbiozaUserWorkspaceBackupProvider(
+            $this->database,
+            $identities,
+            'simbioza-user-workspace',
+            ['workspace-scope', 'calendar-workspace'],
+            [BackupScope::WORKSPACE],
+        );
+
+        $this->assertSame([BackupScope::COMPONENT], $component->metadata()->scopes);
+        $this->assertSame(['workspace', 'calendar'], $component->metadata()->dependencies);
+        $this->assertSame([BackupScope::WORKSPACE], $workspace->metadata()->scopes);
+        $this->assertSame(['workspace-scope', 'calendar-workspace'], $workspace->metadata()->dependencies);
     }
 
     /**

@@ -34,7 +34,18 @@ Labels stored in `label_snapshot` are presentation aids only. They are not retur
 
 ## Backup
 
-Preferences, follows, and automatic-follow exclusions belong to the **Users** business component. User, workspace, page, and optional calendar IDs use Backup identity namespaces during restore. Task UUIDs are portable identifiers. Pending digests are excluded and the normal worker recreates future operational state.
+A full-site backup and the **Users** business component store global preferences,
+all follows, and explicit automatic-follow exclusions. The **Workspaces**
+component and a single-Workspace backup store only follows, personal delivery
+overrides, and calendar exclusions related to the included Workspaces. Global
+personal preferences stay outside a scoped archive so a Workspace manager
+cannot export data unrelated to that Workspace.
+
+Restore remaps users, Workspaces, pages, and optional calendars through Backup
+identity namespaces; a task-list UUID remains portable. Pending digests are
+excluded and the normal worker recreates future operational state. A stale
+follow belonging to a deleted user is skipped because it belongs to no Auth
+account on the target site.
 
 ## Extending a domain module
 

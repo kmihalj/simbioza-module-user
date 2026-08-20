@@ -25,12 +25,16 @@ Osobni profil prikazuje vrstu cilja, aktualni ACL-sigurni naziv, datum početka
 praćenja, opcionalnu iznimku e-pošte i poveznicu. Polje za pretragu filtrira
 prema nazivu. Filtar stanja nudi sve stavke, pratim/ne pratim, samo u
 aplikaciji, e-pošta odmah, dnevni sažetak i samo važne promjene. Akcija sa
-zvonom mijenja stanje praćenja, a skup gumba dostave jasno prikazuje jedan
-aktivni način za svaku stavku: neaktivni gumbi su obrubljeni i izdignuti, a
-aktivni je pun i utisnut. Opis ispod gumba objašnjava trenutačni izbor. Promjena
+zvonom mijenja stanje praćenja, a skup kompaktnih ikon-gumba dostave jasno
+prikazuje jedan aktivni način za svaku stavku: neaktivni gumbi su obrubljeni i
+izdignuti, a aktivni je pun i utisnut. Naziv gumba dostupan je prelaskom
+pokazivača i čitačima zaslona. Kurzivni opis uz gumbe objašnjava trenutačni
+izbor, a na mobilnom se prikazuje ispod njih. Promjena
 načina i spremanje osobnih postavki
-odvijaju se u pozadini: profil se ne osvježava, otvoreni accordioni i položaj
-stranice ostaju sačuvani, a rezultat potvrđuje tematska toast poruka. Cilj kojem
+odvijaju se u pozadini: profil se ne osvježava, stanje sklopivih cjelina i
+položaj stranice ostaju sačuvani, a rezultat potvrđuje tematska toast poruka.
+Postavke obavijesti uvijek su otvorene, dok je samo tablica praćenja smještena
+u accordion **Praćeni sadržaj**. Cilj kojem
 je pristup izgubljen nikada se ne prikazuje sa starim nazivom.
 
 Lista zadataka prati se kao jedna poslovna cjelina. Njezini retci ostaju

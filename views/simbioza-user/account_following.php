@@ -39,7 +39,7 @@ $modeDescriptions = [
     'off' => __('Sve promjene odmah su vidljive u aplikaciji, bez slanja e-pošte.'),
     'immediate' => __('Obavijest je odmah u aplikaciji, a kopija e-pošte šalje se bez čekanja.'),
     'daily' => __('Obavijesti su odmah u aplikaciji, a e-pošta ih objedinjuje u jedan sažetak sljedećeg dana.'),
-    'important' => __('U aplikaciji su sve promjene, a e-pošta se šalje samo za objave i uklanjanja stranica, promjene termina ili uklanjanja događaja te dovršavanje, ponovno otvaranje i promjenu nositelja zadatka.'),
+    'important' => __('Sve promjene su u aplikaciji; e-pošta stiže samo za objave, uklanjanja i važne promjene događaja ili zadataka.'),
 ];
 $activeCount = count(array_filter(
     $follows,
@@ -63,6 +63,7 @@ $icon = static function (string $name): string {
         'mail' => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>',
         'daily' => '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 14h3M8 17h6"/></svg>',
         'important' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>',
+        'open' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9"/><path d="M19 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>',
         default => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
     };
 };
@@ -88,77 +89,72 @@ $icon = static function (string $name): string {
             </ul>
         </div>
 
-        <div class="accordion" id="simbioza-user-following-accordion">
-            <div class="accordion-item">
-                <h3 class="accordion-header" id="simbioza-user-preferences-heading">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#simbioza-user-preferences" aria-expanded="true"
-                            aria-controls="simbioza-user-preferences">
-                        <?= __('Postavke obavijesti') ?>
-                    </button>
+        <section class="simbioza-user-preferences mb-3" id="simbioza-user-preferences"
+                 aria-labelledby="simbioza-user-preferences-heading">
+            <div class="simbioza-user-preferences-header">
+                <h3 class="h6 mb-0" id="simbioza-user-preferences-heading">
+                    <?= __('Postavke obavijesti') ?>
                 </h3>
-                <div id="simbioza-user-preferences" class="accordion-collapse collapse show"
-                     aria-labelledby="simbioza-user-preferences-heading"
-                     data-bs-parent="#simbioza-user-following-accordion">
-                    <div class="accordion-body">
-                        <form method="post" action="<?= $this->escape((string)$savePreferencesPath) ?>"
-                              data-simbioza-preferences-form>
-                            <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
-
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" role="switch"
-                                       id="simbioza-user-email-enabled" name="email_enabled" value="1"
-                                       <?= $emailEnabled ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="simbioza-user-email-enabled">
-                                    <?= __('Šalji mi i e-mail obavijesti') ?>
-                                </label>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label" for="simbioza-user-email-mode">
-                                    <?= __('Zadani način dostave') ?>
-                                </label>
-                                <select class="form-select" id="simbioza-user-email-mode" name="email_mode"
-                                        <?= $emailEnabled ? '' : 'disabled' ?>>
-                                    <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
-                                        <option value="<?= $this->escape($mode) ?>" <?= $emailMode === $mode ? 'selected' : '' ?>>
-                                            <?= $this->escape($modeLabel) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" role="switch"
-                                       id="simbioza-user-own-changes" name="notify_own_changes" value="1"
-                                       <?= !empty($preferences['notify_own_changes']) ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="simbioza-user-own-changes">
-                                    <?= __('Obavještavaj me i o mojim vlastitim promjenama') ?>
-                                </label>
-                            </div>
-
-                            <p class="small text-body-secondary">
-                                <?= __('Način dostave uz pojedinu stavku nadjačava ovu zadanu postavku.') ?>
-                            </p>
-                            <div class="simbioza-user-delivery-help mb-3" role="note">
-                                <h4 class="h6 mb-2"><?= __('Što znače načini dostave?') ?></h4>
-                                <dl class="small mb-0">
-                                    <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
-                                        <div>
-                                            <dt><?= $this->escape($modeLabel) ?></dt>
-                                            <dd><?= $this->escape($modeDescriptions[$mode]) ?></dd>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </dl>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <?= __('Spremi postavke praćenja') ?>
-                            </button>
-                        </form>
-                    </div>
-                </div>
             </div>
+            <div class="simbioza-user-preferences-body">
+                <form method="post" action="<?= $this->escape((string)$savePreferencesPath) ?>"
+                      data-simbioza-preferences-form>
+                    <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
 
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="simbioza-user-email-enabled" name="email_enabled" value="1"
+                               <?= $emailEnabled ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="simbioza-user-email-enabled">
+                            <?= __('Šalji mi i e-mail obavijesti') ?>
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="simbioza-user-email-mode">
+                            <?= __('Zadani način dostave') ?>
+                        </label>
+                        <select class="form-select" id="simbioza-user-email-mode" name="email_mode"
+                                <?= $emailEnabled ? '' : 'disabled' ?>>
+                            <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
+                                <option value="<?= $this->escape($mode) ?>" <?= $emailMode === $mode ? 'selected' : '' ?>>
+                                    <?= $this->escape($modeLabel) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="simbioza-user-own-changes" name="notify_own_changes" value="1"
+                               <?= !empty($preferences['notify_own_changes']) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="simbioza-user-own-changes">
+                            <?= __('Obavještavaj me i o mojim vlastitim promjenama') ?>
+                        </label>
+                    </div>
+
+                    <p class="small text-body-secondary">
+                        <?= __('Način dostave uz pojedinu stavku nadjačava ovu zadanu postavku.') ?>
+                    </p>
+                    <div class="simbioza-user-delivery-help mb-3" role="note">
+                        <h4 class="h6 mb-2"><?= __('Što znače načini dostave?') ?></h4>
+                        <dl class="small mb-0">
+                            <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
+                                <div>
+                                    <dt><?= $this->escape($modeLabel) ?></dt>
+                                    <dd><?= $this->escape($modeDescriptions[$mode]) ?></dd>
+                                </div>
+                            <?php endforeach; ?>
+                        </dl>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <?= __('Spremi postavke praćenja') ?>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <div class="accordion" id="simbioza-user-following-accordion">
             <div class="accordion-item">
                 <h3 class="accordion-header" id="simbioza-user-items-heading">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -169,8 +165,7 @@ $icon = static function (string $name): string {
                     </button>
                 </h3>
                 <div id="simbioza-user-items" class="accordion-collapse collapse"
-                     aria-labelledby="simbioza-user-items-heading"
-                     data-bs-parent="#simbioza-user-following-accordion">
+                     aria-labelledby="simbioza-user-items-heading">
                     <div class="accordion-body">
                         <?php if ($follows === []) : ?>
                             <p class="text-body-secondary mb-0">
@@ -264,7 +259,6 @@ $icon = static function (string $name): string {
                                                             title="<?= $this->escape($following ? __('Prestani pratiti') : __('Prati')) ?>"
                                                             aria-label="<?= $this->escape($following ? __('Prestani pratiti') : __('Prati')) ?>">
                                                         <?= $icon('follow') ?>
-                                                        <span><?= $following ? __('Pratim') : __('Prati') ?></span>
                                                     </button>
                                                 </form>
                                             </td>
@@ -279,36 +273,38 @@ $icon = static function (string $name): string {
                                                     <input type="hidden" name="target_id" value="<?= $this->escape($targetId) ?>">
                                                     <fieldset <?= $following ? '' : 'disabled' ?>>
                                                         <legend class="visually-hidden"><?= __('Način dostave') ?></legend>
-                                                        <div class="simbioza-user-mode-options">
-                                                    <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
-                                                        <?php $modeIcon = match ($mode) {
-                                                            'immediate' => 'mail',
-                                                            'daily' => 'daily',
-                                                            'important' => 'important',
-                                                            default => 'app',
-                                                        }; ?>
-                                                        <label class="simbioza-user-mode-choice"
-                                                               for="<?= $this->escape($controlBase . '-' . $mode) ?>"
-                                                               title="<?= $this->escape($modeDescriptions[$mode]) ?>">
-                                                            <input class="visually-hidden simbioza-user-mode-input" type="radio"
-                                                                   id="<?= $this->escape($controlBase . '-' . $mode) ?>"
-                                                                   name="email_mode_override"
-                                                                   value="<?= $this->escape($mode) ?>"
-                                                                   data-mode-description="<?= $this->escape($modeDescriptions[$mode]) ?>"
-                                                                   <?= $deliveryMode === $mode ? 'checked' : '' ?>>
-                                                            <span class="simbioza-user-mode-choice-content">
-                                                                <?= $icon($modeIcon) ?>
-                                                                <span><?= $this->escape($modeLabel) ?></span>
-                                                            </span>
-                                                        </label>
-                                                    <?php endforeach; ?>
+                                                        <div class="simbioza-user-mode-layout">
+                                                            <div class="simbioza-user-mode-options">
+                                                        <?php foreach ($modeLabels as $mode => $modeLabel) : ?>
+                                                            <?php $modeIcon = match ($mode) {
+                                                                'immediate' => 'mail',
+                                                                'daily' => 'daily',
+                                                                'important' => 'important',
+                                                                default => 'app',
+                                                            }; ?>
+                                                            <label class="simbioza-user-mode-choice"
+                                                                   for="<?= $this->escape($controlBase . '-' . $mode) ?>"
+                                                                   title="<?= $this->escape($modeLabel) ?>">
+                                                                <input class="visually-hidden simbioza-user-mode-input" type="radio"
+                                                                       id="<?= $this->escape($controlBase . '-' . $mode) ?>"
+                                                                       name="email_mode_override"
+                                                                       value="<?= $this->escape($mode) ?>"
+                                                                       data-mode-description="<?= $this->escape($modeDescriptions[$mode]) ?>"
+                                                                       <?= $deliveryMode === $mode ? 'checked' : '' ?>>
+                                                                <span class="simbioza-user-mode-choice-content">
+                                                                    <?= $icon($modeIcon) ?>
+                                                                    <span class="visually-hidden"><?= $this->escape($modeLabel) ?></span>
+                                                                </span>
+                                                            </label>
+                                                        <?php endforeach; ?>
+                                                            </div>
+                                                            <p class="small text-body-secondary fst-italic simbioza-user-mode-description mb-0"
+                                                               data-simbioza-mode-description>
+                                                                <?= $following
+                                                                    ? $this->escape($modeDescriptions[$deliveryMode] ?? $modeDescriptions['off'])
+                                                                    : '—' ?>
+                                                            </p>
                                                         </div>
-                                                        <p class="small text-body-secondary simbioza-user-mode-description mb-0 mt-2"
-                                                           data-simbioza-mode-description>
-                                                            <?= $following
-                                                                ? $this->escape($modeDescriptions[$deliveryMode] ?? $modeDescriptions['off'])
-                                                                : '—' ?>
-                                                        </p>
                                                     </fieldset>
                                                     <span class="visually-hidden" role="status" aria-live="polite"
                                                           data-simbioza-mode-status></span>
@@ -316,8 +312,11 @@ $icon = static function (string $name): string {
                                             </td>
                                             <td class="text-end" data-label="<?= $this->escape(__('Otvori')) ?>">
                                                 <?php if ($accessible && $url !== '') : ?>
-                                                    <a class="btn btn-sm btn-secondary" href="<?= $this->escape($url) ?>">
-                                                        <?= __('Otvori') ?>
+                                                    <a class="btn btn-sm btn-secondary simbioza-user-icon-action"
+                                                       href="<?= $this->escape($url) ?>"
+                                                       title="<?= $this->escape(__('Otvori')) ?>"
+                                                       aria-label="<?= $this->escape(__('Otvori')) ?>">
+                                                        <?= $icon('open') ?>
                                                     </a>
                                                 <?php endif; ?>
                                             </td>

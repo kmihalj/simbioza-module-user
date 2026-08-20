@@ -50,25 +50,50 @@ final readonly class EmbeddedCalendarPageResolver
      */
     public function pagesForCalendar(int $calendarId): array
     {
-        if ($calendarId <= 0 || !$this->tablesReady()) {
+        if ($calendarId <= 0) {
             return [];
         }
 
-        $calendar = $this->database->table(ModuleCalendar::TABLE_CALENDARS)
-            ->select(['uuid'])
-            ->where('id', '=', $calendarId)
-            ->first();
-        $uuid = is_array($calendar) && is_scalar($calendar['uuid'] ?? null)
-            ? strtolower(trim((string)$calendar['uuid']))
-            : '';
-        if ($uuid === '') {
+        return $this->calendarPageMap()[$calendarId] ?? [];
+    }
+
+    /**
+     * HR: Vraća kalendare koje trenutačno objavljene stranice područja ugrađuju.
+     *     Backup koristi rezultat bez izlaganja HTML sadržaja.
+     * EN: Returns calendars embedded by currently published Workspace pages.
+     *     Backup consumes the result without exposing HTML content.
+     *
+     * @return list<int>
+     */
+    public function calendarIdsForWorkspace(int $workspaceId): array
+    {
+        if ($workspaceId <= 0) {
+            return [];
+        }
+
+        return array_keys($this->calendarPageMap($workspaceId));
+    }
+
+    /**
+     * HR: Jednim batch prolazom povezuje kalendare s objavljenim stranicama.
+     * EN: Maps calendars to published pages in one batched pass.
+     *
+     * @return array<int,list<array{id:int,workspace_id:int,document_key:string,title:string}>>
+     */
+    private function calendarPageMap(?int $workspaceId = null): array
+    {
+        if (!$this->tablesReady()) {
             return [];
         }
 
         $nodes = [];
-        $nodeRows = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_NODES)
-            ->where('is_enabled', '=', true)
-            ->get();
+        $nodeQuery = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_NODES)
+            ->where('is_enabled', '=', true);
+        if (is_int($workspaceId) && $workspaceId > 0) {
+            $nodeQuery->where('workspace_id', '=', $workspaceId);
+        }
+
+        $nodeRows = $nodeQuery->get();
         foreach ($nodeRows as $node) {
             $documentKey = is_array($node) && is_scalar($node['document_key'] ?? null)
                 ? trim((string)$node['document_key'])
@@ -94,7 +119,7 @@ final readonly class EmbeddedCalendarPageResolver
         }
 
         $requests = [];
-        $nodeByDocument = [];
+        $nodesByDocument = [];
         $workflows = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_NODE_WORKFLOWS)
             ->whereIn('node_id', array_keys($nodes))
             ->whereNotNull('published_version_number')
@@ -117,40 +142,70 @@ final readonly class EmbeddedCalendarPageResolver
             }
 
             $requests[$language][$node['document_key']] = (int)$workflow['published_version_number'];
-            $nodeByDocument[$node['document_key']] = $node;
+            $nodesByDocument[$node['document_key']][(int)$node['id']] = $node;
         }
 
-        $matched = [];
+        /** @var array<string,array<string,true>> $documentsByCalendarUuid */
+        $documentsByCalendarUuid = [];
         foreach ($requests as $language => $versionsByDocument) {
             foreach ($this->versions->loadPublishedVersionsForIndexing($versionsByDocument, $language) as $version) {
-                if (!$this->htmlReferencesCalendar($version->html, $uuid)) {
-                    continue;
-                }
-
-                $node = $nodeByDocument[$version->documentId] ?? null;
-                if (is_array($node)) {
-                    $matched[(int)$node['id']] = $node;
+                foreach ($this->calendarUuidsFromHtml($version->html) as $uuid) {
+                    $documentsByCalendarUuid[$uuid][$version->documentId] = true;
                 }
             }
         }
 
-        return array_values($matched);
+        if ($documentsByCalendarUuid === []) {
+            return [];
+        }
+
+        $calendarRows = $this->database->table(ModuleCalendar::TABLE_CALENDARS)
+            ->select(['id', 'uuid'])
+            ->whereIn('uuid', array_keys($documentsByCalendarUuid))
+            ->get();
+        $pagesByCalendar = [];
+        foreach ($calendarRows as $calendar) {
+            if (!is_array($calendar) || !is_numeric($calendar['id'] ?? null)) {
+                continue;
+            }
+
+            $uuid = is_scalar($calendar['uuid'] ?? null)
+                ? strtolower(trim((string)$calendar['uuid']))
+                : '';
+            foreach (array_keys($documentsByCalendarUuid[$uuid] ?? []) as $documentKey) {
+                foreach ($nodesByDocument[$documentKey] ?? [] as $nodeId => $node) {
+                    $pagesByCalendar[(int)$calendar['id']][$nodeId] = $node;
+                }
+            }
+        }
+
+        foreach ($pagesByCalendar as $calendarId => $pages) {
+            $pagesByCalendar[$calendarId] = array_values($pages);
+        }
+
+        return $pagesByCalendar;
     }
 
-    /** HR: Potvrđuje točan UUID u calendar embed atributu. EN: Confirms the exact UUID in a calendar-embed attribute. */
-    private function htmlReferencesCalendar(string $html, string $uuid): bool
+    /**
+     * HR: Čita jedinstvene UUID-ove iz sigurnih calendar embed atributa.
+     * EN: Reads unique UUIDs from safe calendar embed attributes.
+     *
+     * @return list<string>
+     */
+    private function calendarUuidsFromHtml(string $html): array
     {
-        if ($html === '' || !str_contains(strtolower($html), $uuid)) {
-            return false;
+        if ($html === '' || !str_contains(strtolower($html), 'data-calendar-uuid')) {
+            return [];
         }
 
         $document = new DOMDocument('1.0', 'UTF-8');
         $previous = libxml_use_internal_errors(true);
         try {
             if (!$document->loadHTML('<div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD)) {
-                return false;
+                return [];
             }
 
+            $uuids = [];
             foreach ($document->getElementsByTagName('*') as $element) {
                 if (!$element instanceof DOMElement) {
                     continue;
@@ -159,13 +214,14 @@ final readonly class EmbeddedCalendarPageResolver
                 $raw = $element->getAttribute('data-calendar-uuids')
                     ?: $element->getAttribute('data-calendar-uuid');
                 foreach (explode(',', strtolower($raw)) as $candidate) {
-                    if (trim($candidate) === $uuid) {
-                        return true;
+                    $candidate = trim($candidate);
+                    if ($candidate !== '') {
+                        $uuids[$candidate] = true;
                     }
                 }
             }
 
-            return false;
+            return array_keys($uuids);
         } finally {
             libxml_clear_errors();
             libxml_use_internal_errors($previous);
