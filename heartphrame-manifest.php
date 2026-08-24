@@ -24,6 +24,7 @@ use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
+use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
@@ -234,6 +235,10 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         $listeners = [
             new EventListener(UserAuthenticated::class, CreatePersonalWorkspaceAfterLogin::class),
             new EventListener(WorkspaceContentChanged::class, WorkspaceFollowActivityListener::class),
+            new EventListener(
+                \AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspacePermanentlyDeleting::class,
+                PurgeWorkspaceUserData::class,
+            ),
         ];
         $optional = [
             CommentChanged::class => CommentFollowActivityListener::class,

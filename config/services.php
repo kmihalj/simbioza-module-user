@@ -22,6 +22,7 @@ use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
+use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
 use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
@@ -45,6 +46,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 $services = [
+    PurgeWorkspaceUserData::class => static fn(ContainerInterface $container): PurgeWorkspaceUserData =>
+        new PurgeWorkspaceUserData($container->get(Database::class)),
     PersonalWorkspaceService::class => static fn(ContainerInterface $container): PersonalWorkspaceService =>
         new PersonalWorkspaceService(
             $container->get(Database::class),

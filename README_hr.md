@@ -37,6 +37,11 @@ Backup sitea i cjeline Korisnici vraća globalne osobne postavke, a backup
 područja vraća samo praćenja i načine dostave povezane s tim područjem.
 Privremeni redovi dnevnog sažetka namjerno se ne spremaju u backup.
 
+Trajno brisanje prethodno obrisanog područja uklanja povezana praćenja, posebne
+načine dostave, čekajuće dostave, zapamćena isključenja i moguće mapiranje
+osobnog područja. Postojeće obavijesti u aplikaciji štiti ista aktualna ACL
+provjera pa se više ne prikazuju nakon nestanka cilja.
+
 ## Brzi početak
 
 ```bash

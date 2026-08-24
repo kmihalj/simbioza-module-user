@@ -61,6 +61,14 @@ se jer bez Auth identiteta ne pripada nijednom računu ciljnog sitea.
 
 Copy import nikada ne zamjenjuje postojeće korisnikovo mapiranje osobnog područja. Uvezena kopija ostaje obično ograničeno područje istog vlasnika, čime se sprječava da se dva područja predstavljaju kao osobno područje istog korisnika.
 
+## Trajno čišćenje područja
+
+Prije nego Workspace ukloni svoje izvorne retke, Simbioza User briše sva
+praćenja, posebne načine dostave, čekajuće dnevne sažetke, isključenja
+automatskog praćenja i moguće mapiranje osobnog područja u tom opsegu. Retci
+obavijesti ne prepisuju se jer su povijesni zapisi; aktualni provider vidljivosti
+nakon nestanka cilja završava zatvoreno pa se naslov i poveznica više ne otkrivaju.
+
 ## Proširenje domenskog modula
 
 Objavite mali nepromjenjivi događaj samo sa stabilnim identifikatorima, ID-em izvršitelja, vrstom promjene i neosjetljivim prikaznim metapodacima. U Simbioza User dodajte listener koji događaj pretvara u `FollowActivity`. U događaje, obavijesti, audit metapodatke i tehničke logove ne stavljajte tijelo stranice ili komentara, tajne ni bajtove privitka.

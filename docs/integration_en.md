@@ -61,6 +61,14 @@ account on the target site.
 
 A copy import never replaces a user's existing personal-space mapping. The imported copy remains an ordinary restricted Workspace owned by that user, preventing two spaces from claiming to be the same user's personal home.
 
+## Permanent Workspace cleanup
+
+Before Workspace erases its source rows, Simbioza User removes all follows,
+delivery overrides, pending digest rows, automatic-follow exclusions, and a
+possible personal-Workspace mapping for that scope. Notification rows are not
+rewritten as historical records; the live visibility provider fails closed once
+the target no longer exists, so titles and links cannot be disclosed afterward.
+
 ## Extending a domain module
 
 Publish a small immutable event containing only stable identifiers, actor ID, change type, and non-sensitive display metadata. Add a listener in Simbioza User that converts the event into `FollowActivity`. Do not include page bodies, comment bodies, secrets, or attachment bytes in events, notifications, audit metadata, or technical logs.

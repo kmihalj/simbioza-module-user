@@ -37,6 +37,11 @@ Site and Users backups restore global personal preferences, while a Workspace
 backup restores only follows and delivery overrides related to that Workspace.
 Transient daily-digest queue rows are deliberately excluded from backup.
 
+Permanent deletion of an already deleted Workspace removes related follows,
+delivery overrides, pending deliveries, opt-out records, and a possible
+personal-Workspace mapping. Existing in-app notifications are protected by the
+same live ACL visibility check and are no longer shown after the target vanishes.
+
 ## Quick start
 
 ```bash
