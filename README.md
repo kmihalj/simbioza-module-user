@@ -19,7 +19,7 @@ Optional integrations are detected at runtime: `heartphrame-module-api`, `heartp
 ## What it provides
 
 - follow an individual Workspace page, a complete workspace, a calendar, or a complete embedded task list;
-- provision one ordinary restricted personal Workspace per user after the first successful sign-in, with an administrator-controlled global rule and per-user exceptions;
+- provision one ordinary restricted personal Workspace per user after the first successful sign-in, with the user's complete ACL, an administrator-controlled global rule, and per-user exceptions;
 - automatically reconcile both new and pre-existing Calendar subscriptions, while allowing notifications to be disabled and re-enabled without cancelling the subscription;
 - use a separated icon-and-label follow action styled by light/dark Theme document-action tokens;
 - manage follows in an ACL-safe profile table with search, state filters, a per-item follow toggle, and compact delivery icon buttons saved without a page reload;
@@ -57,7 +57,7 @@ php vendor/bin/hph simbioza-user:install-personal-workspaces-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
-Administrators configure personal Workspaces under **Settings → Workspaces → Personal Workspaces**. The default enables creation after a user's first successful local, SAML, OIDC, OAuth2, or CAS sign-in. A batch action provisions eligible existing active users. Each user can be excluded without changing Workspace or Auth behavior.
+Administrators configure personal Workspaces under **Settings → Workspaces → Personal Workspaces**. The default enables creation after a user's first successful local, SAML, OIDC, OAuth2, or CAS sign-in and grants the mapped user View, Add, Edit, Publish, Delete, and Manage. A batch action provisions eligible existing active users. Each user can be excluded without changing Workspace or Auth behavior.
 
 Enable `aaieduhr/simbioza-module-user` after its required modules. The Auth profile joins basic account data to its security accordion and keeps **Personal settings** permanently open in a separate card. **Notification settings** also stay open, while the table is searched and filtered inside the **Followed content** accordion. Page/workspace/task-list controls appear automatically where their owning modules render them; Calendar subscriptions are synchronized with the unified list.
 

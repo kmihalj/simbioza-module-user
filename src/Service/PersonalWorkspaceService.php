@@ -141,21 +141,28 @@ final readonly class PersonalWorkspaceService
      */
     public function ensureAfterLogin(int $userId): ?array
     {
+        $mapped = $this->forUser($userId);
+        if (is_array($mapped)) {
+            $this->grantAllPermissions($mapped, $userId);
+
+            return $mapped;
+        }
+
         if (
             !$this->automaticCreationEnabled()
             || !$this->automaticCreationEnabledForUser($userId)
         ) {
-            return $this->forUser($userId);
+            return null;
         }
 
         return $this->ensureForUser($userId, $userId, true);
     }
 
     /**
-     * HR: Izrađuje nedostajuće osobno područje i sprema mapiranje odvojeno od
-     *     općih područja, tako da korisnik može posjedovati i druga područja.
+     * HR: Izrađuje nedostajuće osobno područje, njegovu korisniku odmah daje
+     *     sva prava i sprema mapiranje odvojeno od općih područja.
      * EN: Creates a missing personal Workspace and stores a mapping separate from
-     *     general Workspaces, allowing the user to own other Workspaces too.
+     *     general Workspaces while immediately granting its user every permission.
      *
      * @return array<string,mixed>|null
      */
@@ -164,6 +171,8 @@ final readonly class PersonalWorkspaceService
         $this->assertReady();
         $mapped = $this->forUser($userId);
         if (is_array($mapped)) {
+            $this->grantAllPermissions($mapped, $userId);
+
             return $mapped;
         }
 
@@ -180,7 +189,6 @@ final readonly class PersonalWorkspaceService
             'slug' => 'osobno-' . ($login !== '' ? $login : $ownerName),
             'description' => sprintf(__('Osobno područje korisnika %s.'), $ownerName),
             'visibility' => 'restricted',
-            'owner_user_id' => $userId,
             'tree_visibility' => 'inherit',
             'contents_visibility' => 'inherit',
         ];
@@ -195,7 +203,11 @@ final readonly class PersonalWorkspaceService
                 $automatic,
                 $now,
             ): int {
-                $workspace = $this->workspaces->saveWorkspace($workspaceValues, $effectiveActorUserId);
+                $workspace = $this->workspaces->saveWorkspace(
+                    $workspaceValues,
+                    $effectiveActorUserId,
+                    $userId,
+                );
                 $workspaceId = is_numeric($workspace['id'] ?? null) ? (int)$workspace['id'] : 0;
                 if ($workspaceId <= 0) {
                     throw new RuntimeException(__('Osobno područje nije moguće povezati s korisnikom.'));
@@ -218,6 +230,8 @@ final readonly class PersonalWorkspaceService
             //     without a mapping. We then use the other request's mapping.
             $concurrent = $this->forUser($userId);
             if (is_array($concurrent)) {
+                $this->grantAllPermissions($concurrent, $userId);
+
                 return $concurrent;
             }
 
@@ -283,7 +297,9 @@ final readonly class PersonalWorkspaceService
                 continue;
             }
 
-            if (is_array($this->forUser($userId))) {
+            $mapped = $this->forUser($userId);
+            if (is_array($mapped)) {
+                $this->grantAllPermissions($mapped, $userId);
                 ++$result['existing'];
                 continue;
             }
@@ -451,6 +467,24 @@ final readonly class PersonalWorkspaceService
             $this->users->listUsersForSetup(),
             fn(mixed $user): bool => is_array($user) && $this->boolValue($user['is_active'] ?? false),
         ));
+    }
+
+    /**
+     * HR: Idempotentno osigurava svih šest prava korisniku mapiranog osobnog
+     *     područja, uključujući područja nastala prije uvođenja ovog pravila.
+     * EN: Idempotently grants all six permissions to the mapped personal
+     *     Workspace user, including Workspaces created before this rule.
+     *
+     * @param array<string,mixed> $mapped
+     */
+    private function grantAllPermissions(array $mapped, int $userId): void
+    {
+        $workspaceId = is_numeric($mapped['workspace_id'] ?? null)
+            ? (int)$mapped['workspace_id']
+            : 0;
+        if ($workspaceId > 0) {
+            $this->workspaces->grantWorkspaceManagement($workspaceId, $userId);
+        }
     }
 
     /**

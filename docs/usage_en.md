@@ -2,7 +2,7 @@
 
 ## Personal Workspaces
 
-After a successful sign-in, an eligible user receives one ordinary restricted Workspace. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user is the Workspace owner and therefore has all Workspace permissions. Administrators retain their normal system-wide access; every other user or group sees the Workspace only after the owner or an administrator explicitly grants ACL access.
+After a successful sign-in, an eligible user receives one ordinary restricted Workspace. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user receives one direct ACL row with all six permissions: View, Add, Edit, Publish, Delete, and Manage. Administrators retain their normal system-wide access; every other user or group sees the Workspace only after the mapped user or an administrator explicitly grants ACL access. A general Workspace has no separate owner concept; a personal Workspace only adds a stable user mapping whose user automatically receives the complete ACL.
 
 Administrators use **Settings → Workspaces → Personal Workspaces** to:
 
@@ -11,7 +11,7 @@ Administrators use **Settings → Workspaces → Personal Workspaces** to:
 - disable or re-enable automatic creation for an individual user;
 - manually create a missing personal Workspace.
 
-Disabling creation never deletes an existing Workspace. A soft-deleted personal Workspace remains mapped and is restored through the normal deleted-Workspace screen; the system does not silently create a replacement and split the user's content.
+Disabling creation never deletes an existing Workspace. A soft-deleted personal Workspace remains mapped and is restored through the normal deleted-Workspace screen; the system does not silently create a replacement and split the user's content. At the next successful sign-in, an idempotent check restores the user's complete ACL if the personal Workspace predates this rule.
 
 ## Follow and unfollow
 

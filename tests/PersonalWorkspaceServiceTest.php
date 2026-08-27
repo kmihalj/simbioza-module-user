@@ -53,7 +53,7 @@ final class PersonalWorkspaceServiceTest extends TestCase
         );
     }
 
-    /** HR: Prva prijava izrađuje jedno ograničeno područje i ponovljena je idempotentna. EN: First sign-in creates one restricted space and repeated calls are idempotent. */
+    /** HR: Prva prijava izrađuje jedno ograničeno područje sa svim pravima i ponovljena je idempotentna. EN: First sign-in creates one restricted space with every permission and repeated calls are idempotent. */
     public function testFirstLoginCreatesOneRestrictedPersonalWorkspace(): void
     {
         $userId = $this->insertUser('ana.horvat');
@@ -65,12 +65,26 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertIsArray($again);
         $this->assertSame($created['workspace_id'], $again['workspace_id']);
         $workspace = $created['workspace'];
-        $this->assertSame($userId, (int)$workspace['owner_user_id']);
         $this->assertSame('Područje od: ana.horvat', $workspace['name']);
         $this->assertSame('restricted', $workspace['visibility']);
         $this->assertStringStartsWith('osobno-ana-horvat', (string)$workspace['slug']);
         $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
+        $acl = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_ACL)
+            ->where('workspace_id', '=', (int)$workspace['id'])
+            ->get();
+        $this->assertCount(1, $acl);
+        $this->assertSame($userId, (int)$acl[0]['subject_id']);
+        foreach (['can_view', 'can_add', 'can_edit', 'can_publish', 'can_delete', 'can_manage'] as $permission) {
+            $this->assertTrue((bool)$acl[0][$permission], $permission);
+        }
+
+        $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_ACL)
+            ->where('workspace_id', '=', (int)$workspace['id'])
+            ->delete();
         $this->assertSame(0, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACE_ACL));
+        $repaired = $this->service->ensureAfterLogin($userId);
+        $this->assertIsArray($repaired);
+        $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACE_ACL));
     }
 
     /** HR: Globalno i korisničko isključenje zaustavljaju samo automatsku izradu. EN: Global and per-user exclusions stop automatic creation only. */
@@ -88,6 +102,13 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $manuallyCreated = $this->service->ensureForUser($second, $first, false);
         $this->assertIsArray($manuallyCreated);
         $this->assertFalse((bool)$manuallyCreated['created_automatically']);
+        $this->assertSame($first, (int)$manuallyCreated['workspace']['created_by_user_id']);
+        $acl = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_ACL)
+            ->where('workspace_id', '=', (int)$manuallyCreated['workspace_id'])
+            ->get();
+        $this->assertCount(1, $acl);
+        $this->assertSame($second, (int)$acl[0]['subject_id']);
+        $this->assertTrue((bool)$acl[0]['can_manage']);
     }
 
     /** HR: Skupna radnja preskače deaktivirane i izričito isključene korisnike. EN: Batch provisioning skips inactive and explicitly excluded users. */

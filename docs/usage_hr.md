@@ -2,7 +2,7 @@
 
 ## Osobna područja
 
-Nakon uspješne prijave dopušteni korisnik dobiva jedno obično ograničeno Workspace područje. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik je vlasnik i zato ima sva prava područja. Administratori zadržavaju uobičajeni sistemski pristup, a svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava.
+Nakon uspješne prijave dopušteni korisnik dobiva jedno obično ograničeno Workspace područje. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik dobiva izravni ACL redak sa svih šest prava: pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Administratori zadržavaju uobičajeni sistemski pristup, a svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava. Opći Workspace nema poseban koncept vlasnika; osobno područje samo ima stabilno mapiranje na korisnika kojemu sustav automatski osigurava sva prava.
 
 Administrator pod **Postavke → Područja → Osobna područja** može:
 
@@ -11,7 +11,7 @@ Administrator pod **Postavke → Područja → Osobna područja** može:
 - isključiti ili ponovno uključiti automatsku izradu pojedinom korisniku;
 - ručno izraditi osobno područje koje nedostaje.
 
-Isključivanje izrade nikada ne briše postojeće područje. Soft-obrisano osobno područje ostaje mapirano i vraća se kroz uobičajeni pregled obrisanih područja; sustav neće potajno izraditi zamjensko područje i razdvojiti korisnikov sadržaj.
+Isključivanje izrade nikada ne briše postojeće područje. Soft-obrisano osobno područje ostaje mapirano i vraća se kroz uobičajeni pregled obrisanih područja; sustav neće potajno izraditi zamjensko područje i razdvojiti korisnikov sadržaj. Pri sljedećoj uspješnoj prijavi idempotentna provjera obnavlja puni korisnički ACL ako je osobno područje nastalo prije tog pravila.
 
 ## Početak i prestanak praćenja
 
