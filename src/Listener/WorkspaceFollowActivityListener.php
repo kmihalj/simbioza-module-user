@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser\Listener;
 
 use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspaceContentChanged;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
@@ -22,6 +23,7 @@ final readonly class WorkspaceFollowActivityListener
     public function __construct(
         private FollowDeliveryService $delivery,
         private WorkspaceRepository $workspaces,
+        private WorkspaceConfig $workspaceConfig,
     ) {
     }
 
@@ -34,6 +36,17 @@ final readonly class WorkspaceFollowActivityListener
 
         $page = $event->nodeId !== null ? $this->workspaces->findNodeById($event->nodeId) : null;
         $workspace = $this->workspaces->findWorkspaceById($event->workspaceId);
+        $primaryLanguage = $this->workspaceConfig->siteDefaultLanguage();
+        $eventLanguage = trim($event->language ?? '');
+        $language = $eventLanguage !== '' ? $eventLanguage : $primaryLanguage;
+        if (is_array($workspace)) {
+            $workspace = $this->workspaces->localizeWorkspace($workspace, $language, $primaryLanguage);
+        }
+
+        if (is_array($page)) {
+            $page = $this->workspaces->localizeNode($page, $language, $primaryLanguage);
+        }
+
         $isPage = $event->nodeId !== null;
         $label = $isPage && is_array($page)
             ? $this->text($page['title'] ?? null)

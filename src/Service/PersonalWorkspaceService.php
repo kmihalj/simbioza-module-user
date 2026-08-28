@@ -15,7 +15,6 @@ use RuntimeException;
 use Throwable;
 
 use function array_filter;
-use function array_merge;
 use function array_unique;
 use function array_values;
 use function date;
@@ -24,6 +23,7 @@ use function is_array;
 use function is_bool;
 use function is_numeric;
 use function is_scalar;
+use function is_string;
 use function strtolower;
 use function trim;
 
@@ -184,10 +184,19 @@ final readonly class PersonalWorkspaceService
         $login = $this->text($user['login_identifier'] ?? '');
         $ownerName = $this->ownerName($user, $userId);
         $name = sprintf(__('Područje od: %s'), $ownerName);
+        $description = sprintf(__('Osobno područje korisnika %s.'), $ownerName);
         $workspaceValues = [
             'name' => $name,
+            'name_translations' => [
+                'hr' => sprintf('Područje od: %s', $ownerName),
+                'en' => sprintf('Workspace of: %s', $ownerName),
+            ],
             'slug' => 'osobno-' . ($login !== '' ? $login : $ownerName),
-            'description' => sprintf(__('Osobno područje korisnika %s.'), $ownerName),
+            'description' => $description,
+            'description_translations' => [
+                'hr' => sprintf('Osobno područje korisnika %s.', $ownerName),
+                'en' => sprintf('Personal workspace of %s.', $ownerName),
+            ],
             'visibility' => 'restricted',
             'tree_visibility' => 'inherit',
             'contents_visibility' => 'inherit',
@@ -256,7 +265,7 @@ final readonly class PersonalWorkspaceService
      * HR: Vraća mapiranje s Workspace podacima, uključujući soft-obrisano područje.
      * EN: Returns the mapping with Workspace data, including a soft-deleted space.
      *
-     * @return array<string,mixed>|null
+     * @return (array<string,mixed>&array{workspace:array<string,mixed>,is_deleted:bool})|null
      */
     public function forUser(int $userId): ?array
     {
@@ -276,10 +285,17 @@ final readonly class PersonalWorkspaceService
             return null;
         }
 
-        return array_merge($mapping, [
-            'workspace' => $workspace,
-            'is_deleted' => $this->boolValue($workspace['is_deleted'] ?? false),
-        ]);
+        $result = [];
+        foreach ($mapping as $key => $value) {
+            if (is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+
+        $result['workspace'] = $workspace;
+        $result['is_deleted'] = $this->boolValue($workspace['is_deleted'] ?? false);
+
+        return $result;
     }
 
     /**

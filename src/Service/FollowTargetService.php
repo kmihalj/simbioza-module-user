@@ -7,8 +7,10 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceAccessService;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
+use HeartPhrame\Localization\TranslatorInterface;
 use HeartPhrame\Routing\UrlGenerator;
 use Psr\Container\ContainerInterface;
 
@@ -59,6 +61,8 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
         private Database $database,
         private WorkspaceRepository $workspaces,
         private WorkspaceAccessService $access,
+        private WorkspaceConfig $workspaceConfig,
+        private TranslatorInterface $translator,
         private UrlGenerator $urls,
         private ContainerInterface $container,
     ) {
@@ -138,6 +142,12 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
             return $empty;
         }
 
+        $workspace = $this->workspaces->localizeWorkspace(
+            $workspace,
+            $this->translator->getLocale(),
+            $this->workspaceConfig->siteDefaultLanguage(),
+        );
+
         $slug = $this->text($workspace['slug'] ?? null);
         $url = $this->path('workspace.show', '/w/' . rawurlencode($slug), ['workspaceSlug' => $slug]);
 
@@ -173,6 +183,11 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
         if (!(bool)($permissions['can_view'] ?? false)) {
             return $empty;
         }
+
+        $locale = $this->translator->getLocale();
+        $primaryLanguage = $this->workspaceConfig->siteDefaultLanguage();
+        $workspace = $this->workspaces->localizeWorkspace($workspace, $locale, $primaryLanguage);
+        $page = $this->workspaces->localizeNode($page, $locale, $primaryLanguage);
 
         $workspaceSlug = $this->text($workspace['slug'] ?? null);
         $pageSlug = $this->text($page['slug'] ?? null);

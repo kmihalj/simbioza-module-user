@@ -8,6 +8,7 @@ use AaiEduHr\HeartPhrameModuleApi\Http\ApiResponseFactory;
 use AaiEduHr\HeartPhrameModuleApi\ModuleApi;
 use AaiEduHr\HeartPhrameModuleAuth\Api\AuthApiIdentity;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
 use AaiEduHr\SimbiozaModuleUser\Event\UserFollowChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
@@ -43,6 +44,7 @@ final readonly class SimbiozaUserResourceController
         private UserPreferenceService $preferences,
         private NotificationPreferenceService $notificationPreferences,
         private PersonalWorkspaceService $personalWorkspaces,
+        private WorkspacePresentationRegistry $workspacePresentations,
         private ?CalendarSubscriptionSynchronizer $calendarSubscriptions = null,
         private ?EventDispatcherInterface $events = null,
     ) {
@@ -178,6 +180,9 @@ final readonly class SimbiozaUserResourceController
         return $this->execute($request, 'workspaces:read', function (int $userId): array {
             $mapping = $this->personalWorkspaces->forUser($userId);
             $workspace = is_array($mapping['workspace'] ?? null) ? $mapping['workspace'] : null;
+            if (is_array($workspace)) {
+                $workspace = $this->workspacePresentations->one($workspace);
+            }
 
             return [
                 'exists' => is_array($workspace),

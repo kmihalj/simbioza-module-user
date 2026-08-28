@@ -7,6 +7,7 @@ use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceAccessService;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
@@ -98,6 +99,8 @@ $services = [
             $container->get(Database::class),
             $container->get(WorkspaceRepository::class),
             $container->get(WorkspaceAccessService::class),
+            $container->get(WorkspaceConfig::class),
+            $container->get(\HeartPhrame\Localization\TranslatorInterface::class),
             $container->get(UrlGenerator::class),
             $container,
         ),
@@ -160,6 +163,7 @@ $services = [
             new WorkspaceFollowActivityListener(
                 $container->get(FollowDeliveryService::class),
                 $container->get(WorkspaceRepository::class),
+                $container->get(WorkspaceConfig::class),
             ),
 
     HpSimbiozaUserCommand::class => static fn(ContainerInterface $container): HpSimbiozaUserCommand =>
@@ -228,6 +232,7 @@ if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterfa
                 $container->get(UserPreferenceService::class),
                 $container->get(NotificationPreferenceService::class),
                 $container->get(PersonalWorkspaceService::class),
+                $container->get(WorkspacePresentationRegistry::class),
                 $container->has(CalendarSubscriptionSynchronizer::class)
                     ? $container->get(CalendarSubscriptionSynchronizer::class)
                     : null,
