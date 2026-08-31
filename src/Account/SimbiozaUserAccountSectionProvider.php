@@ -6,13 +6,13 @@ namespace AaiEduHr\SimbiozaModuleUser\Account;
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
-use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
-use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceValue;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceValue;
 use HeartPhrame\Routing\UrlGenerator;
 
 use function is_scalar;

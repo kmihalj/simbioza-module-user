@@ -6,10 +6,10 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceAccessService;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
-use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
 use HeartPhrame\Localization\TranslatorInterface;
 use HeartPhrame\Routing\UrlGenerator;
 use Psr\Container\ContainerInterface;

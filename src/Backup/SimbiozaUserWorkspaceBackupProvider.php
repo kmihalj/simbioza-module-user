@@ -18,9 +18,9 @@ use AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope;
 use AaiEduHr\HeartPhrameModuleBackup\Value\BackupValue;
 use AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
+use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 
 /**
  * HR: Prenosi samo praćenja vezana uz područja, bez globalnih osobnih

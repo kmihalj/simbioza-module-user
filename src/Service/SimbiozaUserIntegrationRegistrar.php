@@ -38,6 +38,7 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
         $this->workspacePresentations->register($this->personalWorkspacePresentation);
         $this->accountSections->unregister(NotificationAccountSectionProvider::class);
         $this->accountSections->register($this->accountSection);
+
         $this->notificationVisibility->register($this->notificationVisibilityProvider);
         $this->menu->register();
     }

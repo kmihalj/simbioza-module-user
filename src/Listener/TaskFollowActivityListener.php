@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser\Listener;
 
 use AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged;
-use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
 use AaiEduHr\SimbiozaModuleUser\Value\FollowActivity;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 
 use function is_array;
 use function is_numeric;
