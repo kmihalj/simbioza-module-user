@@ -12,7 +12,7 @@ Required Composer packages, enabled before this module:
 - `aaieduhr/heartphrame-module-auth`
 - `aaieduhr/heartphrame-module-orm`
 - `aaieduhr/heartphrame-module-notification`
-- `aaieduhr/heartphrame-module-workspace`
+- `aaieduhr/simbioza-module-workspace`
 
 Optional integrations are detected at runtime: `heartphrame-module-api`, `heartphrame-module-audit`, `heartphrame-module-backup`, `heartphrame-module-calendar`, `heartphrame-module-comment`, `heartphrame-module-email`, `heartphrame-module-task`, and `heartphrame-module-theme`.
 
@@ -45,7 +45,7 @@ same live ACL visibility check and are no longer shown after the target vanishes
 ## Quick start
 
 ```bash
-composer require aaieduhr/simbioza-module-user:dev-main
+composer require aaieduhr/simbioza-module-user:^0.1.0
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```

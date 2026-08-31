@@ -12,7 +12,7 @@ Obavezni Composer paketi koji moraju biti uključeni prije ovog modula:
 - `aaieduhr/heartphrame-module-auth`
 - `aaieduhr/heartphrame-module-orm`
 - `aaieduhr/heartphrame-module-notification`
-- `aaieduhr/heartphrame-module-workspace`
+- `aaieduhr/simbioza-module-workspace`
 
 Opcionalne integracije otkrivaju se tijekom rada: `heartphrame-module-api`, `heartphrame-module-audit`, `heartphrame-module-backup`, `heartphrame-module-calendar`, `heartphrame-module-comment`, `heartphrame-module-email`, `heartphrame-module-task` i `heartphrame-module-theme`.
 
@@ -45,7 +45,7 @@ provjera pa se više ne prikazuju nakon nestanka cilja.
 ## Brzi početak
 
 ```bash
-composer require aaieduhr/simbioza-module-user:dev-main
+composer require aaieduhr/simbioza-module-user:^0.1.0
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```

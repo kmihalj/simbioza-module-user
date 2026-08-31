@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser\Listener;
 
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspacePermanentlyDeleting;
+use AaiEduHr\SimbiozaModuleWorkspace\Event\WorkspacePermanentlyDeleting;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 
 /** HR: Uklanja praćenja, čekajuće dostave i osobno mapiranje obrisanog područja. EN: Removes follows, pending deliveries, and personal mapping for a deleted Workspace. */

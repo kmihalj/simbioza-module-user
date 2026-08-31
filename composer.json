@@ -12,11 +12,11 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-API.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-api.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-audit.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-audit.git"
         },
         {
             "type": "vcs",
@@ -24,7 +24,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-backup.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-backup.git"
         },
         {
             "type": "vcs",
@@ -32,7 +32,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-comment.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-comment.git"
         },
         {
             "type": "vcs",
@@ -40,11 +40,11 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-email.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-email.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-notification.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-notification.git"
         },
         {
             "type": "vcs",
@@ -52,20 +52,20 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-task.git"
+            "url": "https://gitlab.opencode.hr/srce/aai-eduhr/heartphrame/heartphrame-module-task.git"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/kmihalj/heartphrame-module-workspace.git"
+            "url": "https://github.com/kmihalj/simbioza-module-workspace.git"
         }
     ],
     "require": {
         "php": ">=8.2",
-        "aaieduhr/heartphrame-framework": "dev-main",
-        "aaieduhr/heartphrame-module-auth": "dev-main",
-        "aaieduhr/heartphrame-module-notification": "dev-main",
-        "aaieduhr/heartphrame-module-orm": "dev-main",
-        "aaieduhr/heartphrame-module-workspace": "dev-main"
+        "aaieduhr/heartphrame-framework": "^0.0.24",
+        "aaieduhr/heartphrame-module-auth": "^0.1.0",
+        "aaieduhr/heartphrame-module-notification": "^0.1.0",
+        "aaieduhr/heartphrame-module-orm": "^0.1.0",
+        "aaieduhr/simbioza-module-workspace": "^0.1.0"
     },
     "suggest": {
         "aaieduhr/heartphrame-module-api": "Exposes the authenticated user's follows and notification preferences.",
@@ -78,13 +78,13 @@
         "aaieduhr/heartphrame-module-theme": "Applies the active light or dark theme to the profile controls."
     },
     "require-dev": {
-        "aaieduhr/heartphrame-module-api": "dev-main",
-        "aaieduhr/heartphrame-module-audit": "dev-main",
-        "aaieduhr/heartphrame-module-backup": "dev-main",
-        "aaieduhr/heartphrame-module-calendar": "dev-main",
-        "aaieduhr/heartphrame-module-comment": "dev-main",
-        "aaieduhr/heartphrame-module-email": "dev-main",
-        "aaieduhr/heartphrame-module-task": "dev-main",
+        "aaieduhr/heartphrame-module-api": "^0.1.0",
+        "aaieduhr/heartphrame-module-audit": "^0.1.0",
+        "aaieduhr/heartphrame-module-backup": "^0.1.0",
+        "aaieduhr/heartphrame-module-calendar": "^0.1.0",
+        "aaieduhr/heartphrame-module-comment": "^0.1.0",
+        "aaieduhr/heartphrame-module-email": "^0.1.0",
+        "aaieduhr/heartphrame-module-task": "^0.1.0",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10 || ^11",
         "rector/rector": "^2.0",
@@ -132,5 +132,10 @@
             "vendor/bin/phpstan analyze -c phpstan-dev.neon --memory-limit=1024M",
             "vendor/bin/phpunit"
         ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
     }
 }

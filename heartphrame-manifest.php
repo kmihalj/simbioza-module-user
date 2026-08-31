@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
 use AaiEduHr\HeartPhrameModuleAuth\Event\UserAuthenticated;
 use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAdminOrBootstrapMiddleware;
 use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAuthenticatedUserMiddleware;
@@ -10,13 +9,9 @@ use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged;
 use AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged;
 use AaiEduHr\HeartPhrameModuleComment\Event\CommentChanged;
-use AaiEduHr\HeartPhrameModuleNotification\Account\NotificationAccountSectionProvider;
 use AaiEduHr\HeartPhrameModuleNotification\ModuleNotification;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged;
-use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspaceContentChanged;
-use AaiEduHr\HeartPhrameModuleWorkspace\ModuleWorkspace;
-use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
@@ -28,12 +23,14 @@ use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
-use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
-use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserMenuIntegration;
+use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserIntegrationRegistrar;
+use AaiEduHr\SimbiozaModuleWorkspace\Event\WorkspaceContentChanged;
+use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 use HeartPhrame\Bridge\ComposerBridge;
 use HeartPhrame\Command\CommandDefinition;
 use HeartPhrame\Config\ConfigInterface;
 use HeartPhrame\Event\EventListener;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
 return new class extends \HeartPhrame\Module\AbstractModuleManifest {
@@ -42,7 +39,7 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         'aaieduhr/heartphrame-module-auth',
         'aaieduhr/heartphrame-module-orm',
         'aaieduhr/heartphrame-module-notification',
-        'aaieduhr/heartphrame-module-workspace',
+        'aaieduhr/simbioza-module-workspace',
     ];
 
     /** HR: Zahtijeva samo temeljne module osobnog iskustva. EN: Requires only the core personal-experience modules. */
@@ -51,8 +48,8 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         $composer = $container->get(ComposerBridge::class);
         $config = $container->get(ConfigInterface::class);
         $enabled = $config instanceof ConfigInterface
-            ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
-            : [];
+        ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
+        : [];
         foreach (self::REQUIRED_PACKAGES as $package) {
             if (
                 !($composer instanceof ComposerBridge)
@@ -186,45 +183,14 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     public function getBootstrapCallables(): array
     {
         return [static function (ContainerInterface $container): void {
-            $workspacePresentations = $container->get(
-                \AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry::class,
-            );
-            $personalWorkspacePresentation = $container->get(
-                \AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider::class,
-            );
-            if (
-                $workspacePresentations instanceof
-                    \AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry
-                && $personalWorkspacePresentation instanceof
-                    \AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider
-            ) {
-                $workspacePresentations->register($personalWorkspacePresentation);
-            }
-
-            $registry = $container->get(AuthAccountSectionRegistry::class);
-            $provider = $container->get(SimbiozaUserAccountSectionProvider::class);
-            if ($registry instanceof AuthAccountSectionRegistry) {
-                $registry->unregister(NotificationAccountSectionProvider::class);
-
-                if ($provider instanceof SimbiozaUserAccountSectionProvider) {
-                    $registry->register($provider);
+            try {
+                $registrar = $container->get(SimbiozaUserIntegrationRegistrar::class);
+                if ($registrar instanceof SimbiozaUserIntegrationRegistrar) {
+                    $registrar->register();
                 }
-            }
-
-            $visibility = $container->get(
-                \AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry::class,
-            );
-            $visibilityProvider = $container->get(SimbiozaNotificationVisibilityProvider::class);
-            if (
-                $visibility instanceof \AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry
-                && $visibilityProvider instanceof SimbiozaNotificationVisibilityProvider
-            ) {
-                $visibility->register($visibilityProvider);
-            }
-
-            $menu = $container->get(SimbiozaUserMenuIntegration::class);
-            if ($menu instanceof SimbiozaUserMenuIntegration) {
-                $menu->register();
+            } catch (ContainerExceptionInterface) {
+                // HR: Workspace će ponoviti registraciju ako se učitava nakon ovog modula.
+                // EN: Workspace retries the registration when it loads after this module.
             }
         }];
     }
@@ -236,7 +202,7 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
             new EventListener(UserAuthenticated::class, CreatePersonalWorkspaceAfterLogin::class),
             new EventListener(WorkspaceContentChanged::class, WorkspaceFollowActivityListener::class),
             new EventListener(
-                \AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspacePermanentlyDeleting::class,
+                \AaiEduHr\SimbiozaModuleWorkspace\Event\WorkspacePermanentlyDeleting::class,
                 PurgeWorkspaceUserData::class,
             ),
         ];

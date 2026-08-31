@@ -7,7 +7,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Event\PersonalWorkspaceChanged;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use Psr\EventDispatcher\EventDispatcherInterface;

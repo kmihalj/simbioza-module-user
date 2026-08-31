@@ -18,7 +18,7 @@ use AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope;
 use AaiEduHr\HeartPhrameModuleBackup\Value\BackupValue;
 use AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\HeartPhrameModuleWorkspace\ModuleWorkspace;
+use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
 

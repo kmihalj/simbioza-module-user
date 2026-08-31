@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Service;
 
-use AaiEduHr\HeartPhrameModuleWorkspace\Contract\WorkspacePresentationProviderInterface;
+use AaiEduHr\SimbiozaModuleWorkspace\Contract\WorkspacePresentationProviderInterface;
 use HeartPhrame\Localization\TranslatorInterface;
 
 use function is_numeric;

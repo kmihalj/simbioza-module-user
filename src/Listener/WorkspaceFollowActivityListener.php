@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Listener;
 
-use AaiEduHr\HeartPhrameModuleWorkspace\Event\WorkspaceContentChanged;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceConfig;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
+use AaiEduHr\SimbiozaModuleWorkspace\Event\WorkspaceContentChanged;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceConfig;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
 use AaiEduHr\SimbiozaModuleUser\Value\FollowActivity;

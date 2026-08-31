@@ -2,40 +2,43 @@
 
 declare(strict_types=1);
 
-use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
+use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
+use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
+use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceConfig;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceAccessService;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceRepository;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserApiExtension;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
 use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
-use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
+use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
+use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
+use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
-use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
-use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
-use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
-use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspacePresentationProvider;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
+use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserIntegrationRegistrar;
 use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserMenuIntegration;
 use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserModuleViewRenderer;
+use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceAccessService;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceConfig;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use HeartPhrame\Alert\AlertHandler;
 use HeartPhrame\Authn\AuthnHandlerInterface;
 use HeartPhrame\Config\ConfigInterface;
@@ -71,6 +74,18 @@ $services = [
     SimbiozaUserMenuIntegration::class =>
         static fn(ContainerInterface $container): SimbiozaUserMenuIntegration =>
             new SimbiozaUserMenuIntegration($container, $container->get(ConfigInterface::class)),
+
+    SimbiozaUserIntegrationRegistrar::class =>
+        static fn(ContainerInterface $container): SimbiozaUserIntegrationRegistrar =>
+            new SimbiozaUserIntegrationRegistrar(
+                $container->get(WorkspacePresentationRegistry::class),
+                $container->get(PersonalWorkspacePresentationProvider::class),
+                $container->get(AuthAccountSectionRegistry::class),
+                $container->get(SimbiozaUserAccountSectionProvider::class),
+                $container->get(NotificationVisibilityRegistry::class),
+                $container->get(SimbiozaNotificationVisibilityProvider::class),
+                $container->get(SimbiozaUserMenuIntegration::class),
+            ),
 
     PersonalWorkspaceSettingsController::class =>
         static fn(ContainerInterface $container): PersonalWorkspaceSettingsController =>
@@ -175,7 +190,7 @@ $services = [
 
 if (class_exists(\AaiEduHr\HeartPhrameModuleComment\Event\CommentChanged::class)) {
     $services[CommentFollowActivityListener::class] =
-        static fn(ContainerInterface $container): CommentFollowActivityListener =>
+    static fn(ContainerInterface $container): CommentFollowActivityListener =>
             new CommentFollowActivityListener(
                 $container->get(FollowDeliveryService::class),
                 $container->get(WorkspaceRepository::class),
@@ -184,7 +199,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleComment\Event\CommentChanged::class)
 
 if (class_exists(\AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged::class)) {
     $services[TaskFollowActivityListener::class] =
-        static fn(ContainerInterface $container): TaskFollowActivityListener =>
+    static fn(ContainerInterface $container): TaskFollowActivityListener =>
             new TaskFollowActivityListener(
                 $container->get(FollowDeliveryService::class),
                 $container->get(WorkspaceRepository::class),
@@ -193,19 +208,19 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged::class)) {
 
 if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged::class)) {
     $services[EmbeddedCalendarPageResolver::class] =
-        static fn(ContainerInterface $container): EmbeddedCalendarPageResolver =>
+    static fn(ContainerInterface $container): EmbeddedCalendarPageResolver =>
             new EmbeddedCalendarPageResolver(
                 $container->get(Database::class),
                 $container->get(EditorPublishedVersionProviderInterface::class),
             );
     $services[CalendarSubscriptionSynchronizer::class] =
-        static fn(ContainerInterface $container): CalendarSubscriptionSynchronizer =>
+    static fn(ContainerInterface $container): CalendarSubscriptionSynchronizer =>
             new CalendarSubscriptionSynchronizer(
                 $container->get(Database::class),
                 $container->get(FollowService::class),
             );
     $services[CalendarFollowActivityListener::class] =
-        static fn(ContainerInterface $container): CalendarFollowActivityListener =>
+    static fn(ContainerInterface $container): CalendarFollowActivityListener =>
             new CalendarFollowActivityListener(
                 $container->get(FollowDeliveryService::class),
                 $container->get(CalendarSubscriptionSynchronizer::class),
@@ -215,7 +230,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarEventChanged:
 
 if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged::class)) {
     $services[CalendarFollowChangedListener::class] =
-        static fn(ContainerInterface $container): CalendarFollowChangedListener =>
+    static fn(ContainerInterface $container): CalendarFollowChangedListener =>
             new CalendarFollowChangedListener($container->get(CalendarSubscriptionSynchronizer::class));
 }
 
@@ -223,9 +238,9 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged
 // EN: The module advertises its personal API when the generic API core is available.
 if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterface::class)) {
     $services[SimbiozaUserApiExtension::class] =
-        static fn(): SimbiozaUserApiExtension => new SimbiozaUserApiExtension();
+    static fn(): SimbiozaUserApiExtension => new SimbiozaUserApiExtension();
     $services[SimbiozaUserResourceController::class] =
-        static fn(ContainerInterface $container): SimbiozaUserResourceController =>
+    static fn(ContainerInterface $container): SimbiozaUserResourceController =>
             new SimbiozaUserResourceController(
                 $container->get(\AaiEduHr\HeartPhrameModuleApi\Http\ApiResponseFactory::class),
                 $container->get(FollowService::class),
@@ -245,8 +260,8 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
         $dependencies = ['auth', 'workspace'];
         $config = $container->get(ConfigInterface::class);
         $enabled = $config instanceof ConfigInterface
-            ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
-            : [];
+        ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
+        : [];
         if (
             in_array('aaieduhr/heartphrame-module-calendar', $enabled, true)
             && class_exists(\AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar::class)
@@ -258,7 +273,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
     };
 
     $services['heartphrame.backup.provider.simbioza-user'] =
-        static fn(
+    static fn(
             ContainerInterface $container,
         ): \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider =>
             new \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider(
@@ -373,7 +388,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
             );
 
     $services['heartphrame.backup.provider.simbioza-user-settings'] =
-        static fn(
+    static fn(
             ContainerInterface $container,
         ): \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider =>
             new \AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupProvider(
@@ -412,8 +427,8 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
         $calendarPages = null;
         $config = $container->get(ConfigInterface::class);
         $enabled = $config instanceof ConfigInterface
-            ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
-            : [];
+        ? ($config->getAsArrayWithValuesAsNonEmptyStrings('app.modules.enabled') ?? [])
+        : [];
         if (
             in_array('aaieduhr/heartphrame-module-calendar', $enabled, true)
             && class_exists(\AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar::class)
@@ -433,22 +448,22 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
     };
 
     $services['heartphrame.backup.provider.simbioza-user-workspaces'] =
-        static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
-            $container,
-            'simbioza-user-workspaces',
-            \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT,
-            'workspace',
-            'calendar',
-        );
+    static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
+        $container,
+        'simbioza-user-workspaces',
+        \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT,
+        'workspace',
+        'calendar',
+    );
 
     $services['heartphrame.backup.provider.simbioza-user-workspace'] =
-        static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
-            $container,
-            'simbioza-user-workspace',
-            \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::WORKSPACE,
-            'workspace-scope',
-            'calendar-workspace',
-        );
+    static fn(ContainerInterface $container): SimbiozaUserWorkspaceBackupProvider => $workspaceFollowProvider(
+        $container,
+        'simbioza-user-workspace',
+        \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::WORKSPACE,
+        'workspace-scope',
+        'calendar-workspace',
+    );
 }
 
 return $services;

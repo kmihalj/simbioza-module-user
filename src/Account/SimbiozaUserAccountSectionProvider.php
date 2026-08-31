@@ -6,8 +6,8 @@ namespace AaiEduHr\SimbiozaModuleUser\Account;
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceValue;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceValue;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;

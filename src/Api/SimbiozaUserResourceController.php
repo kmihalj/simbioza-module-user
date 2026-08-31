@@ -8,7 +8,7 @@ use AaiEduHr\HeartPhrameModuleApi\Http\ApiResponseFactory;
 use AaiEduHr\HeartPhrameModuleApi\ModuleApi;
 use AaiEduHr\HeartPhrameModuleAuth\Api\AuthApiIdentity;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
 use AaiEduHr\SimbiozaModuleUser\Event\UserFollowChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;

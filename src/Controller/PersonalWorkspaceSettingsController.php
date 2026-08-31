@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Controller;
 
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspacePresentationRegistry;
-use AaiEduHr\HeartPhrameModuleWorkspace\Service\WorkspaceValue;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
+use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceValue;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserModuleViewRenderer;
 use HeartPhrame\Alert\Alert;

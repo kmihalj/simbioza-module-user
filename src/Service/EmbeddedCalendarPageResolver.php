@@ -7,7 +7,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 use AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar;
 use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
-use AaiEduHr\HeartPhrameModuleWorkspace\ModuleWorkspace;
+use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 use DOMDocument;
 use DOMElement;
 
