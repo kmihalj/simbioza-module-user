@@ -6,6 +6,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 
 use HeartPhrame\Authn\AuthnHandlerInterface;
 use HeartPhrame\View\View;
+use Throwable;
 
 use function is_array;
 use function is_numeric;
@@ -30,11 +31,17 @@ final readonly class UserThemeViewIntegration
     /** HR: Registrira sigurnu zadanu vrijednost i osobni izbor prijavljenog korisnika. EN: Registers a safe default and the authenticated user's personal choice. */
     public function register(): void
     {
-        $user = $this->authn->userData();
-        $id = is_array($user) ? $user['id'] ?? null : null;
-        $mode = is_numeric($id) && $this->policy->selectionAvailable()
-            ? $this->preferences->forUser((int)$id)['theme_mode']
-            : UserPreferenceService::THEME_AUTO;
+        $mode = UserPreferenceService::THEME_AUTO;
+        try {
+            $user = $this->authn->userData();
+            $id = is_array($user) ? $user['id'] ?? null : null;
+            if (is_numeric($id) && $this->policy->selectionAvailable()) {
+                $mode = $this->preferences->forUser((int)$id)['theme_mode'];
+            }
+        } catch (Throwable) {
+            // HR: CLI i instalacijski bootstrap namjerno nemaju pokrenutu sesiju.
+            // EN: CLI and installation bootstrap intentionally have no started session.
+        }
 
         $this->view->addGlobal('userThemeMode', $mode);
     }
