@@ -1,5 +1,17 @@
 # Korištenje praćenja
 
+## Osobni izgled
+
+Profil prikazuje odabir **Izgled** samo dok je administratorski globalni način
+Theme modula postavljen na **Automatski**. Dostupni su Svijetla, Tamna,
+Automatski i Sistemski. Automatski nasljeđuje automatsku politiku aplikacije, a
+Sistemski izričito prati postavku uređaja `prefers-color-scheme`.
+
+Administratorski način **Samo svijetla** ili **Samo tamna** uklanja cijelu
+cjelinu Izgled iz profila. Poslužitelj odbija i ručno krivotvoren zahtjev te ne
+renderira ranije spremljen osobni odabir, pa ovo nije samo vizualno skrivanje
+kontrole nego provedena globalna politika.
+
 ## Osobna područja
 
 Nakon uspješne prijave dopušteni korisnik dobiva jedno obično ograničeno Workspace područje. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik dobiva izravni ACL redak sa svih šest prava: pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Administratori zadržavaju uobičajeni sistemski pristup, a svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava. Opći Workspace nema poseban koncept vlasnika; osobno područje samo ima stabilno mapiranje na korisnika kojemu sustav automatski osigurava sva prava.

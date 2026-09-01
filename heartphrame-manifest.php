@@ -108,6 +108,13 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
             ],
             [
                 'POST',
+                '/account/appearance',
+                SimbiozaUserController::class . '@saveThemeMode',
+                'simbioza-user.theme-mode.save',
+                $authenticated,
+            ],
+            [
+                'POST',
                 '/account/following/toggle',
                 SimbiozaUserController::class . '@toggle',
                 'simbioza-user.toggle',
@@ -242,6 +249,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 'simbioza-user:install-personal-workspaces-migration',
                 'Copy the Simbioza personal-space upgrade migration.',
                 [HpSimbiozaUserCommand::class, 'installPersonalWorkspacesMigration'],
+            ),
+            new CommandDefinition(
+                'simbioza-user:install-theme-mode-migration',
+                'Copy the Simbioza personal theme-mode upgrade migration.',
+                [HpSimbiozaUserCommand::class, 'installThemeModeMigration'],
             ),
             new CommandDefinition(
                 'simbioza-user:dispatch',

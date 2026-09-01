@@ -24,6 +24,7 @@ return new class implements ReversibleMigrationInterface {
                 $table->bigInteger('user_id')->unsigned()->unique();
                 $table->string('email_mode', 24)->default('off')->index();
                 $table->boolean('notify_own_changes')->default(false)->index();
+                $table->string('theme_mode', 16)->default('auto')->index();
                 $table->timestamps();
             });
         }

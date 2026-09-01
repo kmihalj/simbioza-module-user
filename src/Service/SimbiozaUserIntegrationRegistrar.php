@@ -29,6 +29,7 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
         private NotificationVisibilityRegistry $notificationVisibility,
         private SimbiozaNotificationVisibilityProvider $notificationVisibilityProvider,
         private SimbiozaUserMenuIntegration $menu,
+        private UserThemeViewIntegration $userTheme,
     ) {
     }
 
@@ -41,5 +42,6 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
 
         $this->notificationVisibility->register($this->notificationVisibilityProvider);
         $this->menu->register();
+        $this->userTheme->register();
     }
 }

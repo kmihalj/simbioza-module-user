@@ -24,6 +24,7 @@ Optional integrations are detected at runtime: `heartphrame-module-api`, `heartp
 - use a separated icon-and-label follow action styled by light/dark Theme document-action tokens;
 - manage follows in an ACL-safe profile table with search, state filters, a per-item follow toggle, and compact delivery icon buttons saved without a page reload;
 - choose immediate e-mail, a daily digest, important changes only, or in-app notifications only;
+- choose a personal light, dark, automatic, or operating-system appearance while the administrator keeps the site-wide Theme mode automatic;
 - optionally suppress notifications caused by the user's own changes;
 - de-duplicate overlapping workspace/page follows and bursts of equivalent changes;
 - treat a change to a calendar or task list embedded in a followed page as a change to that page;
@@ -54,12 +55,20 @@ An existing installation upgrades with:
 
 ```bash
 php vendor/bin/hph simbioza-user:install-personal-workspaces-migration
+php vendor/bin/hph simbioza-user:install-theme-mode-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
 Administrators configure personal Workspaces under **Settings → Workspaces → Personal Workspaces**. The default enables creation after a user's first successful local, SAML, OIDC, OAuth2, or CAS sign-in and grants the mapped user View, Add, Edit, Publish, Delete, and Manage. A batch action provisions eligible existing active users. Each user can be excluded without changing Workspace or Auth behavior.
 
 Enable `aaieduhr/simbioza-module-user` after its required modules. The Auth profile joins basic account data to its security accordion and keeps **Personal settings** permanently open in a separate card. **Notification settings** also stay open, while the table is searched and filtered inside the **Followed content** accordion. Page/workspace/task-list controls appear automatically where their owning modules render them; Calendar subscriptions are synchronized with the unified list.
+
+When the optional Theme module uses its site-wide **Automatic** policy, the
+profile also shows **Appearance**. A user can inherit automatic behavior,
+force light or dark presentation, or explicitly follow the operating-system
+color preference. If an administrator selects **Light only** or **Dark only**,
+the Appearance section is absent and any previously stored personal choice is
+ignored, so the enforced global policy remains authoritative.
 
 Run due daily digests from a worker or cron job:
 

@@ -27,6 +27,19 @@ return [
         'Obavijest u aplikaciji odmah je u korisničkom izborniku pod stavkom „Obavijesti”; '
         . 'e-pošta slijedi odabrani način dostave.',
     'Postavke obavijesti' => 'Postavke obavijesti',
+    'Izgled' => 'Izgled',
+    'Tema sučelja' => 'Tema sučelja',
+    'Svijetla' => 'Svijetla',
+    'Tamna' => 'Tamna',
+    'Automatski' => 'Automatski',
+    'Sistemski' => 'Sistemski',
+    'Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.' =>
+        'Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.',
+    'Spremi izgled' => 'Spremi izgled',
+    'Postavka izgleda je spremljena.' => 'Postavka izgleda je spremljena.',
+    'Postavke izgleda trenutačno nisu dostupne.' => 'Postavke izgleda trenutačno nisu dostupne.',
+    'Osobni odabir teme dostupan je samo kada je globalni način teme automatski.' =>
+        'Osobni odabir teme dostupan je samo kada je globalni način teme automatski.',
     'Šalji mi i e-mail obavijesti' => 'Šalji mi i e-mail obavijesti',
     'Način e-mail dostave' => 'Način e-mail dostave',
     'Zadani način dostave' => 'Zadani način dostave',
@@ -234,4 +247,8 @@ return [
         'Predložak migracije osobnih područja nije pronađen.',
     'Nije moguće kopirati migraciju osobnih područja.' =>
         'Nije moguće kopirati migraciju osobnih područja.',
+    'Predložak migracije osobnog izgleda nije pronađen.' =>
+        'Predložak migracije osobnog izgleda nije pronađen.',
+    'Nije moguće kopirati migraciju osobnog izgleda.' =>
+        'Nije moguće kopirati migraciju osobnog izgleda.',
 ];

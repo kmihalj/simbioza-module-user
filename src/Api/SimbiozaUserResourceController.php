@@ -14,6 +14,7 @@ use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleUser\Service\UserThemePolicy;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
 use JsonException;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -47,6 +48,7 @@ final readonly class SimbiozaUserResourceController
         private WorkspacePresentationRegistry $workspacePresentations,
         private ?CalendarSubscriptionSynchronizer $calendarSubscriptions = null,
         private ?EventDispatcherInterface $events = null,
+        private ?UserThemePolicy $userThemePolicy = null,
     ) {
     }
 
@@ -166,8 +168,19 @@ final readonly class SimbiozaUserResourceController
                 $mode = UserPreferenceService::EMAIL_OFF;
             }
 
+            $themeMode = (string)$current['theme_mode'];
+            if (isset($payload['theme_mode'])) {
+                if (!($this->userThemePolicy?->selectionAvailable() ?? false)) {
+                    throw new RuntimeException(
+                        __('Osobni odabir teme dostupan je samo kada je globalni način teme automatski.'),
+                    );
+                }
+
+                $themeMode = $this->scalar($payload['theme_mode']);
+            }
+
             $this->notificationPreferences->saveEmailEnabled($userId, $emailEnabled);
-            $saved = $this->preferences->save($userId, $mode, $notifyOwn);
+            $saved = $this->preferences->save($userId, $mode, $notifyOwn, $themeMode);
             $this->dispatch(new UserFollowChanged($userId, 'preferences_updated'));
 
             return [...$saved, 'email_enabled' => $emailEnabled];

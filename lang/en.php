@@ -27,6 +27,19 @@ return [
         'An in-app notification appears immediately under “Notifications” in the user menu; '
         . 'e-mail follows the selected delivery mode.',
     'Postavke obavijesti' => 'Notification settings',
+    'Izgled' => 'Appearance',
+    'Tema sučelja' => 'Interface theme',
+    'Svijetla' => 'Light',
+    'Tamna' => 'Dark',
+    'Automatski' => 'Automatic',
+    'Sistemski' => 'System',
+    'Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.' =>
+        'Automatic uses the application theme default. System follows your device light or dark mode.',
+    'Spremi izgled' => 'Save appearance',
+    'Postavka izgleda je spremljena.' => 'The appearance setting was saved.',
+    'Postavke izgleda trenutačno nisu dostupne.' => 'Appearance settings are currently unavailable.',
+    'Osobni odabir teme dostupan je samo kada je globalni način teme automatski.' =>
+        'Personal theme selection is available only when the global theme mode is automatic.',
     'Šalji mi i e-mail obavijesti' => 'Also send me e-mail notifications',
     'Način e-mail dostave' => 'E-mail delivery mode',
     'Zadani način dostave' => 'Default delivery mode',
@@ -228,4 +241,8 @@ return [
         'The personal Workspace migration template was not found.',
     'Nije moguće kopirati migraciju osobnih područja.' =>
         'The personal-space migration cannot be copied.',
+    'Predložak migracije osobnog izgleda nije pronađen.' =>
+        'The personal-appearance migration template was not found.',
+    'Nije moguće kopirati migraciju osobnog izgleda.' =>
+        'The personal-appearance migration cannot be copied.',
 ];

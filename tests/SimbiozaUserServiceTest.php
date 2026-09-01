@@ -131,18 +131,29 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Potvrđuje zadane postavke i eksplicitni način dnevnog sažetka.
-     * EN: Verifies default preferences and an explicit daily-digest mode.
+     * HR: Potvrđuje zadane postavke, dnevni sažetak i osobni način teme.
+     * EN: Verifies default preferences, daily digest, and personal theme mode.
      */
     public function testPersonalPreferencesAreStoredPerUser(): void
     {
         $preferences = new UserPreferenceService($this->database);
         $this->assertSame('off', $preferences->forUser(3)['email_mode']);
+        $this->assertSame('auto', $preferences->forUser(3)['theme_mode']);
 
         $saved = $preferences->save(3, 'daily', true);
         $this->assertSame('daily', $saved['email_mode']);
         $this->assertTrue($saved['notify_own_changes']);
+        $this->assertSame('auto', $saved['theme_mode']);
+
+        $saved = $preferences->saveThemeMode(3, 'dark');
+        $this->assertSame('dark', $saved['theme_mode']);
+        $this->assertSame('daily', $saved['email_mode']);
+
+        $saved = $preferences->save(3, 'important', false);
+        $this->assertSame('dark', $saved['theme_mode']);
+        $this->assertSame('important', $saved['email_mode']);
         $this->assertSame('off', $preferences->forUser(4)['email_mode']);
+        $this->assertSame('auto', $preferences->forUser(4)['theme_mode']);
     }
 
     /**

@@ -91,8 +91,13 @@ curl -H 'Authorization: Bearer hp_live_REPLACE_ME' \
 curl -X PATCH \
   -H 'Authorization: Bearer hp_live_REPLACE_ME' \
   -H 'Content-Type: application/json' \
-  -d '{"email_enabled":true,"email_mode":"daily","notify_own_changes":false}' \
+  -d '{"email_enabled":true,"email_mode":"daily","notify_own_changes":false,"theme_mode":"dark"}' \
   'https://example.test/api/v1/me/follow-preferences'
 ```
 
-Allowed `email_mode` values are `immediate`, `daily`, `important`, and `off`. Validation failures use the shared `application/problem+json` format.
+Allowed `email_mode` values are `immediate`, `daily`, `important`, and `off`.
+Allowed `theme_mode` values are `auto`, `light`, `dark`, and `system`.
+`theme_mode` can be changed only while the site-wide Theme policy is
+`auto`; fixed light/dark policy rejects the field and ignores a previously
+stored personal value. Validation failures use the shared
+`application/problem+json` format.

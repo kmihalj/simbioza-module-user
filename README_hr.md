@@ -24,6 +24,7 @@ Opcionalne integracije otkrivaju se tijekom rada: `heartphrame-module-api`, `hea
 - izdvojena akcija praćenja s ikonom i tekstom, stilizirana svijetlim/tamnim Theme tokenima akcija dokumenta;
 - ACL-sigurna tablica u profilu s pretragom, filtrima stanja, prekidačem praćenja po stavci i kompaktnim ikon-gumbima načina dostave bez osvježavanja stranice;
 - izbor neposredne e-pošte, dnevnog sažetka, samo važnih promjena ili samo obavijesti u aplikaciji;
+- osobni izbor svijetlog, tamnog, automatskog ili sistemskog izgleda dok administrator drži globalni način Theme modula na automatskom;
 - opcionalno isključivanje obavijesti o vlastitim promjenama;
 - uklanjanje duplikata kod istodobnog praćenja područja i stranice te kod brzih istovrsnih izmjena;
 - promjena kalendara ili liste zadataka ugrađene u praćenu stranicu računa se kao promjena te stranice;
@@ -54,12 +55,19 @@ Postojeća instalacija nadograđuje se naredbama:
 
 ```bash
 php vendor/bin/hph simbioza-user:install-personal-workspaces-migration
+php vendor/bin/hph simbioza-user:install-theme-mode-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
 Administrator osobna područja podešava pod **Postavke → Područja → Osobna područja**. Zadano pravilo izrađuje područje nakon prve uspješne lokalne, SAML, OIDC, OAuth2 ili CAS prijave i mapiranom korisniku dodjeljuje pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Skupna radnja obrađuje dopuštene postojeće aktivne korisnike, a pojedini se korisnik može isključiti bez promjene ponašanja Workspace ili Auth modula.
 
 Uključite `aaieduhr/simbioza-module-user` nakon obaveznih modula. Auth profil osnovne podatke računa spaja sa sigurnosnim accordionom, a **Osobne postavke** prikazuje u trajno otvorenoj kartici. **Postavke obavijesti** također su uvijek otvorene, dok se tablica pretražuje i filtrira u accordionu **Praćeni sadržaj**. Gumbi stranice, područja i zadatka pojavljuju se u prikazima njihovih modula, a Calendar pretplate sinkroniziraju se s jedinstvenim popisom.
+
+Kada opcionalni Theme modul koristi globalni način **Automatski**, profil
+prikazuje i cjelinu **Izgled**. Korisnik može naslijediti automatsko ponašanje,
+izričito odabrati svijetli ili tamni prikaz ili pratiti sistemsku postavku
+uređaja. Ako administrator odabere **Samo svijetla** ili **Samo tamna**, cjelina
+Izgled uopće se ne prikazuje, a ranije spremljen osobni izbor se zanemaruje.
 
 Dospjele dnevne sažetke pokreće worker ili cron:
 

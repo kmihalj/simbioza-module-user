@@ -13,6 +13,8 @@ declare(strict_types=1);
  * @var bool $emailEnabled
  * @var list<array<string,mixed>> $follows
  * @var string $savePreferencesPath
+ * @var string $saveThemeModePath
+ * @var bool $themeModeSelectionAvailable
  * @var string $togglePath
  * @var string $modePath
  * @var string $profileFollowingPath
@@ -25,6 +27,14 @@ $preferences = is_array($preferences ?? null) ? $preferences : [];
 $follows = is_array($follows ?? null) ? $follows : [];
 $emailEnabled = (bool)($emailEnabled ?? false);
 $emailMode = is_string($preferences['email_mode'] ?? null) ? $preferences['email_mode'] : 'off';
+$themeMode = is_string($preferences['theme_mode'] ?? null) ? $preferences['theme_mode'] : 'auto';
+$themeModeLabels = [
+    'light' => __('Svijetla'),
+    'dark' => __('Tamna'),
+    'auto' => __('Automatski'),
+    'system' => __('Sistemski'),
+];
+$themeModeSelectionAvailable = (bool)($themeModeSelectionAvailable ?? false);
 $typeLabels = [
     'workspace' => __('Područje'),
     'page' => __('Stranica'),
@@ -97,6 +107,41 @@ $icon = static function (string $name): string {
                     <?= $this->escape($personalWorkspaceName) ?>
                 </a>
             </div>
+        <?php endif; ?>
+
+        <?php if ($themeModeSelectionAvailable) : ?>
+        <section class="simbioza-user-preferences mb-3" id="simbioza-user-appearance"
+                 aria-labelledby="simbioza-user-appearance-heading">
+            <div class="simbioza-user-preferences-header">
+                <h3 class="h6 mb-0" id="simbioza-user-appearance-heading">
+                    <?= __('Izgled') ?>
+                </h3>
+            </div>
+            <div class="simbioza-user-preferences-body">
+                <form method="post" action="<?= $this->escape((string)$saveThemeModePath) ?>">
+                    <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
+                    <div class="mb-3">
+                        <label class="form-label" for="simbioza-user-theme-mode">
+                            <?= __('Tema sučelja') ?>
+                        </label>
+                        <select class="form-select" id="simbioza-user-theme-mode" name="theme_mode">
+                            <?php foreach ($themeModeLabels as $mode => $label) : ?>
+                                <option value="<?= $this->escape($mode) ?>"
+                                    <?= $themeMode === $mode ? 'selected' : '' ?>>
+                                    <?= $this->escape($label) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <p class="small text-body-secondary">
+                        <?= __('Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.') ?>
+                    </p>
+                    <button type="submit" class="btn btn-primary">
+                        <?= __('Spremi izgled') ?>
+                    </button>
+                </form>
+            </div>
+        </section>
         <?php endif; ?>
 
         <div class="alert alert-info simbioza-user-follow-explanation" role="note">

@@ -9,6 +9,7 @@ use AaiEduHr\SimbiozaModuleUser\Event\UserFollowChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleUser\Service\UserThemePolicy;
 use HeartPhrame\Alert\Alert;
 use HeartPhrame\Alert\AlertHandler;
 use HeartPhrame\Authn\AuthnHandlerInterface;
@@ -49,6 +50,7 @@ final readonly class SimbiozaUserController
         private AlertHandler $alerts,
         private CsrfHandler $csrf,
         private ?EventDispatcherInterface $events = null,
+        private ?UserThemePolicy $userThemePolicy = null,
     ) {
     }
 
@@ -87,6 +89,35 @@ final readonly class SimbiozaUserController
         $this->alerts->add(new Alert($message, AlertLevelEnum::Success));
 
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-preferences');
+    }
+
+    /** HR: Sprema osobni izbor svijetle, tamne, automatske ili sistemske teme. EN: Saves the personal light, dark, automatic, or system theme choice. */
+    public function saveThemeMode(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!($this->userThemePolicy?->selectionAvailable() ?? false)) {
+            throw new \RuntimeException(
+                __('Osobni odabir teme dostupan je samo kada je globalni način teme automatski.'),
+            );
+        }
+
+        $body = $this->body($request);
+        $saved = $this->preferences->saveThemeMode(
+            $this->currentUserId(),
+            $this->text($body['theme_mode'] ?? null),
+        );
+        $message = __('Postavka izgleda je spremljena.');
+        if ($this->expectsJson($request)) {
+            return $this->responses->json([
+                'ok' => true,
+                'message' => $message,
+                'theme_mode' => $saved['theme_mode'],
+                'csrf_token' => $this->csrf->getOrGenerateCsrfToken(),
+            ]);
+        }
+
+        $this->alerts->add(new Alert($message, AlertLevelEnum::Success));
+
+        return $this->responses->redirect($this->profilePath() . '#simbioza-user-appearance');
     }
 
     /** HR: Uključuje ili isključuje jedno praćenje bez pristupa tuđim zapisima. EN: Enables or disables one follow without accessing another user's rows. */

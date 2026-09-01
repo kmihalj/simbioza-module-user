@@ -35,6 +35,8 @@ use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserIntegrationRegistrar;
 use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserMenuIntegration;
 use AaiEduHr\SimbiozaModuleUser\Service\SimbiozaUserModuleViewRenderer;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleUser\Service\UserThemePolicy;
+use AaiEduHr\SimbiozaModuleUser\Service\UserThemeViewIntegration;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceAccessService;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
@@ -85,6 +87,7 @@ $services = [
                 $container->get(NotificationVisibilityRegistry::class),
                 $container->get(SimbiozaNotificationVisibilityProvider::class),
                 $container->get(SimbiozaUserMenuIntegration::class),
+                $container->get(UserThemeViewIntegration::class),
             ),
 
     PersonalWorkspaceSettingsController::class =>
@@ -108,6 +111,17 @@ $services = [
 
     UserPreferenceService::class => static fn(ContainerInterface $container): UserPreferenceService =>
         new UserPreferenceService($container->get(Database::class)),
+
+    UserThemePolicy::class => static fn(ContainerInterface $container): UserThemePolicy =>
+        new UserThemePolicy($container),
+
+    UserThemeViewIntegration::class => static fn(ContainerInterface $container): UserThemeViewIntegration =>
+        new UserThemeViewIntegration(
+            $container->get(UserPreferenceService::class),
+            $container->get(AuthnHandlerInterface::class),
+            $container->get(\HeartPhrame\View\View::class),
+            $container->get(UserThemePolicy::class),
+        ),
 
     FollowTargetService::class => static fn(ContainerInterface $container): FollowTargetService =>
         new FollowTargetService(
@@ -154,6 +168,7 @@ $services = [
             $container->get(AlertHandler::class),
             $container->get(CsrfHandler::class),
             $container->get(EventDispatcherInterface::class),
+            $container->get(UserThemePolicy::class),
         ),
 
     SimbiozaUserAccountSectionProvider::class =>
@@ -170,6 +185,7 @@ $services = [
                 $calendarSubscriptions,
                 $container->get(PersonalWorkspaceService::class),
                 $container->get(WorkspacePresentationRegistry::class),
+                $container->get(UserThemePolicy::class),
             );
         },
 
@@ -252,6 +268,7 @@ if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterfa
                     ? $container->get(CalendarSubscriptionSynchronizer::class)
                     : null,
                 $container->get(EventDispatcherInterface::class),
+                $container->get(UserThemePolicy::class),
             );
 }
 

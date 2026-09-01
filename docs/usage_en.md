@@ -1,5 +1,17 @@
 # Using follows
 
+## Personal appearance
+
+The profile shows an **Appearance** selector only while the administrator's
+site-wide Theme policy is **Automatic**. Available choices are Light, Dark,
+Automatic, and System. Automatic inherits the application's automatic policy;
+System explicitly follows the device's `prefers-color-scheme` setting.
+
+An administrator-enforced **Light only** or **Dark only** policy removes the
+whole Appearance section from the profile. The server also rejects a forged
+preference request and does not render a stored personal override, so this is
+an enforced policy rather than a visual hiding rule.
+
 ## Personal Workspaces
 
 After a successful sign-in, an eligible user receives one ordinary restricted Workspace. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user receives one direct ACL row with all six permissions: View, Add, Edit, Publish, Delete, and Manage. Administrators retain their normal system-wide access; every other user or group sees the Workspace only after the mapped user or an administrator explicitly grants ACL access. A general Workspace has no separate owner concept; a personal Workspace only adds a stable user mapping whose user automatically receives the complete ACL.

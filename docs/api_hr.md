@@ -91,8 +91,13 @@ curl -H 'Authorization: Bearer hp_live_ZAMIJENI_ME' \
 curl -X PATCH \
   -H 'Authorization: Bearer hp_live_ZAMIJENI_ME' \
   -H 'Content-Type: application/json' \
-  -d '{"email_enabled":true,"email_mode":"daily","notify_own_changes":false}' \
+  -d '{"email_enabled":true,"email_mode":"daily","notify_own_changes":false,"theme_mode":"dark"}' \
   'https://primjer.test/api/v1/me/follow-preferences'
 ```
 
-Dopuštene vrijednosti `email_mode` su `immediate`, `daily`, `important` i `off`. Pogreške validacije koriste zajednički format `application/problem+json`.
+Dopuštene vrijednosti `email_mode` su `immediate`, `daily`, `important` i
+`off`, a vrijednosti `theme_mode` su `auto`, `light`, `dark` i `system`.
+`theme_mode` se može promijeniti samo dok je globalni Theme način `auto`;
+prisilno svijetla ili tamna politika odbija to polje i zanemaruje ranije
+spremljenu osobnu vrijednost. Pogreške validacije koriste zajednički format
+`application/problem+json`.

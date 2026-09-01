@@ -11,6 +11,7 @@ use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
+use AaiEduHr\SimbiozaModuleUser\Service\UserThemePolicy;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceValue;
 use HeartPhrame\Routing\UrlGenerator;
@@ -33,6 +34,7 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
         private ?CalendarSubscriptionSynchronizer $calendarSubscriptions = null,
         private ?PersonalWorkspaceService $personalWorkspaces = null,
         private ?WorkspacePresentationRegistry $workspacePresentations = null,
+        private ?UserThemePolicy $userThemePolicy = null,
     ) {
     }
 
@@ -142,6 +144,11 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
                     'simbioza-user.preferences.save',
                     '/account/following/preferences',
                 ),
+                'saveThemeModePath' => $this->path(
+                    'simbioza-user.theme-mode.save',
+                    '/account/appearance',
+                ),
+                'themeModeSelectionAvailable' => $this->userThemePolicy?->selectionAvailable() ?? false,
                 'bulkPath' => $this->path('simbioza-user.bulk', '/account/following/bulk'),
                 'togglePath' => $this->path('simbioza-user.toggle', '/account/following/toggle'),
                 'modePath' => $this->path('simbioza-user.mode', '/account/following/mode'),
