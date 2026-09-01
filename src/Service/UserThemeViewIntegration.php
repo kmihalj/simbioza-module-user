@@ -18,6 +18,7 @@ use function is_numeric;
  */
 final readonly class UserThemeViewIntegration
 {
+    /** HR: Prima osobne postavke, prijavljenog korisnika, prikaz i globalnu politiku. EN: Receives preferences, authenticated user, view, and global policy. */
     public function __construct(
         private UserPreferenceService $preferences,
         private AuthnHandlerInterface $authn,

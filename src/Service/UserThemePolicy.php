@@ -17,6 +17,7 @@ final readonly class UserThemePolicy
 {
     private const REPOSITORY = 'AaiEduHr\\HeartPhrameModuleTheme\\Service\\ThemeConfigRepository';
 
+    /** HR: Prima aplikacijski container za sigurnu opcionalnu integraciju. EN: Receives the application container for safe optional integration. */
     public function __construct(private ContainerInterface $container)
     {
     }
