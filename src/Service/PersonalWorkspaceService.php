@@ -404,6 +404,27 @@ final readonly class PersonalWorkspaceService
      */
     public function presentationOwners(array $workspaceIds): array
     {
+        $owners = [];
+        foreach ($this->presentationOwnerRows($workspaceIds) as $workspaceId => $owner) {
+            $owners[$workspaceId] = $owner['name'];
+        }
+
+        return $owners;
+    }
+
+    /**
+     * HR: Vraća stabilni ID i prikaznu oznaku vlasnika za grupni prikaz osobnih
+     *     područja. ID omogućuje generičkom Workspace sučelju da vlastito
+     *     područje zadrži u glavnom popisu bez pogađanja prema nazivu ili slugu.
+     * EN: Returns the stable owner ID and display label for batched personal-
+     *     Workspace presentation. The ID lets the generic Workspace UI retain
+     *     the actor's own space without guessing from its name or slug.
+     *
+     * @param list<int> $workspaceIds
+     * @return array<int,array{user_id:int,name:string}>
+     */
+    public function presentationOwnerRows(array $workspaceIds): array
+    {
         $workspaceIds = array_values(array_unique(array_filter(
             $workspaceIds,
             static fn(int $workspaceId): bool => $workspaceId > 0,
@@ -464,7 +485,10 @@ final readonly class PersonalWorkspaceService
         foreach ($ownerRows as $workspaceId => $ownerRow) {
             $ownerName = $this->ownerName($ownerRow, $ownerRow['user_id']);
             if ($ownerName !== '') {
-                $owners[$workspaceId] = $ownerName;
+                $owners[$workspaceId] = [
+                    'user_id' => $ownerRow['user_id'],
+                    'name' => $ownerName,
+                ];
             }
         }
 

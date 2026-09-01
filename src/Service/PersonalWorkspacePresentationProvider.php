@@ -7,6 +7,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 use AaiEduHr\SimbiozaModuleWorkspace\Contract\WorkspacePresentationProviderInterface;
 use HeartPhrame\Localization\TranslatorInterface;
 
+use function is_array;
 use function is_numeric;
 use function is_scalar;
 use function preg_match;
@@ -44,10 +45,13 @@ final readonly class PersonalWorkspacePresentationProvider implements WorkspaceP
             }
         }
 
-        $owners = $this->personalWorkspaces->presentationOwners($workspaceIds);
+        $owners = $this->personalWorkspaces->presentationOwnerRows($workspaceIds);
         foreach ($workspaces as &$workspace) {
             $workspaceId = is_numeric($workspace['id'] ?? null) ? (int)$workspace['id'] : 0;
-            $ownerName = $owners[$workspaceId] ?? '';
+            $owner = $owners[$workspaceId] ?? null;
+            $ownerName = is_array($owner) && is_scalar($owner['name'] ?? null)
+                ? trim((string)$owner['name'])
+                : '';
             if ($workspaceId <= 0 || $ownerName === '') {
                 continue;
             }
@@ -75,6 +79,9 @@ final readonly class PersonalWorkspacePresentationProvider implements WorkspaceP
             }
 
             $workspace['is_personal_workspace'] = true;
+            $workspace['personal_workspace_owner_user_id'] = is_numeric($owner['user_id'] ?? null)
+                ? (int)$owner['user_id']
+                : 0;
         }
 
         unset($workspace);

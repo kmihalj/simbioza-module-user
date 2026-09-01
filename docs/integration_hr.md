@@ -19,7 +19,10 @@ Workspace izlaže generički `WorkspacePresentationRegistry`. Simbioza User pri
 pokretanju modula registrira svoj provider i lokalizira generirani naziv i opis
 osobnog područja prema trenutačnom jeziku sučelja. Prilagodba se radi grupno,
 ne mijenja spremljeni Workspace zapis te čuva naziv ili opis koji vlasnik
-naknadno prilagodi.
+naknadno prilagodi. Provider uz prikazni redak dodaje oznaku osobnog područja i
+stabilni ID vlasnika. Generički Workspace pregled zato može odvojiti tuđa osobna
+područja, a vlastito ostaviti u glavnom popisu, bez zaključivanja prema nazivu ili
+slugu. Popisi i dalje nastaju tek nakon Workspace ACL provjere.
 
 ## Integracija korisničkog sučelja
 

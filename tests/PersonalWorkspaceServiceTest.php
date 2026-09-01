@@ -168,6 +168,8 @@ final class PersonalWorkspaceServiceTest extends TestCase
 
         $this->assertSame('Workspace of: ana.horvat', $english['name']);
         $this->assertSame('Personal Workspace of user ana.horvat.', $english['description']);
+        $this->assertTrue($english['is_personal_workspace']);
+        $this->assertSame($userId, $english['personal_workspace_owner_user_id']);
         $this->assertSame('Područje od: ana.horvat', $croatian['name']);
         $this->assertSame('Osobno područje korisnika ana.horvat.', $croatian['description']);
         $stored = $this->database->table(ModuleWorkspace::TABLE_WORKSPACES)
@@ -182,6 +184,7 @@ final class PersonalWorkspaceServiceTest extends TestCase
         ]], 'hr')[0];
         $this->assertSame('Ana private notes', $renamed['name']);
         $this->assertSame('My own description.', $renamed['description']);
+        $this->assertSame($userId, $renamed['personal_workspace_owner_user_id']);
     }
 
     /** HR: Sprema minimalan Auth korisnički red. EN: Stores a minimal Auth user row. */

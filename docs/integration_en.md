@@ -19,7 +19,11 @@ Workspace exposes a generic `WorkspacePresentationRegistry`. Simbioza User
 registers its provider during module bootstrap and localizes generated personal-
 space names and descriptions for the current interface language. Presentation
 is batched, does not mutate stored Workspace data, and preserves a title or
-description that the owner customized later.
+description that the owner customized later. The provider also annotates the
+presentation row with its personal-Workspace marker and stable owner ID. The
+generic Workspace screen can therefore separate other people's personal spaces
+while retaining the actor's own space in the primary list, without guessing from
+names or slugs. Lists are still built only after the Workspace ACL check.
 
 ## User-interface integration
 
