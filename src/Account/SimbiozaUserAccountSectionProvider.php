@@ -6,6 +6,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Account;
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
+use AaiEduHr\HeartPhrameModuleOrm\Database\LocaleSorter;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
@@ -103,7 +104,7 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
             $leftLabel = is_scalar($left['label'] ?? null) ? (string)$left['label'] : '';
             $rightLabel = is_scalar($right['label'] ?? null) ? (string)$right['label'] : '';
 
-            return strcasecmp($leftLabel, $rightLabel);
+            return LocaleSorter::compare($leftLabel, $rightLabel);
         });
 
         $personalWorkspace = $this->personalWorkspaces?->forUser($userId);
