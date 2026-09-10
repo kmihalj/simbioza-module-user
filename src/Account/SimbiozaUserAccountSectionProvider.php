@@ -131,6 +131,9 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
                 : rtrim($this->urls->getBasePath(), '/') . '/workspace/' . rawurlencode($slug);
         }
 
+        $canCreatePersonalWorkspace = !is_array($personalWorkspace)
+            && ($this->personalWorkspaces?->userCreationEnabled() ?? false);
+
         return [
             'key' => 'simbioza-following',
             'package' => ModuleSimbiozaUser::PACKAGE_NAME,
@@ -158,6 +161,11 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
                 'assetsCssPath' => $this->path('simbioza-user.assets.css', '/simbioza-user/assets.css'),
                 'personalWorkspace' => $personalWorkspace,
                 'personalWorkspacePath' => $personalWorkspacePath,
+                'canCreatePersonalWorkspace' => $canCreatePersonalWorkspace,
+                'createPersonalWorkspacePath' => $this->path(
+                    'simbioza-user.personal-workspace.create',
+                    '/account/personal-workspace',
+                ),
             ],
         ];
     }

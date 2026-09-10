@@ -37,6 +37,8 @@ final readonly class PersonalWorkspaceService
 {
     private const SETTING_AUTOMATIC_CREATION = 'personal_workspace.auto_create';
 
+    private const SETTING_SELF_CREATION = 'personal_workspace.self_create';
+
     /** HR: Prima javne servise modula o kojima Simbioza User već ovisi. EN: Receives public services of existing module dependencies. */
     public function __construct(
         private Database $database,
@@ -70,25 +72,68 @@ final readonly class PersonalWorkspaceService
         return !is_array($row) || $this->boolValue($row['setting_value'] ?? true);
     }
 
+    /** HR: Vraća spremljeno pravilo samostalne izrade; zadano je isključeno. EN: Returns the stored self-creation rule; it is disabled by default. */
+    public function selfCreationEnabled(): bool
+    {
+        if (!$this->tablesReady()) {
+            return false;
+        }
+
+        $row = $this->database->table(ModuleSimbiozaUser::TABLE_SETTINGS)
+            ->where('setting_key', '=', self::SETTING_SELF_CREATION)
+            ->first();
+
+        return is_array($row) && $this->boolValue($row['setting_value'] ?? false);
+    }
+
+    /** HR: Samostalna izrada vrijedi samo kada automatska nije uključena. EN: Self-creation applies only while automatic creation is disabled. */
+    public function userCreationEnabled(): bool
+    {
+        return !$this->automaticCreationEnabled() && $this->selfCreationEnabled();
+    }
+
     /** HR: Sprema globalno administratorsko pravilo. EN: Saves the global administrator rule. */
     public function setAutomaticCreationEnabled(bool $enabled, int $actorUserId = 0): void
     {
+        $this->setCreationSettings($enabled, $this->selfCreationEnabled(), $actorUserId);
+    }
+
+    /**
+     * HR: Atomski sprema automatsku i korisničku izradu; automatika uvijek
+     *     nadjačava i isključuje korisnički prekidač.
+     * EN: Atomically saves automatic and user-driven creation; automation
+     *     always takes precedence and disables the user switch.
+     */
+    public function setCreationSettings(
+        bool $automaticCreation,
+        bool $selfCreation,
+        int $actorUserId = 0,
+    ): void {
         $this->assertReady();
+        $selfCreation = !$automaticCreation && $selfCreation;
         $now = date('Y-m-d H:i:s');
         $this->database->table(ModuleSimbiozaUser::TABLE_SETTINGS)->upsert(
-            [[
-                'setting_key' => self::SETTING_AUTOMATIC_CREATION,
-                'setting_value' => $enabled ? '1' : '0',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]],
+            [
+                [
+                    'setting_key' => self::SETTING_AUTOMATIC_CREATION,
+                    'setting_value' => $automaticCreation ? '1' : '0',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
+                [
+                    'setting_key' => self::SETTING_SELF_CREATION,
+                    'setting_value' => $selfCreation ? '1' : '0',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
+            ],
             ['setting_key'],
             ['setting_value', 'updated_at'],
         );
         $this->dispatch(new PersonalWorkspaceChanged(
             $actorUserId,
             0,
-            $enabled ? 'automatic_creation_enabled' : 'automatic_creation_disabled',
+            'creation_settings_updated',
         ));
     }
 
@@ -156,6 +201,40 @@ final readonly class PersonalWorkspaceService
         }
 
         return $this->ensureForUser($userId, $userId, true);
+    }
+
+    /**
+     * HR: Korisniku dopušta izradu samo vlastitog područja i samo prema
+     *     trenutačnoj globalnoj postavci. Postojeće područje ostaje dostupno.
+     * EN: Allows a user to create only their own Workspace and only under the
+     *     current global setting. An existing Workspace remains available.
+     *
+     * @return array<string,mixed>
+     */
+    public function createOwnWorkspace(int $userId): array
+    {
+        $this->assertReady();
+        $mapped = $this->forUser($userId);
+        if (is_array($mapped)) {
+            if ((bool)($mapped['is_deleted'] ?? false)) {
+                throw new RuntimeException(__('Vaše osobno područje je obrisano. Obratite se administratoru.'));
+            }
+
+            $this->grantAllPermissions($mapped, $userId);
+
+            return $mapped;
+        }
+
+        if (!$this->userCreationEnabled()) {
+            throw new RuntimeException(__('Samostalna izrada osobnog područja nije omogućena.'));
+        }
+
+        $created = $this->ensureForUser($userId, $userId, false);
+        if (!is_array($created)) {
+            throw new RuntimeException(__('Osobno područje nije moguće izraditi.'));
+        }
+
+        return $created;
     }
 
     /**

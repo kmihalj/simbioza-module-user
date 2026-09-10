@@ -206,13 +206,21 @@ return [
     'Osobna područja' => 'Osobna područja',
     'Osobno područje' => 'Osobno područje',
     'Moje osobno područje' => 'Moje osobno područje',
+    'Moje područje' => 'Moje područje',
+    'Izradi moje osobno područje' => 'Izradi moje osobno područje',
     'Otvori osobno područje' => 'Otvori osobno područje',
+    'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.' =>
+        'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.',
     'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
         'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.',
     'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
         'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.',
     'Automatski izradi osobno područje pri prvoj prijavi' =>
         'Automatski izradi osobno područje pri prvoj prijavi',
+    'Omogući korisnicima izradu osobnog područja' =>
+        'Omogući korisnicima izradu osobnog područja',
+    'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.' =>
+        'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.',
     'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
         'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.',
     'Postojeći korisnici' => 'Postojeći korisnici',
@@ -232,7 +240,12 @@ return [
     'Postavke osobnih područja su spremljene.' => 'Postavke osobnih područja su spremljene.',
     'Postavka korisnika je spremljena.' => 'Postavka korisnika je spremljena.',
     'Osobno područje je izrađeno.' => 'Osobno područje je izrađeno.',
+    'Vaše osobno područje je izrađeno.' => 'Vaše osobno područje je izrađeno.',
     'Osobno područje nije moguće izraditi.' => 'Osobno područje nije moguće izraditi.',
+    'Samostalna izrada osobnog područja nije omogućena.' =>
+        'Samostalna izrada osobnog područja nije omogućena.',
+    'Vaše osobno područje je obrisano. Obratite se administratoru.' =>
+        'Vaše osobno područje je obrisano. Obratite se administratoru.',
     'Osobno područje nije moguće povezati s korisnikom.' =>
         'Osobno područje nije moguće povezati s korisnikom.',
     'Migracija osobnih područja nije primijenjena.' => 'Migracija osobnih područja nije primijenjena.',

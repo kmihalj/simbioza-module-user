@@ -8,6 +8,7 @@ use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService
 use AaiEduHr\SimbiozaModuleUser\Event\UserFollowChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowTargetService;
+use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserThemePolicy;
 use HeartPhrame\Alert\Alert;
@@ -20,6 +21,7 @@ use HeartPhrame\View\CsrfHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 use function in_array;
 use function is_array;
@@ -45,6 +47,7 @@ final readonly class SimbiozaUserController
         private AuthnHandlerInterface $authn,
         private FollowService $follows,
         private UserPreferenceService $preferences,
+        private PersonalWorkspaceService $personalWorkspaces,
         private NotificationPreferenceService $notificationPreferences,
         private UrlGenerator $urls,
         private AlertHandler $alerts,
@@ -118,6 +121,19 @@ final readonly class SimbiozaUserController
         $this->alerts->add(new Alert($message, AlertLevelEnum::Success));
 
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-appearance');
+    }
+
+    /** HR: Izrađuje osobno područje isključivo za prijavljenog korisnika kada je to dopušteno. EN: Creates a personal Workspace only for the authenticated user when allowed. */
+    public function createPersonalWorkspace(): ResponseInterface
+    {
+        try {
+            $this->personalWorkspaces->createOwnWorkspace($this->currentUserId());
+            $this->alerts->add(new Alert(__('Vaše osobno područje je izrađeno.'), AlertLevelEnum::Success));
+        } catch (Throwable $throwable) {
+            $this->alerts->add(new Alert($throwable->getMessage(), AlertLevelEnum::Danger));
+        }
+
+        return $this->responses->redirect($this->profilePath() . '#simbioza-user-personal-workspace');
     }
 
     /** HR: Uključuje ili isključuje jedno praćenje bez pristupa tuđim zapisima. EN: Enables or disables one follow without accessing another user's rows. */

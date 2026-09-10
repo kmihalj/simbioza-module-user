@@ -115,6 +115,13 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
             ],
             [
                 'POST',
+                '/account/personal-workspace',
+                SimbiozaUserController::class . '@createPersonalWorkspace',
+                'simbioza-user.personal-workspace.create',
+                $authenticated,
+            ],
+            [
+                'POST',
                 '/account/following/toggle',
                 SimbiozaUserController::class . '@toggle',
                 'simbioza-user.toggle',

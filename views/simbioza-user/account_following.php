@@ -21,6 +21,8 @@ declare(strict_types=1);
  * @var string $assetsCssPath
  * @var array<string,mixed>|null $personalWorkspace
  * @var string|null $personalWorkspacePath
+ * @var bool $canCreatePersonalWorkspace
+ * @var string $createPersonalWorkspacePath
  */
 
 $preferences = is_array($preferences ?? null) ? $preferences : [];
@@ -35,6 +37,7 @@ $themeModeLabels = [
     'system' => __('Sistemski'),
 ];
 $themeModeSelectionAvailable = (bool)($themeModeSelectionAvailable ?? false);
+$canCreatePersonalWorkspace = (bool)($canCreatePersonalWorkspace ?? false);
 $typeLabels = [
     'workspace' => __('Područje'),
     'page' => __('Stranica'),
@@ -84,65 +87,82 @@ $icon = static function (string $name): string {
     <link rel="stylesheet" href="<?= $this->escape($assetsCssPath) ?>">
 <?php endif; ?>
 
-<section class="simbioza-user-card card shadow-sm" aria-labelledby="simbioza-following-heading">
+<?php if (is_string($personalWorkspacePath ?? null) && $personalWorkspacePath !== '') : ?>
+    <?php $personalWorkspaceRow = is_array($personalWorkspace['workspace'] ?? null) ? $personalWorkspace['workspace'] : []; ?>
+    <?php $personalWorkspaceName = is_scalar($personalWorkspaceRow['name'] ?? null)
+        ? (string)$personalWorkspaceRow['name']
+        : __('Otvori osobno područje'); ?>
+<section class="simbioza-user-card card shadow-sm" id="simbioza-user-personal-workspace"
+         aria-labelledby="simbioza-user-personal-workspace-heading" data-simbioza-personal-workspace-card>
+    <div class="card-body p-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h2 class="h5 mb-1" id="simbioza-user-personal-workspace-heading">
+                    <?= $this->escape(__('Moje osobno područje')) ?>
+                </h2>
+                <p class="text-body-secondary mb-0">
+                    <?= $this->escape(__('Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.')) ?>
+                </p>
+            </div>
+            <a class="btn btn-secondary" href="<?= $this->escape($personalWorkspacePath) ?>">
+                <?= $this->escape($personalWorkspaceName) ?>
+            </a>
+        </div>
+    </div>
+</section>
+<?php elseif ($canCreatePersonalWorkspace) : ?>
+<section class="simbioza-user-card card shadow-sm" id="simbioza-user-personal-workspace"
+         aria-labelledby="simbioza-user-personal-workspace-heading" data-simbioza-personal-workspace-card>
+    <div class="card-body p-4">
+        <h2 class="h5 mb-1" id="simbioza-user-personal-workspace-heading">
+            <?= $this->escape(__('Izradi moje osobno područje')) ?>
+        </h2>
+        <p class="text-body-secondary mb-3">
+            <?= $this->escape(__('Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.')) ?>
+        </p>
+        <form method="post" action="<?= $this->escape((string)$createPersonalWorkspacePath) ?>">
+            <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
+            <button class="btn btn-primary" type="submit">
+                <?= $this->escape(__('Izradi moje osobno područje')) ?>
+            </button>
+        </form>
+    </div>
+</section>
+<?php endif; ?>
+
+<?php if ($themeModeSelectionAvailable) : ?>
+<section class="simbioza-user-card card shadow-sm" id="simbioza-user-appearance"
+         aria-labelledby="simbioza-user-appearance-heading" data-simbioza-appearance-card>
+    <div class="card-body p-4">
+        <h2 class="h5 mb-3" id="simbioza-user-appearance-heading"><?= __('Izgled') ?></h2>
+        <form method="post" action="<?= $this->escape((string)$saveThemeModePath) ?>">
+            <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
+            <div class="mb-3">
+                <label class="form-label" for="simbioza-user-theme-mode"><?= __('Tema sučelja') ?></label>
+                <select class="form-select" id="simbioza-user-theme-mode" name="theme_mode">
+                    <?php foreach ($themeModeLabels as $mode => $label) : ?>
+                        <option value="<?= $this->escape($mode) ?>" <?= $themeMode === $mode ? 'selected' : '' ?>>
+                            <?= $this->escape($label) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <p class="small text-body-secondary">
+                <?= __('Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.') ?>
+            </p>
+            <button type="submit" class="btn btn-primary"><?= __('Spremi izgled') ?></button>
+        </form>
+    </div>
+</section>
+<?php endif; ?>
+
+<section class="simbioza-user-card card shadow-sm" aria-labelledby="simbioza-following-heading"
+         data-simbioza-following-card>
     <div class="card-body p-4">
         <h2 class="h5 mb-2" id="simbioza-following-heading"><?= __('Praćenje i obavijesti') ?></h2>
         <p class="text-body-secondary mb-3">
             <?= __('Odredite kako želite primati promjene i upravljajte sadržajem koji pratite.') ?>
         </p>
-
-        <?php if (is_string($personalWorkspacePath ?? null) && $personalWorkspacePath !== '') : ?>
-            <?php $personalWorkspaceRow = is_array($personalWorkspace['workspace'] ?? null) ? $personalWorkspace['workspace'] : []; ?>
-            <?php $personalWorkspaceName = is_scalar($personalWorkspaceRow['name'] ?? null)
-                ? (string)$personalWorkspaceRow['name']
-                : __('Otvori osobno područje'); ?>
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border rounded p-3 mb-3">
-                <div>
-                    <h3 class="h6 mb-1"><?= $this->escape(__('Moje osobno područje')) ?></h3>
-                    <p class="text-body-secondary small mb-0">
-                        <?= $this->escape(__('Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.')) ?>
-                    </p>
-                </div>
-                <a class="btn btn-secondary" href="<?= $this->escape($personalWorkspacePath) ?>">
-                    <?= $this->escape($personalWorkspaceName) ?>
-                </a>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($themeModeSelectionAvailable) : ?>
-        <section class="simbioza-user-preferences mb-3" id="simbioza-user-appearance"
-                 aria-labelledby="simbioza-user-appearance-heading">
-            <div class="simbioza-user-preferences-header">
-                <h3 class="h6 mb-0" id="simbioza-user-appearance-heading">
-                    <?= __('Izgled') ?>
-                </h3>
-            </div>
-            <div class="simbioza-user-preferences-body">
-                <form method="post" action="<?= $this->escape((string)$saveThemeModePath) ?>">
-                    <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
-                    <div class="mb-3">
-                        <label class="form-label" for="simbioza-user-theme-mode">
-                            <?= __('Tema sučelja') ?>
-                        </label>
-                        <select class="form-select" id="simbioza-user-theme-mode" name="theme_mode">
-                            <?php foreach ($themeModeLabels as $mode => $label) : ?>
-                                <option value="<?= $this->escape($mode) ?>"
-                                    <?= $themeMode === $mode ? 'selected' : '' ?>>
-                                    <?= $this->escape($label) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <p class="small text-body-secondary">
-                        <?= __('Automatski koristi zadanu postavku teme aplikacije. Sistemski prati svijetli ili tamni način vašeg uređaja.') ?>
-                    </p>
-                    <button type="submit" class="btn btn-primary">
-                        <?= __('Spremi izgled') ?>
-                    </button>
-                </form>
-            </div>
-        </section>
-        <?php endif; ?>
 
         <div class="alert alert-info simbioza-user-follow-explanation" role="note">
             <h3 class="h6 alert-heading mb-2"><?= __('Kako rade praćenje i obavijesti?') ?></h3>

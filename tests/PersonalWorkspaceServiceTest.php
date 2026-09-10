@@ -28,6 +28,8 @@ final class PersonalWorkspaceServiceTest extends TestCase
 {
     private Database $database;
 
+    private WorkspaceRepository $workspaces;
+
     private PersonalWorkspaceService $service;
 
     /** HR: Priprema stvarne prenosive sheme ovisnih modula. EN: Prepares real portable schemas of dependent modules. */
@@ -46,9 +48,10 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->runMigration($this->moduleMigration(WorkspaceRepository::class, 'initial_workspace_schema.php'));
         $this->runMigration(dirname(__DIR__) . '/resources/migrations/initial_simbioza_user_schema.php');
         $users = new AuthUserService($this->database);
+        $this->workspaces = new WorkspaceRepository($this->database);
         $this->service = new PersonalWorkspaceService(
             $this->database,
-            new WorkspaceRepository($this->database),
+            $this->workspaces,
             $users,
         );
     }
@@ -109,6 +112,67 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertCount(1, $acl);
         $this->assertSame($second, (int)$acl[0]['subject_id']);
         $this->assertTrue((bool)$acl[0]['can_manage']);
+    }
+
+    /** HR: Korisnik može sam izraditi područje samo kada je to globalno dopušteno, a postojeće područje preživi kasnije isključenje. EN: A user can create their own Workspace only when globally allowed, and the existing Workspace survives later disabling. */
+    public function testSelfCreationIsExclusiveWithAutomationAndPreservesExistingWorkspace(): void
+    {
+        $userId = $this->insertUser('self.creator');
+
+        $this->assertFalse($this->service->selfCreationEnabled());
+        $this->assertFalse($this->service->userCreationEnabled());
+        $this->service->setCreationSettings(false, true);
+
+        $this->assertFalse($this->service->automaticCreationEnabled());
+        $this->assertTrue($this->service->selfCreationEnabled());
+        $this->assertTrue($this->service->userCreationEnabled());
+        $this->assertNull($this->service->ensureAfterLogin($userId));
+
+        $created = $this->service->createOwnWorkspace($userId);
+        $this->assertFalse((bool)$created['created_automatically']);
+        $this->assertSame($userId, (int)$created['workspace']['created_by_user_id']);
+        $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
+
+        $this->service->setCreationSettings(false, false);
+        $existing = $this->service->createOwnWorkspace($userId);
+        $this->assertSame($created['workspace_id'], $existing['workspace_id']);
+        $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
+
+        $this->service->setCreationSettings(true, true);
+        $this->assertTrue($this->service->automaticCreationEnabled());
+        $this->assertFalse($this->service->selfCreationEnabled());
+        $this->assertFalse($this->service->userCreationEnabled());
+    }
+
+    /** HR: Isključena samostalna izrada i administratorsko brisanje sprječavaju izradu ili povrat obrisanog područja. EN: Disabled self-creation and administrator deletion prevent creation or resurrection of a deleted Workspace. */
+    public function testSelfCreationCannotBypassDisabledPolicyOrDeletedWorkspace(): void
+    {
+        $userId = $this->insertUser('self.disabled');
+
+        $this->service->setCreationSettings(false, false);
+        try {
+            $this->service->createOwnWorkspace($userId);
+            $this->fail('Self-creation must be rejected while disabled.');
+        } catch (RuntimeException $runtimeException) {
+            $this->assertSame('Samostalna izrada osobnog područja nije omogućena.', $runtimeException->getMessage());
+        }
+
+        $this->service->setCreationSettings(false, true);
+        $created = $this->service->createOwnWorkspace($userId);
+        $workspaceId = (int)$created['workspace_id'];
+        $this->workspaces->softDeleteWorkspace($workspaceId, $userId);
+
+        try {
+            $this->service->createOwnWorkspace($userId);
+            $this->fail('A soft-deleted personal Workspace must not be restored by its owner.');
+        } catch (RuntimeException $runtimeException) {
+            $this->assertSame(
+                'Vaše osobno područje je obrisano. Obratite se administratoru.',
+                $runtimeException->getMessage(),
+            );
+        }
+
+        $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
     }
 
     /** HR: Skupna radnja preskače deaktivirane i izričito isključene korisnike. EN: Batch provisioning skips inactive and explicitly excluded users. */

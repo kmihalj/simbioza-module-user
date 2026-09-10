@@ -12,6 +12,7 @@ declare(strict_types=1);
  * @var string $title
  * @var bool $tablesReady
  * @var bool $automaticCreationEnabled
+ * @var bool $selfCreationEnabled
  * @var list<array<string,mixed>> $users
  * @var string $savePath
  * @var string $provisionPath
@@ -45,26 +46,48 @@ $text = static fn(mixed $value): string => is_scalar($value) ? (string)$value : 
                         <?= $this->escape(__('Migracija osobnih područja nije primijenjena.')) ?>
                     </div>
                 <?php else : ?>
-                    <form method="post" action="<?= $this->escape($savePath) ?>" class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <form method="post" action="<?= $this->escape($savePath) ?>" data-personal-workspace-settings>
                         <?= $this->csrfHandler->generateCsrfTokenInputField() ?>
-                        <div class="form-check form-switch">
-                            <input type="hidden" name="enabled" value="0">
-                            <input
-                                id="personal-workspaces-auto-create"
-                                class="form-check-input"
-                                type="checkbox"
-                                name="enabled"
-                                value="1"
-                                <?= $automaticCreationEnabled ? 'checked' : '' ?>
-                            >
-                            <label class="form-check-label fw-semibold" for="personal-workspaces-auto-create">
-                                <?= $this->escape(__('Automatski izradi osobno područje pri prvoj prijavi')) ?>
-                            </label>
-                            <div class="form-text">
-                                <?= $this->escape(__('Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.')) ?>
+                        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+                            <div class="d-flex flex-column gap-3">
+                                <div class="form-check form-switch">
+                                    <input type="hidden" name="auto_create_enabled" value="0">
+                                    <input
+                                        id="personal-workspaces-auto-create"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="auto_create_enabled"
+                                        value="1"
+                                        <?= $automaticCreationEnabled ? 'checked' : '' ?>
+                                    >
+                                    <label class="form-check-label fw-semibold" for="personal-workspaces-auto-create">
+                                        <?= $this->escape(__('Automatski izradi osobno područje pri prvoj prijavi')) ?>
+                                    </label>
+                                    <div class="form-text">
+                                        <?= $this->escape(__('Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.')) ?>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input type="hidden" name="self_create_enabled" value="0">
+                                    <input
+                                        id="personal-workspaces-self-create"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="self_create_enabled"
+                                        value="1"
+                                        <?= $selfCreationEnabled ? 'checked' : '' ?>
+                                        <?= $automaticCreationEnabled ? 'disabled' : '' ?>
+                                    >
+                                    <label class="form-check-label fw-semibold" for="personal-workspaces-self-create">
+                                        <?= $this->escape(__('Omogući korisnicima izradu osobnog područja')) ?>
+                                    </label>
+                                    <div class="form-text">
+                                        <?= $this->escape(__('Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.')) ?>
+                                    </div>
+                                </div>
                             </div>
+                            <button class="btn btn-primary" type="submit"><?= $this->escape(__('Spremi')) ?></button>
                         </div>
-                        <button class="btn btn-primary" type="submit"><?= $this->escape(__('Spremi')) ?></button>
                     </form>
                 <?php endif; ?>
             </div>
@@ -167,3 +190,19 @@ $text = static fn(mixed $value): string => is_scalar($value) ? (string)$value : 
         <?php endif; ?>
     </main>
 </div>
+
+<script>
+(() => {
+    const form = document.querySelector('[data-personal-workspace-settings]');
+    const automatic = form?.querySelector('#personal-workspaces-auto-create');
+    const selfCreation = form?.querySelector('#personal-workspaces-self-create');
+    if (!(automatic instanceof HTMLInputElement) || !(selfCreation instanceof HTMLInputElement)) return;
+
+    const refresh = () => {
+        selfCreation.disabled = automatic.checked;
+        if (automatic.checked) selfCreation.checked = false;
+    };
+    automatic.addEventListener('change', refresh);
+    refresh();
+})();
+</script>

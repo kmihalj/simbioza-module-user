@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
+use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountNavigationRegistry;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use AaiEduHr\SimbiozaModuleUser\Account\PersonalWorkspaceAccountNavigationProvider;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserApiExtension;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
@@ -69,6 +71,14 @@ $services = [
                 $container->get(\HeartPhrame\Localization\TranslatorInterface::class),
             ),
 
+    PersonalWorkspaceAccountNavigationProvider::class =>
+        static fn(ContainerInterface $container): PersonalWorkspaceAccountNavigationProvider =>
+            new PersonalWorkspaceAccountNavigationProvider(
+                $container->get(PersonalWorkspaceService::class),
+                $container->get(UrlGenerator::class),
+                $container->get(\HeartPhrame\Localization\TranslatorInterface::class),
+            ),
+
     SimbiozaUserModuleViewRenderer::class =>
         static fn(ContainerInterface $container): SimbiozaUserModuleViewRenderer =>
             new SimbiozaUserModuleViewRenderer($container->get(ResponseFactory::class)),
@@ -84,6 +94,8 @@ $services = [
                 $container->get(PersonalWorkspacePresentationProvider::class),
                 $container->get(AuthAccountSectionRegistry::class),
                 $container->get(SimbiozaUserAccountSectionProvider::class),
+                $container->get(AuthAccountNavigationRegistry::class),
+                $container->get(PersonalWorkspaceAccountNavigationProvider::class),
                 $container->get(NotificationVisibilityRegistry::class),
                 $container->get(SimbiozaNotificationVisibilityProvider::class),
                 $container->get(SimbiozaUserMenuIntegration::class),
@@ -163,6 +175,7 @@ $services = [
             $container->get(AuthnHandlerInterface::class),
             $container->get(FollowService::class),
             $container->get(UserPreferenceService::class),
+            $container->get(PersonalWorkspaceService::class),
             $container->get(NotificationPreferenceService::class),
             $container->get(UrlGenerator::class),
             $container->get(AlertHandler::class),

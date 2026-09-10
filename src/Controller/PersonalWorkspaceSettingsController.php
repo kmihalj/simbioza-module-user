@@ -65,6 +65,7 @@ final readonly class PersonalWorkspaceSettingsController
             'title' => __('Osobna područja'),
             'tablesReady' => $this->personalWorkspaces->tablesReady(),
             'automaticCreationEnabled' => $this->personalWorkspaces->automaticCreationEnabled(),
+            'selfCreationEnabled' => $this->personalWorkspaces->selfCreationEnabled(),
             'users' => $users,
             'settingsMenuActiveSection' => 'simbioza-user.personal-workspaces.settings',
             'savePath' => $this->path(
@@ -86,13 +87,14 @@ final readonly class PersonalWorkspaceSettingsController
         ]);
     }
 
-    /** HR: Sprema globalni prekidač automatske izrade. EN: Saves the global automatic-creation switch. */
+    /** HR: Sprema globalna pravila automatske i korisničke izrade. EN: Saves global automatic and user-driven creation rules. */
     public function save(ServerRequestInterface $request): ResponseInterface
     {
         try {
             $body = $this->body($request);
-            $this->personalWorkspaces->setAutomaticCreationEnabled(
-                $this->checked($body['enabled'] ?? null),
+            $this->personalWorkspaces->setCreationSettings(
+                $this->checked($body['auto_create_enabled'] ?? $body['enabled'] ?? null),
+                $this->checked($body['self_create_enabled'] ?? null),
                 $this->actorUserId(),
             );
             $this->success(__('Postavke osobnih područja su spremljene.'));

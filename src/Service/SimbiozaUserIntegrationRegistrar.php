@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Service;
 
+use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountNavigationRegistry;
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
 use AaiEduHr\HeartPhrameModuleNotification\Account\NotificationAccountSectionProvider;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry;
+use AaiEduHr\SimbiozaModuleUser\Account\PersonalWorkspaceAccountNavigationProvider;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
 use AaiEduHr\SimbiozaModuleWorkspace\Contract\WorkspaceIntegrationRegistrarInterface;
@@ -26,6 +28,8 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
         private PersonalWorkspacePresentationProvider $personalWorkspacePresentation,
         private AuthAccountSectionRegistry $accountSections,
         private SimbiozaUserAccountSectionProvider $accountSection,
+        private AuthAccountNavigationRegistry $accountNavigation,
+        private PersonalWorkspaceAccountNavigationProvider $personalWorkspaceNavigation,
         private NotificationVisibilityRegistry $notificationVisibility,
         private SimbiozaNotificationVisibilityProvider $notificationVisibilityProvider,
         private SimbiozaUserMenuIntegration $menu,
@@ -39,6 +43,8 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
         $this->workspacePresentations->register($this->personalWorkspacePresentation);
         $this->accountSections->unregister(NotificationAccountSectionProvider::class);
         $this->accountSections->register($this->accountSection);
+
+        $this->accountNavigation->register($this->personalWorkspaceNavigation);
 
         $this->notificationVisibility->register($this->notificationVisibilityProvider);
         $this->menu->register();

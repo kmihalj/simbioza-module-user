@@ -200,13 +200,21 @@ return [
     'Osobna područja' => 'Personal Workspaces',
     'Osobno područje' => 'Personal Workspace',
     'Moje osobno područje' => 'My personal Workspace',
+    'Moje područje' => 'My Workspace',
+    'Izradi moje osobno područje' => 'Create my personal Workspace',
     'Otvori osobno područje' => 'Open personal Workspace',
+    'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.' =>
+        'Create a private Workspace where you can add pages and grant access to other people.',
     'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
         'Your private Workspace is visible only to you, administrators, and people you explicitly grant access to.',
     'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
         'A personal Workspace is an ordinary restricted Workspace: its owner has full permissions, and others see it only when explicitly granted access.',
     'Automatski izradi osobno područje pri prvoj prijavi' =>
         'Automatically create a personal Workspace on first sign-in',
+    'Omogući korisnicima izradu osobnog područja' =>
+        'Allow users to create a personal Workspace',
+    'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.' =>
+        'When automatic creation is disabled, a user without a personal Workspace can create one from their profile.',
     'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
         'The change applies to future sign-ins; existing users can be processed with a separate action.',
     'Postojeći korisnici' => 'Existing users',
@@ -226,7 +234,12 @@ return [
     'Postavke osobnih područja su spremljene.' => 'Personal Workspace settings were saved.',
     'Postavka korisnika je spremljena.' => 'The user setting was saved.',
     'Osobno područje je izrađeno.' => 'The personal Workspace was created.',
+    'Vaše osobno područje je izrađeno.' => 'Your personal Workspace was created.',
     'Osobno područje nije moguće izraditi.' => 'The personal Workspace cannot be created.',
+    'Samostalna izrada osobnog područja nije omogućena.' =>
+        'Creating your own personal Workspace is not enabled.',
+    'Vaše osobno područje je obrisano. Obratite se administratoru.' =>
+        'Your personal Workspace has been deleted. Contact an administrator.',
     'Osobno područje nije moguće povezati s korisnikom.' =>
         'The personal Workspace cannot be mapped to the user.',
     'Migracija osobnih područja nije primijenjena.' => 'The personal Workspace migration has not been applied.',
