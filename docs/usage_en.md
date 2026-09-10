@@ -14,16 +14,21 @@ an enforced policy rather than a visual hiding rule.
 
 ## Personal Workspaces
 
-After a successful sign-in, an eligible user receives one ordinary restricted Workspace. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user receives one direct ACL row with all six permissions: View, Add, Edit, Publish, Delete, and Manage. Administrators retain their normal system-wide access; every other user or group sees the Workspace only after the mapped user or an administrator explicitly grants ACL access. A general Workspace has no separate owner concept; a personal Workspace only adds a stable user mapping whose user automatically receives the complete ACL.
+When automatic creation is enabled, an eligible user receives one ordinary restricted Workspace after a successful sign-in. When automatic creation is disabled, an administrator may instead allow users to create it from their profile. Its stored name is the user's display name, while the profile identifies it as **My personal Workspace**. The user receives one direct ACL row with all six permissions: View, Add, Edit, Publish, Delete, and Manage. Every other user or group sees the Workspace only after an explicit ACL grant. A general Workspace has no separate owner concept; a personal Workspace only adds a stable user mapping whose user automatically receives the complete ACL.
 
 Administrators use **Settings → Workspaces → Personal Workspaces** to:
 
 - enable or disable automatic creation after first sign-in;
-- provision all eligible existing active users in one batch;
-- disable or re-enable automatic creation for an individual user;
-- manually create a missing personal Workspace.
+- enable or disable self-service profile creation while automatic creation is off;
+- view only users whose personal Workspace has already been created.
 
 Disabling creation never deletes an existing Workspace. A soft-deleted personal Workspace remains mapped and is restored through the normal deleted-Workspace screen; the system does not silently create a replacement and split the user's content. At the next successful sign-in, an idempotent check restores the user's complete ACL if the personal Workspace predates this rule.
+
+## Administrator elevation
+
+After signing in, a member of the Administrator group works with the ordinary rights received through all other groups and direct ACL grants. The administrator bypass and the Administrator group become effective only after the user chooses **Administrator** in the account menu and confirms the local password. The same switch then shows the active state and immediately disables the elevated rights when selected again.
+
+The switch is available only to a real Administrator-group member who has a local password. A direct administrator URL first sends a guest through sign-in, then sends an eligible signed-in administrator without elevated rights to the password challenge. An ordinary user remains forbidden. Elevation belongs only to the current session, is cleared on sign-in and sign-out, and becomes invalid after a local-password change. Workspace, the HTML editor, Calendar, and every other module consume the same effective authentication context and therefore honor the switch state consistently.
 
 ## Follow and unfollow
 

@@ -13,6 +13,7 @@ use AaiEduHr\HeartPhrameModuleNotification\ModuleNotification;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleTask\Event\TaskChanged;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
+use AaiEduHr\SimbiozaModuleUser\Controller\AdminElevationController;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
@@ -121,6 +122,27 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 $authenticated,
             ],
             [
+                'GET',
+                '/account/administrator',
+                AdminElevationController::class . '@form',
+                'simbioza-user.admin-elevation',
+                $authenticated,
+            ],
+            [
+                'POST',
+                '/account/administrator/enable',
+                AdminElevationController::class . '@enable',
+                'simbioza-user.admin-elevation.enable',
+                $authenticated,
+            ],
+            [
+                'POST',
+                '/account/administrator/disable',
+                AdminElevationController::class . '@disable',
+                'simbioza-user.admin-elevation.disable',
+                $authenticated,
+            ],
+            [
                 'POST',
                 '/account/following/toggle',
                 SimbiozaUserController::class . '@toggle',
@@ -167,27 +189,6 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 '/settings/personal-workspaces',
                 PersonalWorkspaceSettingsController::class . '@save',
                 'simbioza-user.personal-workspaces.settings.save',
-                $admin,
-            ],
-            [
-                'POST',
-                '/settings/personal-workspaces/provision',
-                PersonalWorkspaceSettingsController::class . '@provision',
-                'simbioza-user.personal-workspaces.provision',
-                $admin,
-            ],
-            [
-                'POST',
-                '/settings/personal-workspaces/user-policy',
-                PersonalWorkspaceSettingsController::class . '@saveUserPolicy',
-                'simbioza-user.personal-workspaces.user-policy',
-                $admin,
-            ],
-            [
-                'POST',
-                '/settings/personal-workspaces/create',
-                PersonalWorkspaceSettingsController::class . '@create',
-                'simbioza-user.personal-workspaces.create',
                 $admin,
             ],
         ];

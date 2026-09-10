@@ -101,7 +101,7 @@ $icon = static function (string $name): string {
                     <?= $this->escape(__('Moje osobno područje')) ?>
                 </h2>
                 <p class="text-body-secondary mb-0">
-                    <?= $this->escape(__('Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.')) ?>
+                    <?= $this->escape(__('Vaše privatno područje vidljivo je samo vama, administratorima s uključenim ovlastima i osobama kojima izričito dodijelite pristup.')) ?>
                 </p>
             </div>
             <a class="btn btn-secondary" href="<?= $this->escape($personalWorkspacePath) ?>">

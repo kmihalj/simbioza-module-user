@@ -54,8 +54,7 @@ final readonly class PersonalWorkspaceService
         $schema = $this->database->schema();
 
         return $schema->hasTable(ModuleSimbiozaUser::TABLE_SETTINGS)
-            && $schema->hasTable(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES)
-            && $schema->hasTable(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES);
+            && $schema->hasTable(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACES);
     }
 
     /** HR: Vraća globalno pravilo; nakon instalacije je uključeno. EN: Returns the global rule; it is enabled after installation. */
@@ -137,47 +136,6 @@ final readonly class PersonalWorkspaceService
         ));
     }
 
-    /** HR: Vraća smije li se područje automatski izraditi tom korisniku. EN: Returns whether automatic creation is allowed for this user. */
-    public function automaticCreationEnabledForUser(int $userId): bool
-    {
-        if ($userId <= 0 || !$this->tablesReady()) {
-            return false;
-        }
-
-        $row = $this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES)
-            ->where('user_id', '=', $userId)
-            ->first();
-
-        return !is_array($row) || $this->boolValue($row['auto_create_enabled'] ?? true);
-    }
-
-    /** HR: Sprema korisničku iznimku koju smije uređivati samo administratorski adapter. EN: Saves a per-user exception edited only by the administrator adapter. */
-    public function setAutomaticCreationForUser(int $userId, bool $enabled, int $actorUserId): void
-    {
-        $this->assertReady();
-        if (!is_array($this->users->findByIdIncludingInactive($userId))) {
-            throw new RuntimeException(__('Korisnik nije pronađen.'));
-        }
-
-        $now = date('Y-m-d H:i:s');
-        $this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES)->upsert(
-            [[
-                'user_id' => $userId,
-                'auto_create_enabled' => $enabled,
-                'updated_by_user_id' => $actorUserId > 0 ? $actorUserId : null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]],
-            ['user_id'],
-            ['auto_create_enabled', 'updated_by_user_id', 'updated_at'],
-        );
-        $this->dispatch(new PersonalWorkspaceChanged(
-            $actorUserId,
-            $userId,
-            $enabled ? 'user_automatic_creation_enabled' : 'user_automatic_creation_disabled',
-        ));
-    }
-
     /**
      * HR: Nakon uspješne prijave izrađuje područje samo kada oba pravila to dopuštaju.
      * EN: Creates the space after successful sign-in only when both policies allow it.
@@ -193,10 +151,7 @@ final readonly class PersonalWorkspaceService
             return $mapped;
         }
 
-        if (
-            !$this->automaticCreationEnabled()
-            || !$this->automaticCreationEnabledForUser($userId)
-        ) {
+        if (!$this->automaticCreationEnabled()) {
             return null;
         }
 
@@ -378,45 +333,6 @@ final readonly class PersonalWorkspaceService
     }
 
     /**
-     * HR: Izrađuje osobna područja aktivnim postojećim korisnicima koji nisu isključeni.
-     * EN: Creates personal Workspaces for active existing users who are not excluded.
-     *
-     * @return array{created:int,existing:int,disabled:int,failed:int}
-     */
-    public function provisionExistingUsers(int $actorUserId): array
-    {
-        $result = ['created' => 0, 'existing' => 0, 'disabled' => 0, 'failed' => 0];
-        foreach ($this->activeUsers() as $user) {
-            $userId = is_numeric($user['id'] ?? null) ? (int)$user['id'] : 0;
-            if ($userId <= 0) {
-                continue;
-            }
-
-            $mapped = $this->forUser($userId);
-            if (is_array($mapped)) {
-                $this->grantAllPermissions($mapped, $userId);
-                ++$result['existing'];
-                continue;
-            }
-
-            if (!$this->automaticCreationEnabledForUser($userId)) {
-                ++$result['disabled'];
-                continue;
-            }
-
-            try {
-                is_array($this->ensureForUser($userId, $actorUserId, false))
-                    ? ++$result['created']
-                    : ++$result['failed'];
-            } catch (Throwable) {
-                ++$result['failed'];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * HR: Sastavlja administratorski pregled bez upita po retku.
      * EN: Builds the administrator overview without per-row queries.
      *
@@ -433,15 +349,6 @@ final readonly class PersonalWorkspaceService
             }
         }
 
-        $policies = [];
-        if ($this->tablesReady()) {
-            foreach ($this->database->table(ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES)->get() as $row) {
-                if (is_array($row) && is_numeric($row['user_id'] ?? null)) {
-                    $policies[(int)$row['user_id']] = $this->boolValue($row['auto_create_enabled'] ?? true);
-                }
-            }
-        }
-
         $workspaceRows = [...$this->workspaces->activeWorkspaces(), ...$this->workspaces->deletedWorkspaces()];
         $workspaceById = [];
         foreach ($workspaceRows as $workspace) {
@@ -451,20 +358,23 @@ final readonly class PersonalWorkspaceService
         }
 
         $rows = [];
-        foreach ($this->activeUsers() as $user) {
+        foreach ($this->users->listUsersForSetup() as $user) {
             $userId = is_numeric($user['id'] ?? null) ? (int)$user['id'] : 0;
-            if ($userId <= 0) {
+            if ($userId <= 0 || !isset($mappings[$userId])) {
                 continue;
             }
 
-            $mapping = $mappings[$userId] ?? null;
-            $workspaceId = is_array($mapping) && is_numeric($mapping['workspace_id'] ?? null)
+            $mapping = $mappings[$userId];
+            $workspaceId = is_numeric($mapping['workspace_id'] ?? null)
                 ? (int)$mapping['workspace_id']
                 : 0;
+            if (!isset($workspaceById[$workspaceId])) {
+                continue;
+            }
+
             $rows[] = [
                 ...$user,
-                'auto_create_enabled' => $policies[$userId] ?? true,
-                'personal_workspace' => $workspaceById[$workspaceId] ?? null,
+                'personal_workspace' => $workspaceById[$workspaceId],
                 'personal_workspace_mapping' => $mapping,
             ];
         }
@@ -572,20 +482,6 @@ final readonly class PersonalWorkspaceService
         }
 
         return $owners;
-    }
-
-    /**
-     * HR: Vraća aktivne Auth korisnike pogodne za izradu područja.
-     * EN: Returns active Auth users eligible for space provisioning.
-     *
-     * @return list<array<string,mixed>>
-     */
-    private function activeUsers(): array
-    {
-        return array_values(array_filter(
-            $this->users->listUsersForSetup(),
-            fn(mixed $user): bool => is_array($user) && $this->boolValue($user['is_active'] ?? false),
-        ));
     }
 
     /**

@@ -26,6 +26,7 @@ final class ModuleSimbiozaUser
 
     public const TABLE_PERSONAL_WORKSPACES = 'simbioza_user_personal_workspaces';
 
+    /** @deprecated Zadržano samo radi povratne kompatibilnosti već objavljenih migracija. */
     public const TABLE_PERSONAL_WORKSPACE_POLICIES = 'simbioza_user_personal_workspace_policies';
 
     /** HR: Statički katalog nije moguće instancirati. EN: The static catalog cannot be instantiated. */

@@ -90,24 +90,20 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACE_ACL));
     }
 
-    /** HR: Globalno i korisničko isključenje zaustavljaju samo automatsku izradu. EN: Global and per-user exclusions stop automatic creation only. */
-    public function testAdministratorPoliciesControlAutomaticCreation(): void
+    /** HR: Globalna postavka jedina upravlja automatskom izradom. EN: The global setting alone controls automatic creation. */
+    public function testGlobalSettingControlsAutomaticCreation(): void
     {
         $first = $this->insertUser('disabled.global');
         $this->service->setAutomaticCreationEnabled(false);
         $this->assertNull($this->service->ensureAfterLogin($first));
 
-        $second = $this->insertUser('disabled.user');
+        $second = $this->insertUser('enabled.global');
         $this->service->setAutomaticCreationEnabled(true);
-        $this->service->setAutomaticCreationForUser($second, false, $first);
-        $this->assertNull($this->service->ensureAfterLogin($second));
-
-        $manuallyCreated = $this->service->ensureForUser($second, $first, false);
-        $this->assertIsArray($manuallyCreated);
-        $this->assertFalse((bool)$manuallyCreated['created_automatically']);
-        $this->assertSame($first, (int)$manuallyCreated['workspace']['created_by_user_id']);
+        $automaticallyCreated = $this->service->ensureAfterLogin($second);
+        $this->assertIsArray($automaticallyCreated);
+        $this->assertTrue((bool)$automaticallyCreated['created_automatically']);
         $acl = $this->database->table(ModuleWorkspace::TABLE_WORKSPACE_ACL)
-            ->where('workspace_id', '=', (int)$manuallyCreated['workspace_id'])
+            ->where('workspace_id', '=', (int)$automaticallyCreated['workspace_id'])
             ->get();
         $this->assertCount(1, $acl);
         $this->assertSame($second, (int)$acl[0]['subject_id']);
@@ -175,24 +171,24 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
     }
 
-    /** HR: Skupna radnja preskače deaktivirane i izričito isključene korisnike. EN: Batch provisioning skips inactive and explicitly excluded users. */
-    public function testExistingUserProvisioningReportsEveryOutcome(): void
+    /** HR: Admin pregled sadrži samo korisnike s izrađenim osobnim područjem. EN: Admin overview contains only users with a created personal Workspace. */
+    public function testAdministrationRowsContainOnlyCreatedPersonalWorkspaces(): void
     {
-        $admin = $this->insertUser('admin');
-        $enabled = $this->insertUser('enabled');
-        $disabled = $this->insertUser('disabled');
-        $this->insertUser('inactive', false);
-        $this->service->ensureForUser($admin, $admin, false);
-        $this->service->setAutomaticCreationForUser($disabled, false, $admin);
+        $first = $this->insertUser('created.active');
+        $second = $this->insertUser('not.created');
+        $third = $this->insertUser('created.inactive');
+        $this->service->ensureForUser($first, $first, false);
+        $this->service->ensureForUser($third, $third, true);
+        $this->database->table(ModuleAuth::TABLE_AUTH_USERS)
+            ->where('id', '=', $third)
+            ->update(['is_active' => false]);
 
-        $result = $this->service->provisionExistingUsers($admin);
+        $rows = $this->service->administrationRows();
 
-        $this->assertSame(1, $result['created']);
-        $this->assertSame(1, $result['existing']);
-        $this->assertSame(1, $result['disabled']);
-        $this->assertSame(0, $result['failed']);
-        $this->assertIsArray($this->service->forUser($enabled));
-        $this->assertNull($this->service->forUser($disabled));
+        $this->assertSame([$first, $third], array_column($rows, 'id'));
+        $this->assertNotContains($second, array_column($rows, 'id'));
+        $this->assertIsArray($rows[0]['personal_workspace']);
+        $this->assertIsArray($rows[1]['personal_workspace']);
     }
 
     /** HR: Generirani naziv i opis prate jezik sučelja bez promjene baze. EN: Generated name and description follow the UI locale without changing the database. */

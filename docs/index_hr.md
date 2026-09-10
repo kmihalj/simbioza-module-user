@@ -12,7 +12,7 @@ Engleska dokumentacija dostupna je u [index_en.md](index_en.md).
 
 ## Vlasništvo podataka
 
-Modul posjeduje sedam prenosivih tablica:
+Modul posjeduje šest aktivnih prenosivih tablica:
 
 - `simbioza_user_preferences`: jedno zadano pravilo dostave po korisniku;
 - `simbioza_user_follows`: trajna polimorfna praćenja;
@@ -20,6 +20,9 @@ Modul posjeduje sedam prenosivih tablica:
 - `simbioza_user_pending_deliveries`: privremeni red dnevnog sažetka.
 - `simbioza_user_settings`: administratorske postavke izrade;
 - `simbioza_user_personal_workspaces`: stabilno mapiranje korisnika na njegovo osobno Workspace područje;
-- `simbioza_user_personal_workspace_policies`: korisničke iznimke automatske izrade.
+
+Starija tablica `simbioza_user_personal_workspace_policies` može ostati u već
+nadograđenoj instalaciji radi kompatibilnosti migracija, ali se više ne čita niti zapisuje.
+Automatsku izradu određuje samo globalna postavka.
 
 Tekst obavijesti sprema generički Notification modul. E-poruke se predaju opcionalnom E-mail modulu. Red sažetka je operativno stanje te se ne izlaže kao sadržaj znanja i ne arhivira u backupu.

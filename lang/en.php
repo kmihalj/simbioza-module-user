@@ -205,8 +205,8 @@ return [
     'Otvori osobno područje' => 'Open personal Workspace',
     'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.' =>
         'Create a private Workspace where you can add pages and grant access to other people.',
-    'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
-        'Your private Workspace is visible only to you, administrators, and people you explicitly grant access to.',
+    'Vaše privatno područje vidljivo je samo vama, administratorima s uključenim ovlastima i osobama kojima izričito dodijelite pristup.' =>
+        'Your private Workspace is visible only to you, administrators with elevated rights, and people you explicitly grant access to.',
     'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
         'A personal Workspace is an ordinary restricted Workspace: its owner has full permissions, and others see it only when explicitly granted access.',
     'Automatski izradi osobno područje pri prvoj prijavi' =>
@@ -215,25 +215,17 @@ return [
         'Allow users to create a personal Workspace',
     'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.' =>
         'When automatic creation is disabled, a user without a personal Workspace can create one from their profile.',
-    'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
-        'The change applies to future sign-ins; existing users can be processed with a separate action.',
-    'Postojeći korisnici' => 'Existing users',
+    'Promjena vrijedi pri sljedećim prijavama; već izrađena osobna područja ostaju nepromijenjena.' =>
+        'The change applies on subsequent sign-ins; existing personal Workspaces remain unchanged.',
+    'Izrađena osobna područja' => 'Created personal Workspaces',
+    'Pregled korisnika kojima je osobno područje već izrađeno automatski ili iz njihovog profila.' =>
+        'Users whose personal Workspace was already created automatically or from their profile.',
     'Korisnik' => 'User',
-    'Radnje' => 'Actions',
     'Spremi' => 'Save',
-    'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.' =>
-        'The mapping is separate from ownership, so the same user may own other ordinary Workspaces.',
-    'Izradi osobna područja postojećim korisnicima' => 'Create personal Workspaces for existing users',
-    'Automatska izrada' => 'Automatic creation',
-    'Dopusti automatsku izradu' => 'Allow automatic creation',
-    'Nije izrađeno' => 'Not created',
-    'Izradi sada' => 'Create now',
     'Obrisano — moguće ga je vratiti u postavkama područja' =>
         'Deleted — it can be restored in Workspace settings',
-    'Nema aktivnih korisnika.' => 'There are no active users.',
+    'Nema izrađenih osobnih područja.' => 'There are no created personal Workspaces.',
     'Postavke osobnih područja su spremljene.' => 'Personal Workspace settings were saved.',
-    'Postavka korisnika je spremljena.' => 'The user setting was saved.',
-    'Osobno područje je izrađeno.' => 'The personal Workspace was created.',
     'Vaše osobno područje je izrađeno.' => 'Your personal Workspace was created.',
     'Osobno područje nije moguće izraditi.' => 'The personal Workspace cannot be created.',
     'Samostalna izrada osobnog područja nije omogućena.' =>
@@ -245,6 +237,24 @@ return [
     'Migracija osobnih područja nije primijenjena.' => 'The personal Workspace migration has not been applied.',
     'Korisnik nije pronađen.' => 'The user was not found.',
     'Prijavljeni administrator nije pronađen.' => 'The signed-in administrator was not found.',
+    'Administrator' => 'Administrator',
+    'Administratorske ovlasti' => 'Administrator rights',
+    'Administratorske ovlasti su uključene.' => 'Administrator rights were enabled.',
+    'Administratorske ovlasti su isključene.' => 'Administrator rights were disabled.',
+    'Administratorske ovlasti možete uključiti tek nakon postavljanja lokalne lozinke.' =>
+        'You can enable administrator rights only after setting a local password.',
+    'Prije korištenja administratorskih ovlasti morate postaviti lokalnu lozinku.' =>
+        'You must set a local password before using administrator rights.',
+    'Za privremeno uključivanje administratorskih ovlasti potvrdite svoju lokalnu lozinku.' =>
+        'Confirm your local password to temporarily enable administrator rights.',
+    'Lokalna lozinka' => 'Local password',
+    'Lokalna lozinka nije ispravna.' => 'The local password is incorrect.',
+    'Uključi administratorske ovlasti' => 'Enable administrator rights',
+    'Previše neuspjelih pokušaja. Pričekajte pet minuta i pokušajte ponovno.' =>
+        'Too many failed attempts. Wait five minutes and try again.',
+    'Nemate ovlasti za pristup traženom sadržaju.' => 'You do not have permission to access the requested content.',
+    'Odustani' => 'Cancel',
+    'Povratak' => 'Back',
     'Korisnik %d' => 'User %d',
     'Područje od: %s' => 'Workspace of: %s',
     'Osobno područje korisnika %s.' => 'Personal Workspace of user %s.',

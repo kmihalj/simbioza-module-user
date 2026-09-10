@@ -38,7 +38,7 @@ final readonly class PersonalWorkspaceSettingsController
     ) {
     }
 
-    /** HR: Prikazuje globalno pravilo, iznimke i stanje svih aktivnih korisnika. EN: Displays the global rule, exceptions, and all active-user statuses. */
+    /** HR: Prikazuje globalna pravila i pregled izrađenih osobnih područja. EN: Displays global rules and the created personal-Workspace overview. */
     public function index(): ResponseInterface
     {
         $users = $this->personalWorkspaces->tablesReady()
@@ -72,18 +72,6 @@ final readonly class PersonalWorkspaceSettingsController
                 'simbioza-user.personal-workspaces.settings.save',
                 '/settings/personal-workspaces',
             ),
-            'provisionPath' => $this->path(
-                'simbioza-user.personal-workspaces.provision',
-                '/settings/personal-workspaces/provision',
-            ),
-            'userPolicyPath' => $this->path(
-                'simbioza-user.personal-workspaces.user-policy',
-                '/settings/personal-workspaces/user-policy',
-            ),
-            'createPath' => $this->path(
-                'simbioza-user.personal-workspaces.create',
-                '/settings/personal-workspaces/create',
-            ),
         ]);
     }
 
@@ -98,66 +86,6 @@ final readonly class PersonalWorkspaceSettingsController
                 $this->actorUserId(),
             );
             $this->success(__('Postavke osobnih područja su spremljene.'));
-        } catch (Throwable $throwable) {
-            $this->danger($throwable->getMessage());
-        }
-
-        return $this->redirect();
-    }
-
-    /** HR: Izrađuje nedostajuća područja svim dopuštenim aktivnim korisnicima. EN: Creates missing spaces for all eligible active users. */
-    public function provision(): ResponseInterface
-    {
-        try {
-            $result = $this->personalWorkspaces->provisionExistingUsers($this->actorUserId());
-            $this->success(sprintf(
-                __('Izrađeno: %1$d; već postoji: %2$d; isključeno: %3$d; neuspjelo: %4$d.'),
-                $result['created'],
-                $result['existing'],
-                $result['disabled'],
-                $result['failed'],
-            ));
-        } catch (Throwable $throwable) {
-            $this->danger($throwable->getMessage());
-        }
-
-        return $this->redirect();
-    }
-
-    /** HR: Sprema iznimku automatske izrade jednog korisnika. EN: Saves one user's automatic-creation exception. */
-    public function saveUserPolicy(ServerRequestInterface $request): ResponseInterface
-    {
-        try {
-            $body = $this->body($request);
-            $userId = $this->positiveInt($body['user_id'] ?? null);
-            $this->personalWorkspaces->setAutomaticCreationForUser(
-                $userId,
-                $this->checked($body['enabled'] ?? null),
-                $this->actorUserId(),
-            );
-            $this->success(__('Postavka korisnika je spremljena.'));
-        } catch (Throwable $throwable) {
-            $this->danger($throwable->getMessage());
-        }
-
-        return $this->redirect();
-    }
-
-    /** HR: Ručno izrađuje osobno područje jednog aktivnog korisnika. EN: Manually creates one active user's personal Workspace. */
-    public function create(ServerRequestInterface $request): ResponseInterface
-    {
-        try {
-            $body = $this->body($request);
-            $created = $this->personalWorkspaces->ensureForUser(
-                $this->positiveInt($body['user_id'] ?? null),
-                $this->actorUserId(),
-                false,
-            );
-            if (!is_array($created)) {
-                throw new \RuntimeException(__('Osobno područje nije moguće izraditi.'));
-            }
-
-            $this->success(__('Osobno područje je izrađeno.'));
         } catch (Throwable $throwable) {
             $this->danger($throwable->getMessage());
         }
@@ -195,17 +123,6 @@ final readonly class PersonalWorkspaceSettingsController
         $id = is_array($user) && is_numeric($user['id'] ?? null) ? (int)$user['id'] : 0;
         if ($id <= 0) {
             throw new \RuntimeException(__('Prijavljeni administrator nije pronađen.'));
-        }
-
-        return $id;
-    }
-
-    /** HR: Validira pozitivan ID iz forme. EN: Validates a positive form ID. */
-    private function positiveInt(mixed $value): int
-    {
-        $id = is_numeric($value) ? (int)$value : 0;
-        if ($id <= 0) {
-            throw new \RuntimeException(__('Korisnik nije pronađen.'));
         }
 
         return $id;

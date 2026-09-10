@@ -14,16 +14,21 @@ kontrole nego provedena globalna politika.
 
 ## Osobna područja
 
-Nakon uspješne prijave dopušteni korisnik dobiva jedno obično ograničeno Workspace područje. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik dobiva izravni ACL redak sa svih šest prava: pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Administratori zadržavaju uobičajeni sistemski pristup, a svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava. Opći Workspace nema poseban koncept vlasnika; osobno područje samo ima stabilno mapiranje na korisnika kojemu sustav automatski osigurava sva prava.
+Kada je uključena automatska izrada, dopušteni korisnik nakon uspješne prijave dobiva jedno obično ograničeno Workspace područje. Ako je automatska izrada isključena, administrator može omogućiti korisnicima da ga sami izrade iz profila. U bazi nosi prikazno ime korisnika, a profil ga označava kao **Moje osobno područje**. Korisnik dobiva izravni ACL redak sa svih šest prava: pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Svaki drugi korisnik ili grupa vidi područje tek nakon izričite dodjele ACL prava. Opći Workspace nema poseban koncept vlasnika; osobno područje samo ima stabilno mapiranje na korisnika kojemu sustav automatski osigurava sva prava.
 
 Administrator pod **Postavke → Područja → Osobna područja** može:
 
 - uključiti ili isključiti automatsku izradu nakon prve prijave;
-- skupno izraditi područja svim dopuštenim postojećim aktivnim korisnicima;
-- isključiti ili ponovno uključiti automatsku izradu pojedinom korisniku;
-- ručno izraditi osobno područje koje nedostaje.
+- kada je automatika isključena, uključiti ili isključiti samostalnu izradu iz profila;
+- pregledati samo korisnike kojima je osobno područje već izrađeno.
 
 Isključivanje izrade nikada ne briše postojeće područje. Soft-obrisano osobno područje ostaje mapirano i vraća se kroz uobičajeni pregled obrisanih područja; sustav neće potajno izraditi zamjensko područje i razdvojiti korisnikov sadržaj. Pri sljedećoj uspješnoj prijavi idempotentna provjera obnavlja puni korisnički ACL ako je osobno područje nastalo prije tog pravila.
+
+## Administratorske ovlasti
+
+Član grupe Administrator nakon prijave radi s istim pravima koja ima kao običan korisnik kroz svoje ostale grupe i izravne ACL dodjele. Administratorski zaobilaz prava i grupa Administrator postaju efektivni tek kada u korisničkom izborniku odabere **Administrator** i potvrdi lokalnu lozinku. Isti prekidač tada pokazuje uključeno stanje i omogućuje trenutno isključivanje ovlasti.
+
+Prekidač se prikazuje samo stvarnom članu grupe Administrator koji ima postavljenu lokalnu lozinku. Izravna administratorska poveznica gosta prvo vodi na prijavu, a prijavljenog podobnog administratora bez aktivnih ovlasti na potvrdu lozinke. Običnom korisniku pristup ostaje zabranjen. Aktivacija vrijedi samo u trenutačnoj sesiji, uklanja se pri prijavi i odjavi te prestaje vrijediti nakon promjene lokalne lozinke. Workspace, HTML editor, Calendar i ostali moduli koriste isti efektivni auth kontekst, pa svugdje poštuju stanje prekidača.
 
 ## Početak i prestanak praćenja
 

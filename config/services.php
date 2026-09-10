@@ -2,20 +2,27 @@
 
 declare(strict_types=1);
 
-use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
 use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountNavigationRegistry;
+use AaiEduHr\HeartPhrameModuleAuth\Account\AuthAccountSectionRegistry;
+use AaiEduHr\HeartPhrameModuleAuth\Auth\AuthUserContextRegistry;
+use AaiEduHr\HeartPhrameModuleAuth\Middleware\RequireAdminOrBootstrapMiddleware;
+use AaiEduHr\HeartPhrameModuleAuth\Service\AuthAuditLogService;
+use AaiEduHr\HeartPhrameModuleAuth\Service\AuthModuleViewRenderer;
+use AaiEduHr\HeartPhrameModuleAuth\Service\AuthSettingsService;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleEditorHtml\Service\EditorPublishedVersionProviderInterface;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationPreferenceService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationService;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationVisibilityRegistry;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use AaiEduHr\SimbiozaModuleUser\Account\AdminElevationAccountNavigationProvider;
 use AaiEduHr\SimbiozaModuleUser\Account\PersonalWorkspaceAccountNavigationProvider;
 use AaiEduHr\SimbiozaModuleUser\Account\SimbiozaUserAccountSectionProvider;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserApiExtension;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
 use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
+use AaiEduHr\SimbiozaModuleUser\Controller\AdminElevationController;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
@@ -25,7 +32,10 @@ use AaiEduHr\SimbiozaModuleUser\Listener\CreatePersonalWorkspaceAfterLogin;
 use AaiEduHr\SimbiozaModuleUser\Listener\PurgeWorkspaceUserData;
 use AaiEduHr\SimbiozaModuleUser\Listener\TaskFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\WorkspaceFollowActivityListener;
+use AaiEduHr\SimbiozaModuleUser\Middleware\SimbiozaRequireAdminMiddleware;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
+use AaiEduHr\SimbiozaModuleUser\Security\SimbiozaAdminContextDecorator;
+use AaiEduHr\SimbiozaModuleUser\Security\SimbiozaAdminElevationService;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
 use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowDeliveryService;
@@ -54,6 +64,51 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 $services = [
+    SimbiozaAdminElevationService::class =>
+        static fn(ContainerInterface $container): SimbiozaAdminElevationService =>
+            new SimbiozaAdminElevationService(
+                $container->get(\HeartPhrame\Session\SessionInterface::class),
+                $container->get(AuthUserService::class),
+                $container->has(AuthAuditLogService::class) ? $container->get(AuthAuditLogService::class) : null,
+            ),
+
+    SimbiozaAdminContextDecorator::class =>
+        static fn(ContainerInterface $container): SimbiozaAdminContextDecorator =>
+            new SimbiozaAdminContextDecorator($container->get(SimbiozaAdminElevationService::class)),
+
+    RequireAdminOrBootstrapMiddleware::class => static function (
+        ContainerInterface $container,
+    ): SimbiozaRequireAdminMiddleware {
+        $fallback = new RequireAdminOrBootstrapMiddleware(
+            $container->get(AuthnHandlerInterface::class),
+            $container->get(AuthSettingsService::class),
+            $container->get(AuthUserService::class),
+            $container->get(ResponseFactory::class),
+            $container->get(AuthModuleViewRenderer::class),
+            $container->get(UrlGenerator::class),
+            $container->get(LoggerInterface::class),
+        );
+
+        return new SimbiozaRequireAdminMiddleware(
+            $container->get(AuthnHandlerInterface::class),
+            $container->get(SimbiozaAdminElevationService::class),
+            $container->get(AuthSettingsService::class),
+            $container->get(AuthUserService::class),
+            $fallback,
+            $container->get(SimbiozaUserModuleViewRenderer::class),
+            $container->get(ResponseFactory::class),
+            $container->get(UrlGenerator::class),
+        );
+    },
+
+    AdminElevationAccountNavigationProvider::class =>
+        static fn(ContainerInterface $container): AdminElevationAccountNavigationProvider =>
+            new AdminElevationAccountNavigationProvider(
+                $container->get(SimbiozaAdminElevationService::class),
+                $container->get(UrlGenerator::class),
+                $container->get(\HeartPhrame\Localization\TranslatorInterface::class),
+            ),
+
     PurgeWorkspaceUserData::class => static fn(ContainerInterface $container): PurgeWorkspaceUserData =>
         new PurgeWorkspaceUserData($container->get(Database::class)),
     PersonalWorkspaceService::class => static fn(ContainerInterface $container): PersonalWorkspaceService =>
@@ -96,6 +151,9 @@ $services = [
                 $container->get(SimbiozaUserAccountSectionProvider::class),
                 $container->get(AuthAccountNavigationRegistry::class),
                 $container->get(PersonalWorkspaceAccountNavigationProvider::class),
+                $container->get(AdminElevationAccountNavigationProvider::class),
+                $container->get(AuthUserContextRegistry::class),
+                $container->get(SimbiozaAdminContextDecorator::class),
                 $container->get(NotificationVisibilityRegistry::class),
                 $container->get(SimbiozaNotificationVisibilityProvider::class),
                 $container->get(SimbiozaUserMenuIntegration::class),
@@ -113,6 +171,16 @@ $services = [
                 $container->get(AlertHandler::class),
                 $container->get(WorkspacePresentationRegistry::class),
             ),
+
+    AdminElevationController::class => static fn(ContainerInterface $container): AdminElevationController =>
+        new AdminElevationController(
+            $container->get(ResponseFactory::class),
+            $container->get(SimbiozaUserModuleViewRenderer::class),
+            $container->get(AuthnHandlerInterface::class),
+            $container->get(SimbiozaAdminElevationService::class),
+            $container->get(UrlGenerator::class),
+            $container->get(AlertHandler::class),
+        ),
 
     CreatePersonalWorkspaceAfterLogin::class =>
         static fn(ContainerInterface $container): CreatePersonalWorkspaceAfterLogin =>
@@ -380,22 +448,6 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\DatabaseTableBackupPr
                                 ],
                                 'passthrough' => ['task_list'],
                                 'skip_if_missing' => true,
-                            ],
-                        ],
-                    ],
-                    [
-                        'dataset' => 'personal-workspace-policies',
-                        'table' => \AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser::TABLE_PERSONAL_WORKSPACE_POLICIES,
-                        'primary_key' => 'id',
-                        'conflict_keys' => ['user_id'],
-                        'preserve_primary_key' => false,
-                        'foreign_keys' => [
-                            ['column' => 'user_id', 'namespace' => 'auth.user', 'skip_if_missing' => true],
-                            [
-                                'column' => 'updated_by_user_id',
-                                'namespace' => 'auth.user',
-                                'nullable' => true,
-                                'defer' => true,
                             ],
                         ],
                     ],

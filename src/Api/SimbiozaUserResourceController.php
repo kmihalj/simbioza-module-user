@@ -200,8 +200,7 @@ final readonly class SimbiozaUserResourceController
             return [
                 'exists' => is_array($workspace),
                 'deleted' => (bool)($mapping['is_deleted'] ?? false),
-                'automatic_creation_enabled' => $this->personalWorkspaces->automaticCreationEnabled()
-                    && $this->personalWorkspaces->automaticCreationEnabledForUser($userId),
+                'automatic_creation_enabled' => $this->personalWorkspaces->automaticCreationEnabled(),
                 'self_creation_enabled' => $this->personalWorkspaces->userCreationEnabled(),
                 'can_create' => !is_array($mapping) && $this->personalWorkspaces->userCreationEnabled(),
                 'workspace' => is_array($workspace) ? [

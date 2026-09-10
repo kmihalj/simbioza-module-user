@@ -211,8 +211,8 @@ return [
     'Otvori osobno područje' => 'Otvori osobno područje',
     'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.' =>
         'Izradite privatno područje u kojem možete stvarati stranice i sami dodjeljivati pristup drugim osobama.',
-    'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.' =>
-        'Vaše privatno područje vidljivo je samo vama, administratorima i osobama kojima izričito dodijelite pristup.',
+    'Vaše privatno područje vidljivo je samo vama, administratorima s uključenim ovlastima i osobama kojima izričito dodijelite pristup.' =>
+        'Vaše privatno područje vidljivo je samo vama, administratorima s uključenim ovlastima i osobama kojima izričito dodijelite pristup.',
     'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.' =>
         'Osobno područje je obično ograničeno područje: vlasnik ima sva prava, a drugi ga vide samo kada im se izričito dodijeli pristup.',
     'Automatski izradi osobno područje pri prvoj prijavi' =>
@@ -221,25 +221,17 @@ return [
         'Omogući korisnicima izradu osobnog područja',
     'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.' =>
         'Kada automatska izrada nije uključena, korisnik bez osobnog područja može ga izraditi u svojem profilu.',
-    'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.' =>
-        'Promjena vrijedi za buduće prijave; postojeće korisnike možete obraditi zasebnom radnjom.',
-    'Postojeći korisnici' => 'Postojeći korisnici',
+    'Promjena vrijedi pri sljedećim prijavama; već izrađena osobna područja ostaju nepromijenjena.' =>
+        'Promjena vrijedi pri sljedećim prijavama; već izrađena osobna područja ostaju nepromijenjena.',
+    'Izrađena osobna područja' => 'Izrađena osobna područja',
+    'Pregled korisnika kojima je osobno područje već izrađeno automatski ili iz njihovog profila.' =>
+        'Pregled korisnika kojima je osobno područje već izrađeno automatski ili iz njihovog profila.',
     'Korisnik' => 'Korisnik',
-    'Radnje' => 'Radnje',
     'Spremi' => 'Spremi',
-    'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.' =>
-        'Mapiranje je odvojeno od vlasništva pa isti korisnik smije posjedovati i druga obična područja.',
-    'Izradi osobna područja postojećim korisnicima' => 'Izradi osobna područja postojećim korisnicima',
-    'Automatska izrada' => 'Automatska izrada',
-    'Dopusti automatsku izradu' => 'Dopusti automatsku izradu',
-    'Nije izrađeno' => 'Nije izrađeno',
-    'Izradi sada' => 'Izradi sada',
     'Obrisano — moguće ga je vratiti u postavkama područja' =>
         'Obrisano — moguće ga je vratiti u postavkama područja',
-    'Nema aktivnih korisnika.' => 'Nema aktivnih korisnika.',
+    'Nema izrađenih osobnih područja.' => 'Nema izrađenih osobnih područja.',
     'Postavke osobnih područja su spremljene.' => 'Postavke osobnih područja su spremljene.',
-    'Postavka korisnika je spremljena.' => 'Postavka korisnika je spremljena.',
-    'Osobno područje je izrađeno.' => 'Osobno područje je izrađeno.',
     'Vaše osobno područje je izrađeno.' => 'Vaše osobno područje je izrađeno.',
     'Osobno područje nije moguće izraditi.' => 'Osobno područje nije moguće izraditi.',
     'Samostalna izrada osobnog područja nije omogućena.' =>
@@ -251,6 +243,24 @@ return [
     'Migracija osobnih područja nije primijenjena.' => 'Migracija osobnih područja nije primijenjena.',
     'Korisnik nije pronađen.' => 'Korisnik nije pronađen.',
     'Prijavljeni administrator nije pronađen.' => 'Prijavljeni administrator nije pronađen.',
+    'Administrator' => 'Administrator',
+    'Administratorske ovlasti' => 'Administratorske ovlasti',
+    'Administratorske ovlasti su uključene.' => 'Administratorske ovlasti su uključene.',
+    'Administratorske ovlasti su isključene.' => 'Administratorske ovlasti su isključene.',
+    'Administratorske ovlasti možete uključiti tek nakon postavljanja lokalne lozinke.' =>
+        'Administratorske ovlasti možete uključiti tek nakon postavljanja lokalne lozinke.',
+    'Prije korištenja administratorskih ovlasti morate postaviti lokalnu lozinku.' =>
+        'Prije korištenja administratorskih ovlasti morate postaviti lokalnu lozinku.',
+    'Za privremeno uključivanje administratorskih ovlasti potvrdite svoju lokalnu lozinku.' =>
+        'Za privremeno uključivanje administratorskih ovlasti potvrdite svoju lokalnu lozinku.',
+    'Lokalna lozinka' => 'Lokalna lozinka',
+    'Lokalna lozinka nije ispravna.' => 'Lokalna lozinka nije ispravna.',
+    'Uključi administratorske ovlasti' => 'Uključi administratorske ovlasti',
+    'Previše neuspjelih pokušaja. Pričekajte pet minuta i pokušajte ponovno.' =>
+        'Previše neuspjelih pokušaja. Pričekajte pet minuta i pokušajte ponovno.',
+    'Nemate ovlasti za pristup traženom sadržaju.' => 'Nemate ovlasti za pristup traženom sadržaju.',
+    'Odustani' => 'Odustani',
+    'Povratak' => 'Povratak',
     'Korisnik %d' => 'Korisnik %d',
     'Područje od: %s' => 'Područje od: %s',
     'Osobno područje korisnika %s.' => 'Osobno područje korisnika %s.',
