@@ -108,6 +108,43 @@ final class SimbiozaAdminElevationService
         return $this->isAdministratorMember($userId) && $this->hasLocalPassword($userId);
     }
 
+    /**
+     * HR: Uspješna lokalna prijava već je potvrdila istu vjerodajnicu pa
+     *     administratora možemo elevatirati bez ponovnog traženja lozinke.
+     *     Privremena lozinka prvo se mora promijeniti.
+     * EN: A successful local sign-in already verified the same credential, so
+     *     an administrator can be elevated without another password prompt.
+     *     A temporary password must be changed first.
+     */
+    public function activateAfterVerifiedLocalLogin(int $userId): bool
+    {
+        $user = $this->user($userId);
+        if (
+            !is_array($user)
+            || !(bool)($user['is_admin'] ?? false)
+            || (bool)($user['must_change_password'] ?? false)
+        ) {
+            return false;
+        }
+
+        $passwordHash = is_scalar($user['password_hash'] ?? null)
+            ? trim((string)$user['password_hash'])
+            : '';
+        if ($passwordHash === '') {
+            return false;
+        }
+
+        $this->session->set(self::SESSION_KEY_ACTIVE, [
+            'user_id' => $userId,
+            'password_fingerprint' => $this->passwordFingerprint($passwordHash),
+            'activated_at' => time(),
+        ]);
+        $this->session->remove(self::SESSION_KEY_FAILURES);
+        $this->audit('simbioza_admin_elevation_activated', $userId, ['source' => 'verified_local_login']);
+
+        return true;
+    }
+
     /** HR: Vraća je li valjana ovlast vezana uz trenutačnog korisnika i lozinku. EN: Returns whether valid elevation is bound to the current user and password. */
     public function isElevated(int $userId): bool
     {

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace AaiEduHr\SimbiozaModuleUser\Tests;
 
+use AaiEduHr\HeartPhrameModuleAuth\Event\UserAuthenticated;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthGroupService;
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Migration\ReversibleMigrationInterface;
+use AaiEduHr\SimbiozaModuleUser\Listener\ActivateAdministratorAfterLocalLogin;
 use AaiEduHr\SimbiozaModuleUser\Security\SimbiozaAdminContextDecorator;
 use AaiEduHr\SimbiozaModuleUser\Security\SimbiozaAdminElevationService;
 use AaiEduHr\SimbiozaModuleUser\Tests\Support\InMemorySession;
@@ -17,10 +19,12 @@ use HeartPhrame\Helper\Helper;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 #[CoversClass(SimbiozaAdminElevationService::class)]
 #[UsesClass(AuthGroupService::class)]
 #[UsesClass(AuthUserService::class)]
+#[UsesClass(ActivateAdministratorAfterLocalLogin::class)]
 #[UsesClass(SimbiozaAdminContextDecorator::class)]
 final class SimbiozaAdminElevationServiceTest extends TestCase
 {
@@ -118,6 +122,40 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         );
     }
 
+    /** HR: Potvrđena lokalna prijava odmah elevatira samo gotov administratorski račun. EN: A verified local sign-in immediately elevates only a ready administrator account. */
+    public function testVerifiedLocalLoginActivatesEligibleAdministrator(): void
+    {
+        $adminId = $this->insertUser('local-admin', true, 'admin-password');
+        $ordinaryId = $this->insertUser('local-user', false, 'user-password');
+        $temporaryAdminId = $this->insertUser('temporary-admin', true, 'temporary-password', true);
+        $this->groups->syncAdministratorMembership($adminId, true);
+        $this->groups->syncAdministratorMembership($temporaryAdminId, true);
+
+        $this->assertTrue($this->service->activateAfterVerifiedLocalLogin($adminId));
+        $this->assertTrue($this->service->isElevated($adminId));
+
+        $this->service->clear();
+        $this->assertFalse($this->service->activateAfterVerifiedLocalLogin($ordinaryId));
+        $this->assertFalse($this->service->isElevated($ordinaryId));
+
+        $this->assertFalse($this->service->activateAfterVerifiedLocalLogin($temporaryAdminId));
+        $this->assertFalse($this->service->isElevated($temporaryAdminId));
+    }
+
+    /** HR: Listener prihvaća samo Authovu potvrdu lokalne prijave. EN: The listener accepts only Auth's verified local sign-in event. */
+    public function testLoginListenerDoesNotElevateExternalSignIn(): void
+    {
+        $adminId = $this->insertUser('provider-admin', true, 'admin-password');
+        $this->groups->syncAdministratorMembership($adminId, true);
+        $listener = new ActivateAdministratorAfterLocalLogin($this->service, new NullLogger());
+
+        $listener(new UserAuthenticated($adminId, 'saml'));
+        $this->assertFalse($this->service->isElevated($adminId));
+
+        $listener(new UserAuthenticated($adminId, 'local'));
+        $this->assertTrue($this->service->isElevated($adminId));
+    }
+
     /** HR: Pet pogrešnih potvrda zaključava i naknadno ispravnu lozinku. EN: Five invalid confirmations also lock a subsequent correct password. */
     public function testRepeatedFailuresTemporarilyLockElevation(): void
     {
@@ -154,8 +192,12 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->assertFalse($decorator->decorate($raw)['is_admin']);
     }
 
-    private function insertUser(string $login, bool $admin, ?string $password): int
-    {
+    private function insertUser(
+        string $login,
+        bool $admin,
+        ?string $password,
+        bool $mustChangePassword = false,
+    ): int {
         $now = '2026-09-10 12:00:00';
         $this->database->table(ModuleAuth::TABLE_AUTH_USERS)->insert([
             'login_identifier' => $login,
@@ -164,7 +206,7 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
             'is_active' => true,
             'auth_source' => 'local',
             'last_login_at' => null,
-            'must_change_password' => false,
+            'must_change_password' => $mustChangePassword,
             'force_local_password_reset_at' => null,
             'created_at' => $now,
             'updated_at' => $now,

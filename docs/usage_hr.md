@@ -26,9 +26,9 @@ Isključivanje izrade nikada ne briše postojeće područje. Soft-obrisano osobn
 
 ## Administratorske ovlasti
 
-Član grupe Administrator nakon prijave radi s istim pravima koja ima kao običan korisnik kroz svoje ostale grupe i izravne ACL dodjele. Administratorski zaobilaz prava i grupa Administrator postaju efektivni tek kada u korisničkom izborniku odabere **Administrator** i potvrdi lokalnu lozinku. Isti prekidač tada pokazuje uključeno stanje i omogućuje trenutno isključivanje ovlasti.
+Član grupe Administrator prijavljen vanjskim providerom radi s istim pravima koja ima kao običan korisnik kroz svoje ostale grupe i izravne ACL dodjele. Administratorski zaobilaz prava i grupa Administrator postaju efektivni tek kada u korisničkom izborniku odabere **Administrator** i potvrdi lokalnu lozinku. Administrator uspješno prijavljen lokalnom lozinkom, uključujući break-glass prijavu, odmah dobiva administratorske ovlasti jer je istu vjerodajnicu već potvrdio. Privremenu lokalnu lozinku mora prvo promijeniti. Prekidač pokazuje uključeno stanje i omogućuje trenutno isključivanje ovlasti.
 
-Prekidač se prikazuje samo stvarnom članu grupe Administrator koji ima postavljenu lokalnu lozinku. Izravna administratorska poveznica gosta prvo vodi na prijavu, a prijavljenog podobnog administratora bez aktivnih ovlasti na potvrdu lozinke. Običnom korisniku pristup ostaje zabranjen. Aktivacija vrijedi samo u trenutačnoj sesiji, uklanja se pri prijavi i odjavi te prestaje vrijediti nakon promjene lokalne lozinke. Workspace, HTML editor, Calendar i ostali moduli koriste isti efektivni auth kontekst, pa svugdje poštuju stanje prekidača.
+Prekidač se prikazuje samo stvarnom članu grupe Administrator koji ima postavljenu lokalnu lozinku. Izravna administratorska poveznica gosta prvo vodi na prijavu, a prijavljenog podobnog administratora bez aktivnih ovlasti na potvrdu lozinke. Običnom korisniku pristup ostaje zabranjen. Aktivacija vrijedi samo u trenutačnoj sesiji, uklanja se pri novoj prijavi i odjavi te prestaje vrijediti nakon promjene lokalne lozinke; uspješna nova lokalna prijava zatim odmah uspostavlja novu elevaciju. Workspace, HTML editor, Calendar i ostali moduli koriste isti efektivni auth kontekst, pa svugdje poštuju stanje prekidača.
 
 ## Početak i prestanak praćenja
 

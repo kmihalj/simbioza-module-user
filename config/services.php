@@ -25,6 +25,7 @@ use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
 use AaiEduHr\SimbiozaModuleUser\Controller\AdminElevationController;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
+use AaiEduHr\SimbiozaModuleUser\Listener\ActivateAdministratorAfterLocalLogin;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
@@ -186,6 +187,13 @@ $services = [
         static fn(ContainerInterface $container): CreatePersonalWorkspaceAfterLogin =>
             new CreatePersonalWorkspaceAfterLogin(
                 $container->get(PersonalWorkspaceService::class),
+                $container->get(LoggerInterface::class),
+            ),
+
+    ActivateAdministratorAfterLocalLogin::class =>
+        static fn(ContainerInterface $container): ActivateAdministratorAfterLocalLogin =>
+            new ActivateAdministratorAfterLocalLogin(
+                $container->get(SimbiozaAdminElevationService::class),
                 $container->get(LoggerInterface::class),
             ),
 

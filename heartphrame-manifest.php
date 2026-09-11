@@ -16,6 +16,7 @@ use AaiEduHr\SimbiozaModuleUser\Command\HpSimbiozaUserCommand;
 use AaiEduHr\SimbiozaModuleUser\Controller\AdminElevationController;
 use AaiEduHr\SimbiozaModuleUser\Controller\PersonalWorkspaceSettingsController;
 use AaiEduHr\SimbiozaModuleUser\Controller\SimbiozaUserController;
+use AaiEduHr\SimbiozaModuleUser\Listener\ActivateAdministratorAfterLocalLogin;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowActivityListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CalendarFollowChangedListener;
 use AaiEduHr\SimbiozaModuleUser\Listener\CommentFollowActivityListener;
@@ -214,6 +215,7 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     public function getEventListeners(): array
     {
         $listeners = [
+            new EventListener(UserAuthenticated::class, ActivateAdministratorAfterLocalLogin::class),
             new EventListener(UserAuthenticated::class, CreatePersonalWorkspaceAfterLogin::class),
             new EventListener(WorkspaceContentChanged::class, WorkspaceFollowActivityListener::class),
             new EventListener(
