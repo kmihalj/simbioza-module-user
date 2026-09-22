@@ -61,15 +61,8 @@ $activeCount = count(array_filter(
     static fn(mixed $item): bool => is_array($item) && (bool)($item['following'] ?? false),
 ));
 $formatDateTime = static function (string $value): string {
-    if (trim($value) === '') {
-        return '';
-    }
-
-    try {
-        return (new DateTimeImmutable($value))->format(__('notification_datetime_format'));
-    } catch (Throwable) {
-        return $value;
-    }
+    return trim($value) === '' ? ''
+        : \AaiEduHr\HeartPhrameModuleOrm\Database\LocaleDateFormatter::dateTime($value);
 };
 $icon = static function (string $name): string {
     return match ($name) {
