@@ -67,7 +67,7 @@ final class SimbiozaUserServiceTest extends TestCase
         ]);
         $this->database = new Database($config, $helper);
         $this->runMigration(
-            dirname(__DIR__) . '/resources/migrations/initial_simbioza_user_schema.php',
+            __DIR__ . '/../resources/migrations/initial_simbioza_user_schema.php',
         );
         $notificationMigration = $this->resolveNotificationMigrationPath('initial_notification_schema.php');
         $this->runMigration($notificationMigration);

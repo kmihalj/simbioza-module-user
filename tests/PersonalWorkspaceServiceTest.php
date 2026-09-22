@@ -46,7 +46,7 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->database = new Database($config, $helper);
         $this->runMigration($this->moduleMigration(AuthUserService::class, 'initial_auth_schema.php'));
         $this->runMigration($this->moduleMigration(WorkspaceRepository::class, 'initial_workspace_schema.php'));
-        $this->runMigration(dirname(__DIR__) . '/resources/migrations/initial_simbioza_user_schema.php');
+        $this->runMigration(__DIR__ . '/../resources/migrations/initial_simbioza_user_schema.php');
         $users = new AuthUserService($this->database);
         $this->workspaces = new WorkspaceRepository($this->database);
         $this->service = new PersonalWorkspaceService(
