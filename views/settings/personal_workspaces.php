@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// HR: Glavni orijentir daje aplikacijski raspored; ovaj je prikaz samo njegov sadržaj.
+// EN: The host layout owns the main landmark; this view only supplies its content.
+
 // phpcs:disable Generic.Files.LineLength.TooLong -- HR/EN: Prevedeni HTML atributi ostaju čitljivi. / Translated HTML attributes remain readable.
 
 /**
@@ -28,7 +31,7 @@ $text = static fn(mixed $value): string => is_scalar($value) ? (string)$value : 
 ?>
 <div class="row g-4">
     <aside class="col-lg-3"><?= is_string($settingsMenuHtml) ? $settingsMenuHtml : '' ?></aside>
-    <main class="col-lg-9">
+    <div class="col-lg-9">
         <section class="card shadow-sm mb-4">
             <div class="card-body p-4">
                 <header class="mb-4">
@@ -144,7 +147,7 @@ $text = static fn(mixed $value): string => is_scalar($value) ? (string)$value : 
                 </div>
             </section>
         <?php endif; ?>
-    </main>
+    </div>
 </div>
 
 <script>

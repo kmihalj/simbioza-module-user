@@ -65,6 +65,10 @@ final readonly class FollowDeliveryService
     /**
      * HR: Pretvara jedan domenski događaj u najviše jednu obavijest po korisniku.
      * EN: Turns one domain event into at most one notification per user.
+     * HR: Čita promjenjivu bazu i zapisuje dostave; rezultat nije čista funkcija argumenata.
+     * EN: Reads mutable database state and records deliveries; the result is not a pure function of arguments.
+     *
+     * @phpstan-impure
      */
     public function process(FollowActivity $activity): int
     {

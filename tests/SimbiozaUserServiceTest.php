@@ -287,8 +287,12 @@ final class SimbiozaUserServiceTest extends TestCase
             dedupIdentity: 'calendar:900:updated',
         );
 
-        $this->assertSame(1, $delivery->process($activity));
-        $this->assertSame(1, $delivery->process($activity));
+        // HR: Provjeravaju se dva stvarna poziva, ne isti zapamćeni rezultat analizatora.
+        // EN: Verify two real invocations, not the analyser's remembered result of one expression.
+        $firstDelivery = $delivery->process($activity);
+        $repeatedDelivery = $delivery->process($activity);
+        $this->assertSame(1, $firstDelivery);
+        $this->assertSame(1, $repeatedDelivery);
         $inbox = $notifications->inbox(21);
         $this->assertSame(1, $inbox['total']);
         $this->assertSame('Calendar changed on followed page', $inbox['items'][0]['title'] ?? null);
@@ -340,8 +344,12 @@ final class SimbiozaUserServiceTest extends TestCase
             documentId: 'doc-55',
         );
 
-        $this->assertSame(1, $delivery->process($activity));
-        $this->assertSame(1, $delivery->process($activity));
+        // HR: Ponovljena dostava mora i dalje proći stvarnu provjeru deduplikacije.
+        // EN: Repeated delivery must still run the actual deduplication assertion.
+        $firstDelivery = $delivery->process($activity);
+        $repeatedDelivery = $delivery->process($activity);
+        $this->assertSame(1, $firstDelivery);
+        $this->assertSame(1, $repeatedDelivery);
         $this->assertSame(1, $notifications->inbox(11)['total']);
 
         $this->setTargetAccess(false);
