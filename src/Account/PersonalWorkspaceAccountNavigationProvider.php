@@ -15,10 +15,18 @@ use function rawurlencode;
 use function rtrim;
 use function trim;
 
-/** HR: Dodaje poveznicu na postojeće aktivno osobno područje u korisnički meni. EN: Adds the existing active personal Workspace to the user menu. */
+/**
+ * EN: Adds the existing active personal Workspace to the user menu.
+ *
+ * HR: Dodaje poveznicu na postojeće aktivno osobno područje u korisnički meni.
+ */
 final readonly class PersonalWorkspaceAccountNavigationProvider implements AuthAccountNavigationProviderInterface
 {
-    /** HR: Prima mapiranje područja, rute i prevoditelj. EN: Receives Workspace mappings, routes, and the translator. */
+    /**
+     * EN: Receives Workspace mappings, routes, and the translator.
+     *
+     * HR: Prima mapiranje područja, rute i prevoditelj.
+     */
     public function __construct(
         private PersonalWorkspaceService $personalWorkspaces,
         private UrlGenerator $urls,
@@ -27,8 +35,9 @@ final readonly class PersonalWorkspaceAccountNavigationProvider implements AuthA
     }
 
     /**
-     * HR: Vraća poveznicu samo kada korisnik već ima aktivno osobno područje.
      * EN: Returns a link only when the user already has an active personal Workspace.
+     *
+     * HR: Vraća poveznicu samo kada korisnik već ima aktivno osobno područje.
      *
      * @return list<array{key:string,label:string,path:string,order:int}>
      */

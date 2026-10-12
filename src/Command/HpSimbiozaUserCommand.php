@@ -20,10 +20,18 @@ use function str_starts_with;
 use function strtolower;
 use function trim;
 
-/** HR: Instalira migraciju i pokreće obradu dnevnih sažetaka. EN: Installs the migration and dispatches daily digests. */
+/**
+ * EN: Installs the migration and dispatches daily digests.
+ *
+ * HR: Instalira migraciju i pokreće obradu dnevnih sažetaka.
+ */
 final readonly class HpSimbiozaUserCommand
 {
-    /** HR: Prima konfiguraciju i servis dostave. EN: Receives configuration and the delivery service. */
+    /**
+     * EN: Receives configuration and the delivery service.
+     *
+     * HR: Prima konfiguraciju i servis dostave.
+     */
     public function __construct(
         private ConfigInterface $config,
         private FollowDeliveryService $delivery,
@@ -31,8 +39,9 @@ final readonly class HpSimbiozaUserCommand
     }
 
     /**
-     * HR: Usmjerava CLI podnaredbu na instalaciju, obradu sažetaka ili pomoć.
      * EN: Routes the CLI subcommand to installation, digest dispatch, or help.
+     *
+     * HR: Usmjerava CLI podnaredbu na instalaciju, obradu sažetaka ili pomoć.
      *
      * @param array<int,string> $arguments
      * @param array<string,mixed> $options
@@ -46,10 +55,6 @@ final readonly class HpSimbiozaUserCommand
                 array_values(array_slice($arguments, 1)),
                 $options,
             ),
-            'install-personal-workspaces', 'install-personal-workspaces-migration' =>
-                $this->installPersonalWorkspacesMigration($options),
-            'install-theme-mode', 'install-theme-mode-migration' =>
-                $this->installThemeModeMigration($options),
             'dispatch', 'digest', 'dispatch-digests' => $this->dispatchDigests($arguments, $options),
             'help', '--help', '-h' => $this->help(),
             default => 1,
@@ -57,8 +62,9 @@ final readonly class HpSimbiozaUserCommand
     }
 
     /**
-     * HR: Kopira prenosivu inicijalnu migraciju u aplikacijski direktorij.
      * EN: Copies the portable initial migration into the application directory.
+     *
+     * HR: Kopira prenosivu inicijalnu migraciju u aplikacijski direktorij.
      *
      * @param array<int,string> $arguments
      * @param array<string,mixed> $options
@@ -88,68 +94,9 @@ final readonly class HpSimbiozaUserCommand
     }
 
     /**
-     * HR: Kopira nadogradnju osobnih područja u postojeću aplikaciju.
-     * EN: Copies the personal-space upgrade into an existing application.
-     *
-     * @param array<string,mixed> $options
-     */
-    public function installPersonalWorkspacesMigration(array $options = []): int
-    {
-        $directory = $this->targetDirectory($options);
-        $template = dirname(__DIR__, 2) . '/resources/migrations/add_personal_workspaces.php';
-        if (!is_file($template)) {
-            throw new RuntimeException(__('Predložak migracije osobnih područja nije pronađen.'));
-        }
-
-        if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
-            throw new RuntimeException(__('Nije moguće kreirati direktorij migracija.'));
-        }
-
-        $target = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
-            . date('YmdHis') . '_add_simbioza_user_personal_workspaces.php';
-        $content = file_get_contents($template);
-        if (!is_string($content) || file_put_contents($target, $content) === false) {
-            throw new RuntimeException(__('Nije moguće kopirati migraciju osobnih područja.'));
-        }
-
-        echo __('Kreirana je migracija: ') . $target . PHP_EOL;
-
-        return 0;
-    }
-
-    /**
-     * HR: Kopira nadogradnju osobnog načina teme u postojeću aplikaciju.
-     * EN: Copies the personal theme-mode upgrade into an existing application.
-     *
-     * @param array<string,mixed> $options
-     */
-    public function installThemeModeMigration(array $options = []): int
-    {
-        $directory = $this->targetDirectory($options);
-        $template = dirname(__DIR__, 2) . '/resources/migrations/add_theme_mode_preference.php';
-        if (!is_file($template)) {
-            throw new RuntimeException(__('Predložak migracije osobnog izgleda nije pronađen.'));
-        }
-
-        if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
-            throw new RuntimeException(__('Nije moguće kreirati direktorij migracija.'));
-        }
-
-        $target = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
-            . date('YmdHis') . '_add_simbioza_user_theme_mode.php';
-        $content = file_get_contents($template);
-        if (!is_string($content) || file_put_contents($target, $content) === false) {
-            throw new RuntimeException(__('Nije moguće kopirati migraciju osobnog izgleda.'));
-        }
-
-        echo __('Kreirana je migracija: ') . $target . PHP_EOL;
-
-        return 0;
-    }
-
-    /**
-     * HR: Pokreće ograničenu obradu dospjelih dnevnih sažetaka.
      * EN: Dispatches a bounded batch of due daily digests.
+     *
+     * HR: Pokreće ograničenu obradu dospjelih dnevnih sažetaka.
      *
      * @param array<int,string> $arguments
      * @param array<string,mixed> $options
@@ -163,20 +110,23 @@ final readonly class HpSimbiozaUserCommand
         return 0;
     }
 
-    /** HR: Ispisuje CLI primjere za početnike i automatizaciju. EN: Prints CLI examples for beginners and automation. */
+    /**
+     * EN: Prints CLI examples for beginners and automation.
+     *
+     * HR: Ispisuje CLI primjere za početnike i automatizaciju.
+     */
     public function help(): int
     {
         echo 'vendor/bin/hph simbioza-user:install-migration' . PHP_EOL;
-        echo 'vendor/bin/hph simbioza-user:install-personal-workspaces-migration' . PHP_EOL;
-        echo 'vendor/bin/hph simbioza-user:install-theme-mode-migration' . PHP_EOL;
         echo 'vendor/bin/hph simbioza-user:dispatch --limit=500' . PHP_EOL;
 
         return 0;
     }
 
     /**
-     * HR: Razrješava apsolutni ili aplikaciji relativni direktorij migracija.
      * EN: Resolves an absolute or application-relative migration directory.
+     *
+     * HR: Razrješava apsolutni ili aplikaciji relativni direktorij migracija.
      *
      * @param array<string,mixed> $options
      */

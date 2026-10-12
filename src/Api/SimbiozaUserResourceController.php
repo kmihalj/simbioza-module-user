@@ -33,12 +33,17 @@ use function trim;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * HR: API adapter ograničen na praćenja i postavke vlasnika API ključa.
  * EN: API adapter restricted to follows and preferences of the API-key owner.
+ *
+ * HR: API adapter ograničen na praćenja i postavke vlasnika API ključa.
  */
 final readonly class SimbiozaUserResourceController
 {
-    /** HR: Prima zajednički API transport i domenske servise. EN: Receives shared API transport and domain services. */
+    /**
+     * EN: Receives shared API transport and domain services.
+     *
+     * HR: Prima zajednički API transport i domenske servise.
+     */
     public function __construct(
         private ApiResponseFactory $responses,
         private FollowService $follows,
@@ -52,7 +57,11 @@ final readonly class SimbiozaUserResourceController
     ) {
     }
 
-    /** HR: Vraća ACL-filtrirana osobna praćenja. EN: Returns ACL-filtered personal follows. */
+    /**
+     * EN: Returns ACL-filtered personal follows.
+     *
+     * HR: Vraća ACL-filtrirana osobna praćenja.
+     */
     public function listFollows(ServerRequestInterface $request): ResponseInterface
     {
         return $this->execute($request, 'follows:read', function (int $userId) use ($request): array {
@@ -67,7 +76,11 @@ final readonly class SimbiozaUserResourceController
         });
     }
 
-    /** HR: Dodaje vlastito praćenje nakon domenske ACL provjere. EN: Adds an owned follow after the domain ACL check. */
+    /**
+     * EN: Adds an owned follow after the domain ACL check.
+     *
+     * HR: Dodaje vlastito praćenje nakon domenske ACL provjere.
+     */
     public function createFollow(ServerRequestInterface $request): ResponseInterface
     {
         return $this->execute($request, 'follows:write', function (int $userId) use ($request): array {
@@ -90,7 +103,11 @@ final readonly class SimbiozaUserResourceController
         }, 201);
     }
 
-    /** HR: Uklanja samo praćenje vlasnika ključa. EN: Removes only a follow owned by the key owner. */
+    /**
+     * EN: Removes only a follow owned by the key owner.
+     *
+     * HR: Uklanja samo praćenje vlasnika ključa.
+     */
     public function deleteFollow(ServerRequestInterface $request): ResponseInterface
     {
         $identity = $this->identity($request);
@@ -128,7 +145,11 @@ final readonly class SimbiozaUserResourceController
         return $this->responses->noContent($request);
     }
 
-    /** HR: Vraća objedinjene osobne postavke kanala i ritma. EN: Returns combined personal channel and cadence preferences. */
+    /**
+     * EN: Returns combined personal channel and cadence preferences.
+     *
+     * HR: Vraća objedinjene osobne postavke kanala i ritma.
+     */
     public function getPreferences(ServerRequestInterface $request): ResponseInterface
     {
         return $this->execute($request, 'follows:read', fn(int $userId): array => [
@@ -137,7 +158,11 @@ final readonly class SimbiozaUserResourceController
         ]);
     }
 
-    /** HR: Djelomično ažurira osobne postavke bez promjene tuđih zapisa. EN: Partially updates personal preferences without changing another user's rows. */
+    /**
+     * EN: Partially updates personal preferences without changing another user's rows.
+     *
+     * HR: Djelomično ažurira osobne postavke bez promjene tuđih zapisa.
+     */
     public function updatePreferences(ServerRequestInterface $request): ResponseInterface
     {
         return $this->execute($request, 'follows:write', function (int $userId) use ($request): array {
@@ -187,7 +212,11 @@ final readonly class SimbiozaUserResourceController
         });
     }
 
-    /** HR: Vraća osobno područje vlasnika API ključa bez tuđih podataka. EN: Returns the API-key owner's personal Workspace without other users' data. */
+    /**
+     * EN: Returns the API-key owner's personal Workspace without other users' data.
+     *
+     * HR: Vraća osobno područje vlasnika API ključa bez tuđih podataka.
+     */
     public function getPersonalWorkspace(ServerRequestInterface $request): ResponseInterface
     {
         return $this->execute($request, 'workspaces:read', function (int $userId): array {
@@ -214,10 +243,11 @@ final readonly class SimbiozaUserResourceController
     }
 
     /**
-     * HR: Provjerava scope, izvršava osobnu radnju i prevodi domenske pogreške
-     *     u ujednačene API problem odgovore.
      * EN: Checks the scope, executes the personal operation, and translates
      *     domain failures into consistent API problem responses.
+     *
+     * HR: Provjerava scope, izvršava osobnu radnju i prevodi domenske pogreške
+     *     u ujednačene API problem odgovore.
      *
      * @param callable(int):mixed $operation
      */
@@ -266,7 +296,11 @@ final readonly class SimbiozaUserResourceController
         }
     }
 
-    /** HR: Vraća API identitet vlasnika ključa. EN: Returns the API-key owner's identity. */
+    /**
+     * EN: Returns the API-key owner's identity.
+     *
+     * HR: Vraća API identitet vlasnika ključa.
+     */
     private function identity(ServerRequestInterface $request): AuthApiIdentity
     {
         $identity = $request->getAttribute(ModuleApi::IDENTITY_ATTRIBUTE);
@@ -277,7 +311,11 @@ final readonly class SimbiozaUserResourceController
         return $identity;
     }
 
-    /** HR: Vraća standardnu zabranu nedostajućeg scopea. EN: Returns the standard missing-scope denial. */
+    /**
+     * EN: Returns the standard missing-scope denial.
+     *
+     * HR: Vraća standardnu zabranu nedostajućeg scopea.
+     */
     private function scopeProblem(ServerRequestInterface $request, string $scope): ResponseInterface
     {
         return $this->responses->problem(
@@ -290,8 +328,9 @@ final readonly class SimbiozaUserResourceController
     }
 
     /**
-     * HR: Dekodira JSON objekt zahtjeva i odbija liste ili neispravne ključeve.
      * EN: Decodes the request JSON object and rejects lists or invalid keys.
+     *
+     * HR: Dekodira JSON objekt zahtjeva i odbija liste ili neispravne ključeve.
      *
      * @return array<string,mixed>
      */
@@ -319,7 +358,11 @@ final readonly class SimbiozaUserResourceController
         return $result;
     }
 
-    /** HR: Čita obavezni skalarni parametar rute. EN: Reads a required scalar route parameter. */
+    /**
+     * EN: Reads a required scalar route parameter.
+     *
+     * HR: Čita obavezni skalarni parametar rute.
+     */
     private function route(ServerRequestInterface $request, string $name): string
     {
         $value = $this->scalar($request->getAttribute($name));
@@ -330,19 +373,29 @@ final readonly class SimbiozaUserResourceController
         return $value;
     }
 
-    /** HR: Normalizira skalarni tekst. EN: Normalizes scalar text. */
+    /**
+     * EN: Normalizes scalar text.
+     *
+     * HR: Normalizira skalarni tekst.
+     */
     private function scalar(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';
     }
 
-    /** HR: Audit događaj ne smije prekinuti API radnju. EN: An audit event must not interrupt the API operation. */
+    /**
+     * EN: An audit event must not interrupt the API operation.
+     *
+     * HR: Audit događaj ne smije prekinuti API radnju.
+     */
     private function dispatch(UserFollowChanged $event): void
     {
         try {
             $this->events?->dispatch($event);
         } catch (Throwable) {
-            // HR: Audit je sekundaran kanal. EN: Audit is a secondary channel.
+            // EN: Audit is a secondary channel.
+            //
+            // HR: Audit je sekundaran kanal.
         }
     }
 }

@@ -23,10 +23,11 @@ use function time;
 use function trim;
 
 /**
- * HR: Drži Simbioza-specifičnu privremenu administratorsku ovlast u sessionu.
- *     Stvarno članstvo ostaje u Authu, a ostatak aplikacije dobiva samo efektivna prava.
  * EN: Keeps Simbioza-specific temporary administrator elevation in the session.
  *     Real membership stays in Auth while the application sees only effective rights.
+ *
+ * HR: Drži Simbioza-specifičnu privremenu administratorsku ovlast u sessionu.
+ *     Stvarno članstvo ostaje u Authu, a ostatak aplikacije dobiva samo efektivna prava.
  */
 final class SimbiozaAdminElevationService
 {
@@ -54,8 +55,9 @@ final class SimbiozaAdminElevationService
     private array $users = [];
 
     /**
-     * HR: Prima session, stvarni Auth korisnički servis i opcionalni audit zapisnik.
      * EN: Receives the session, real Auth user service, and optional audit log.
+     *
+     * HR: Prima session, stvarni Auth korisnički servis i opcionalni audit zapisnik.
      */
     public function __construct(
         private readonly SessionInterface $session,
@@ -65,8 +67,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Vraća stvarni Auth red aktivnog korisnika, uključujući grupe i lokalnu lozinku.
      * EN: Returns the active user's real Auth row, including groups and local password.
+     *
+     * HR: Vraća stvarni Auth red aktivnog korisnika, uključujući grupe i lokalnu lozinku.
      *
      * @return array<string,mixed>|null
      */
@@ -83,7 +86,11 @@ final class SimbiozaAdminElevationService
         return $this->users[$userId];
     }
 
-    /** HR: Stvarno administratorsko članstvo ostaje Authova trajna odluka. EN: Real administrator membership remains Auth's persistent decision. */
+    /**
+     * EN: Real administrator membership remains Auth's persistent decision.
+     *
+     * HR: Stvarno administratorsko članstvo ostaje Authova trajna odluka.
+     */
     public function isAdministratorMember(int $userId): bool
     {
         $user = $this->user($userId);
@@ -91,7 +98,11 @@ final class SimbiozaAdminElevationService
         return is_array($user) && (bool)($user['is_admin'] ?? false);
     }
 
-    /** HR: Provjerava postoji li lokalna vjerodajnica za potvrdu ovlasti. EN: Checks whether a local credential exists for elevation. */
+    /**
+     * EN: Checks whether a local credential exists for elevation.
+     *
+     * HR: Provjerava postoji li lokalna vjerodajnica za potvrdu ovlasti.
+     */
     public function hasLocalPassword(int $userId): bool
     {
         $user = $this->user($userId);
@@ -102,19 +113,24 @@ final class SimbiozaAdminElevationService
         return $hash !== '';
     }
 
-    /** HR: Stavka u profilu postoji samo administratoru s lokalnom lozinkom. EN: The profile entry exists only for an administrator with a local password. */
+    /**
+     * EN: The profile entry exists only for an administrator with a local password.
+     *
+     * HR: Stavka u profilu postoji samo administratoru s lokalnom lozinkom.
+     */
     public function canElevate(int $userId): bool
     {
         return $this->isAdministratorMember($userId) && $this->hasLocalPassword($userId);
     }
 
     /**
-     * HR: Uspješna lokalna prijava već je potvrdila istu vjerodajnicu pa
-     *     administratora možemo elevatirati bez ponovnog traženja lozinke.
-     *     Privremena lozinka prvo se mora promijeniti.
      * EN: A successful local sign-in already verified the same credential, so
      *     an administrator can be elevated without another password prompt.
      *     A temporary password must be changed first.
+     *
+     * HR: Uspješna lokalna prijava već je potvrdila istu vjerodajnicu pa
+     *     administratora možemo elevatirati bez ponovnog traženja lozinke.
+     *     Privremena lozinka prvo se mora promijeniti.
      */
     public function activateAfterVerifiedLocalLogin(int $userId): bool
     {
@@ -145,7 +161,11 @@ final class SimbiozaAdminElevationService
         return true;
     }
 
-    /** HR: Vraća je li valjana ovlast vezana uz trenutačnog korisnika i lozinku. EN: Returns whether valid elevation is bound to the current user and password. */
+    /**
+     * EN: Returns whether valid elevation is bound to the current user and password.
+     *
+     * HR: Vraća je li valjana ovlast vezana uz trenutačnog korisnika i lozinku.
+     */
     public function isElevated(int $userId): bool
     {
         if (!$this->canElevate($userId)) {
@@ -173,8 +193,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Potvrđuje lokalnu lozinku bez uključivanja lokalne web-prijave.
      * EN: Confirms the local password independently of local web sign-in.
+     *
+     * HR: Potvrđuje lokalnu lozinku bez uključivanja lokalne web-prijave.
      */
     public function activate(int $userId, #[\SensitiveParameter] string $password): string
     {
@@ -215,7 +236,11 @@ final class SimbiozaAdminElevationService
         return self::STATUS_ACTIVATED;
     }
 
-    /** HR: Odmah uklanja efektivne administratorske ovlasti. EN: Immediately removes effective administrator rights. */
+    /**
+     * EN: Immediately removes effective administrator rights.
+     *
+     * HR: Odmah uklanja efektivne administratorske ovlasti.
+     */
     public function deactivate(int $userId): void
     {
         $wasElevated = $this->isElevated($userId);
@@ -226,7 +251,11 @@ final class SimbiozaAdminElevationService
         }
     }
 
-    /** HR: Čisti Simbioza admin stanje pri prijavi i odjavi. EN: Clears Simbioza admin state on sign-in and sign-out. */
+    /**
+     * EN: Clears Simbioza admin state on sign-in and sign-out.
+     *
+     * HR: Čisti Simbioza admin stanje pri prijavi i odjavi.
+     */
     public function clear(bool $regenerateSession = false): void
     {
         $this->session->remove(self::SESSION_KEY_ACTIVE);
@@ -237,10 +266,11 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Iz stvarnog Auth payload-a izrađuje efektivnog korisnika. Kada ovlast
-     *     nije aktivna, uklanja i admin zastavicu i sistemsku admin grupu.
      * EN: Builds the effective user from the real Auth payload. When elevation
      *     is inactive, both the admin flag and system admin group are removed.
+     *
+     * HR: Iz stvarnog Auth payload-a izrađuje efektivnog korisnika. Kada ovlast
+     *     nije aktivna, uklanja i admin zastavicu i sistemsku admin grupu.
      *
      * @param array<string,mixed>|null $user
      * @return array<string,mixed>|null
@@ -276,7 +306,11 @@ final class SimbiozaAdminElevationService
         return $user;
     }
 
-    /** HR: Session ograničenje usporava ponavljanje pogrešnih lozinki. EN: A session limit slows repeated invalid-password attempts. */
+    /**
+     * EN: A session limit slows repeated invalid-password attempts.
+     *
+     * HR: Session ograničenje usporava ponavljanje pogrešnih lozinki.
+     */
     private function locked(int $userId): bool
     {
         $failures = $this->failureState($userId);
@@ -284,7 +318,11 @@ final class SimbiozaAdminElevationService
         return $failures['locked_until'] > time();
     }
 
-    /** HR: Bilježi neuspjeh i nakon pet pokušaja privremeno zaključava potvrdu. EN: Records failure and temporarily locks elevation after five attempts. */
+    /**
+     * EN: Records failure and temporarily locks elevation after five attempts.
+     *
+     * HR: Bilježi neuspjeh i nakon pet pokušaja privremeno zaključava potvrdu.
+     */
     private function recordFailure(int $userId): void
     {
         $now = time();
@@ -305,8 +343,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Normalizira session stanje neuspjelih potvrda za zadanog korisnika.
      * EN: Normalizes failed-confirmation session state for the supplied user.
+     *
+     * HR: Normalizira session stanje neuspjelih potvrda za zadanog korisnika.
      *
      * @return array{user_id:int,started_at:int,count:int,locked_until:int}
      */
@@ -329,8 +368,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Iz normaliziranih grupa izdvaja valjane pozitivne ID-jeve.
      * EN: Extracts valid positive IDs from normalized groups.
+     *
+     * HR: Iz normaliziranih grupa izdvaja valjane pozitivne ID-jeve.
      *
      * @param list<array<string,mixed>> $groups
      * @return list<int>
@@ -346,8 +386,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Pretvara proizvoljan auth podatak u listu grupa sa string ključevima.
      * EN: Converts arbitrary auth data into a list of groups with string keys.
+     *
+     * HR: Pretvara proizvoljan auth podatak u listu grupa sa string ključevima.
      *
      * @return list<array<string,mixed>>
      */
@@ -377,8 +418,9 @@ final class SimbiozaAdminElevationService
     }
 
     /**
-     * HR: Vraća normalizirani stabilni ključ grupe.
      * EN: Returns the normalized stable group key.
+     *
+     * HR: Vraća normalizirani stabilni ključ grupe.
      *
      * @param array<string,mixed> $group
      */
@@ -389,15 +431,20 @@ final class SimbiozaAdminElevationService
         return is_scalar($key) ? strtolower(trim((string)$key)) : '';
     }
 
-    /** HR: Veže elevaciju uz aktualni hash lokalne lozinke. EN: Binds elevation to the current local-password hash. */
+    /**
+     * EN: Binds elevation to the current local-password hash.
+     *
+     * HR: Veže elevaciju uz aktualni hash lokalne lozinke.
+     */
     private function passwordFingerprint(string $passwordHash): string
     {
         return hash('sha256', $passwordHash);
     }
 
     /**
-     * HR: Zapisuje sigurnosni događaj kada je Auth audit servis dostupan.
      * EN: Records a security event when the Auth audit service is available.
+     *
+     * HR: Zapisuje sigurnosni događaj kada je Auth audit servis dostupan.
      *
      * @param array<string,mixed> $context
      */

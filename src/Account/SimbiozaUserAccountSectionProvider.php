@@ -21,12 +21,17 @@ use function is_scalar;
 use function usort;
 
 /**
- * HR: Dodaje objedinjene postavke praćenja i popis praćenog sadržaja u Auth profil.
  * EN: Adds combined follow settings and the followed-content list to the Auth profile.
+ *
+ * HR: Dodaje objedinjene postavke praćenja i popis praćenog sadržaja u Auth profil.
  */
 final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSectionProviderInterface
 {
-    /** HR: Prima samo javne poslovne servise potrebne profilu. EN: Receives only public business services required by the profile. */
+    /**
+     * EN: Receives only public business services required by the profile.
+     *
+     * HR: Prima samo javne poslovne servise potrebne profilu.
+     */
     public function __construct(
         private FollowService $follows,
         private UserPreferenceService $preferences,
@@ -40,8 +45,9 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
     }
 
     /**
-     * HR: Vraća dvije povezane profilne cjeline kada je migracija spremna.
      * EN: Returns two related profile sections when the migration is ready.
+     *
+     * HR: Vraća dvije povezane profilne cjeline kada je migracija spremna.
      *
      * @return array{key:string,package:string,partial:string,data:array<string,mixed>,group:string,order:int}|null
      */
@@ -51,8 +57,9 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
             return null;
         }
 
-        // HR: Stare i nove Calendar pretplate prikazuje u istom popisu praćenja.
         // EN: Shows legacy and new Calendar subscriptions in the unified follow list.
+        //
+        // HR: Stare i nove Calendar pretplate prikazuje u istom popisu praćenja.
         $this->calendarSubscriptions?->syncUser($userId);
         $preferences = $this->preferences->forUser($userId);
         $follows = $this->follows->listForUser($userId);
@@ -66,10 +73,11 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
         }
 
         /*
-         * HR: Pretplaćeni kalendar ostaje u pregledu i nakon što korisnik
-         *     isključi njegove obavijesti, kako bi ih mogao ponovno uključiti.
          * EN: A subscribed calendar remains in the overview after the user
          *     disables its notifications, so they can enable them again.
+         *
+         * HR: Pretplaćeni kalendar ostaje u pregledu i nakon što korisnik
+         *     isključi njegove obavijesti, kako bi ih mogao ponovno uključiti.
          */
         foreach ($this->calendarSubscriptions?->subscribedCalendarIdsForUser($userId) ?? [] as $calendarId) {
             if (isset($calendarRows[(string)$calendarId])) {
@@ -170,7 +178,11 @@ final readonly class SimbiozaUserAccountSectionProvider implements AuthAccountSe
         ];
     }
 
-    /** HR: Generira named rutu ili prenosivi fallback. EN: Generates a named route or portable fallback. */
+    /**
+     * EN: Generates a named route or portable fallback.
+     *
+     * HR: Generira named rutu ili prenosivi fallback.
+     */
     private function path(string $name, string $fallback): string
     {
         return $this->urls->namedRouteExists($name)

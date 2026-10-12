@@ -1,5 +1,7 @@
 # Modul Simbioza User
 
+> Priprema izdanja 0.3.0: navedene naredbe za označena izdanja vrijede nakon koordinirane objave aplikacije i modula. Razvojna provjera koristi lokalne pakete; starija izdanja nisu zamjena za ovu konfiguraciju i shemu.
+
 Osobno praćenje sadržaja, obavijesti u aplikaciji i opcionalna dostava e-poštom za aplikaciju znanja Simbioza.
 
 English documentation: [README.md](README.md)
@@ -46,18 +48,13 @@ provjera pa se više ne prikazuju nakon nestanka cilja.
 ## Brzi početak
 
 ```bash
-composer require aaieduhr/simbioza-module-user:^0.1.0
+composer require aaieduhr/simbioza-module-user:^0.3.0
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
-Postojeća instalacija nadograđuje se naredbama:
-
-```bash
-php vendor/bin/hph simbioza-user:install-personal-workspaces-migration
-php vendor/bin/hph simbioza-user:install-theme-mode-migration
-php vendor/bin/hph orm-migrate:up
-```
+Početna shema uključuje mapiranja osobnih područja i postavke izgleda.
+Povijesne migracije nadogradnje ne isporučuju se.
 
 Administrator osobna područja podešava pod **Postavke → Područja → Osobna područja**. Zadano pravilo izrađuje područje nakon prve uspješne lokalne, SAML, OIDC, OAuth2 ili CAS prijave i mapiranom korisniku dodjeljuje pregled, dodavanje, uređivanje, objavljivanje, brisanje i upravljanje. Skupna radnja obrađuje dopuštene postojeće aktivne korisnike, a pojedini se korisnik može isključiti bez promjene ponašanja Workspace ili Auth modula.
 

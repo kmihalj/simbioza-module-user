@@ -22,12 +22,17 @@ use function strtolower;
 use function trim;
 
 /**
- * HR: Sprema korisnička praćenja i vraća samo ACL-sigurne opise ciljeva.
  * EN: Stores user follows and returns only ACL-safe target descriptors.
+ *
+ * HR: Sprema korisnička praćenja i vraća samo ACL-sigurne opise ciljeva.
  */
 final readonly class FollowService
 {
-    /** HR: Prima bazu, ciljnu ACL rezoluciju i validator načina e-pošte. EN: Receives the database, target ACL resolution, and e-mail mode validator. */
+    /**
+     * EN: Receives the database, target ACL resolution, and e-mail mode validator.
+     *
+     * HR: Prima bazu, ciljnu ACL rezoluciju i validator načina e-pošte.
+     */
     public function __construct(
         private Database $database,
         private FollowTargetResolverInterface $targets,
@@ -35,7 +40,11 @@ final readonly class FollowService
     ) {
     }
 
-    /** HR: Provjerava jesu li tablice modula spremne. EN: Checks whether module tables are ready. */
+    /**
+     * EN: Checks whether module tables are ready.
+     *
+     * HR: Provjerava jesu li tablice modula spremne.
+     */
     public function tablesReady(): bool
     {
         $schema = $this->database->schema();
@@ -47,8 +56,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Uključuje praćenje tek nakon aktualne ACL provjere cilja.
      * EN: Enables following only after a current ACL check of the target.
+     *
+     * HR: Uključuje praćenje tek nakon aktualne ACL provjere cilja.
      *
      * @param array<string,mixed> $context
      * @return array<string,mixed>
@@ -67,10 +77,11 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Uključuje praćenje nastalo iz drugog modula samo ako ga korisnik nije
-     *     izričito isključio, bez brisanja te korisničke odluke.
      * EN: Enables a follow derived from another module only when the user has
      *     not explicitly opted out, without clearing that user decision.
+     *
+     * HR: Uključuje praćenje nastalo iz drugog modula samo ako ga korisnik nije
+     *     izričito isključio, bez brisanja te korisničke odluke.
      *
      * @param array<string,mixed> $context
      * @return array<string,mixed>|null
@@ -90,10 +101,11 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Sprema praćenje nakon ACL provjere; javne metode određuju smije li se
-     *     pritom mijenjati iznimka automatskog praćenja.
      * EN: Stores a follow after ACL validation; public methods decide whether
      *     the automatic-follow exclusion may be changed as part of the action.
+     *
+     * HR: Sprema praćenje nakon ACL provjere; javne metode određuju smije li se
+     *     pritom mijenjati iznimka automatskog praćenja.
      *
      * @param array<string,mixed> $context
      * @return array<string,mixed>
@@ -150,7 +162,11 @@ final readonly class FollowService
         return $this->decorate($row);
     }
 
-    /** HR: Isključuje samo vlastito praćenje korisnika. EN: Disables only the user's own follow. */
+    /**
+     * EN: Disables only the user's own follow.
+     *
+     * HR: Isključuje samo vlastito praćenje korisnika.
+     */
     public function unfollow(int $userId, string $targetType, string $targetId): bool
     {
         if ($userId <= 0 || !$this->tablesReady()) {
@@ -165,10 +181,11 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Isključuje automatski izvedeno praćenje i pamti odluku dok izvorna
-     *     pretplata postoji. Pretplatu ili vlasničke podatke drugog modula ne dira.
      * EN: Disables an automatically derived follow and remembers the choice while
      *     the source subscription exists. It does not change another module's data.
+     *
+     * HR: Isključuje automatski izvedeno praćenje i pamti odluku dok izvorna
+     *     pretplata postoji. Pretplatu ili vlasničke podatke drugog modula ne dira.
      */
     public function excludeAutomaticFollow(
         int $userId,
@@ -205,7 +222,11 @@ final readonly class FollowService
         return true;
     }
 
-    /** HR: Briše zapamćenu iznimku bez uključivanja praćenja. EN: Clears a remembered exclusion without enabling a follow. */
+    /**
+     * EN: Clears a remembered exclusion without enabling a follow.
+     *
+     * HR: Briše zapamćenu iznimku bez uključivanja praćenja.
+     */
     public function clearAutomaticExclusion(int $userId, string $targetType, string $targetId): bool
     {
         if ($userId <= 0 || !$this->tablesReady()) {
@@ -219,7 +240,11 @@ final readonly class FollowService
             ->delete() > 0;
     }
 
-    /** HR: Provjerava je li korisnik isključio automatsko praćenje cilja. EN: Checks whether the user opted out of an automatic follow. */
+    /**
+     * EN: Checks whether the user opted out of an automatic follow.
+     *
+     * HR: Provjerava je li korisnik isključio automatsko praćenje cilja.
+     */
     public function isAutomaticFollowExcluded(int $userId, string $targetType, string $targetId): bool
     {
         if ($userId <= 0 || !$this->tablesReady()) {
@@ -234,8 +259,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Mijenja samo osobni način dostave postojećeg praćenja.
      * EN: Changes only the personal delivery mode of an existing follow.
+     *
+     * HR: Mijenja samo osobni način dostave postojećeg praćenja.
      */
     public function setEmailMode(int $userId, string $targetType, string $targetId, string $mode): bool
     {
@@ -258,8 +284,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Gradi ACL-siguran red za dostupni cilj koji korisnik trenutačno ne prati.
      * EN: Builds an ACL-safe row for an available target the user does not currently follow.
+     *
+     * HR: Gradi ACL-siguran red za dostupni cilj koji korisnik trenutačno ne prati.
      *
      * @param array<string,mixed> $context
      * @return array<string,mixed>|null
@@ -297,15 +324,20 @@ final readonly class FollowService
         ];
     }
 
-    /** HR: Vraća slijedi li korisnik točno zadani cilj. EN: Returns whether the user follows the exact target. */
+    /**
+     * EN: Returns whether the user follows the exact target.
+     *
+     * HR: Vraća slijedi li korisnik točno zadani cilj.
+     */
     public function isFollowing(int $userId, string $targetType, string $targetId): bool
     {
         return is_array($this->find($userId, $targetType, $targetId));
     }
 
     /**
-     * HR: Vraća grupiran i pretraživ popis praćenja bez curenja ACL podataka.
      * EN: Returns a grouped, searchable follow list without leaking ACL data.
+     *
+     * HR: Vraća grupiran i pretraživ popis praćenja bez curenja ACL podataka.
      *
      * @return list<array<string,mixed>>
      */
@@ -351,8 +383,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Vraća jedinstvena praćenja na koja se odnosi domenski događaj.
      * EN: Returns unique follows affected by a domain event.
+     *
+     * HR: Vraća jedinstvena praćenja na koja se odnosi domenski događaj.
      *
      * @return list<array<string,mixed>>
      */
@@ -389,8 +422,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Dohvaća jedno praćenje koje pripada zadanom korisniku i cilju.
      * EN: Retrieves one follow owned by the requested user and target.
+     *
+     * HR: Dohvaća jedno praćenje koje pripada zadanom korisniku i cilju.
      *
      * @return array<string,mixed>|null
      */
@@ -410,8 +444,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Dodaje aktualni ACL opis retku praćenja prije prikaza korisniku.
      * EN: Adds the current ACL descriptor to a follow row before presentation.
+     *
+     * HR: Dodaje aktualni ACL opis retku praćenja prije prikaza korisniku.
      *
      * @param array<string,mixed> $row
      * @return array<string,mixed>
@@ -438,8 +473,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Spaja ORM retke po korisniku kako se preklapajuća praćenja ne bi dostavila dvaput.
      * EN: Merges ORM rows by user so overlapping follows are not delivered twice.
+     *
+     * HR: Spaja ORM retke po korisniku kako se preklapajuća praćenja ne bi dostavila dvaput.
      *
      * @param array<int,array<string,mixed>> $indexed
      * @param-out array<int,array<string,mixed>> $indexed
@@ -459,7 +495,11 @@ final readonly class FollowService
         }
     }
 
-    /** HR: Zaustavlja poslovnu radnju dok migracija nedostaje. EN: Stops the business operation while the migration is missing. */
+    /**
+     * EN: Stops the business operation while the migration is missing.
+     *
+     * HR: Zaustavlja poslovnu radnju dok migracija nedostaje.
+     */
     private function assertReady(): void
     {
         if (!$this->tablesReady()) {
@@ -468,8 +508,9 @@ final readonly class FollowService
     }
 
     /**
-     * HR: Filtrira ORM redak na tekstualne ključeve za stabilni povratni tip.
      * EN: Filters an ORM row to string keys for a stable return type.
+     *
+     * HR: Filtrira ORM redak na tekstualne ključeve za stabilni povratni tip.
      *
      * @param array<array-key,mixed> $row
      * @return array<string,mixed>
@@ -486,13 +527,21 @@ final readonly class FollowService
         return $result;
     }
 
-    /** HR: Sigurno normalizira skalarni podatak retka. EN: Safely normalizes scalar row data. */
+    /**
+     * EN: Safely normalizes scalar row data.
+     *
+     * HR: Sigurno normalizira skalarni podatak retka.
+     */
     private function text(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';
     }
 
-    /** HR: Generira RFC 4122 UUID v4 bez dodatne biblioteke. EN: Generates an RFC 4122 UUID v4 without an extra library. */
+    /**
+     * EN: Generates an RFC 4122 UUID v4 without an extra library.
+     *
+     * HR: Generira RFC 4122 UUID v4 bez dodatne biblioteke.
+     */
     private function uuid(): string
     {
         $bytes = random_bytes(16);

@@ -32,7 +32,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
 
     private PersonalWorkspaceService $service;
 
-    /** HR: Priprema stvarne prenosive sheme ovisnih modula. EN: Prepares real portable schemas of dependent modules. */
+    /**
+     * EN: Prepares real portable schemas of dependent modules.
+     *
+     * HR: Priprema stvarne prenosive sheme ovisnih modula.
+     */
     protected function setUp(): void
     {
         $helper = new Helper();
@@ -56,7 +60,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         );
     }
 
-    /** HR: Prva prijava izrađuje jedno ograničeno područje sa svim pravima i ponovljena je idempotentna. EN: First sign-in creates one restricted space with every permission and repeated calls are idempotent. */
+    /**
+     * EN: First sign-in creates one restricted space with every permission and repeated calls are idempotent.
+     *
+     * HR: Prva prijava izrađuje jedno ograničeno područje sa svim pravima i ponovljena je idempotentna.
+     */
     public function testFirstLoginCreatesOneRestrictedPersonalWorkspace(): void
     {
         $userId = $this->insertUser('ana.horvat');
@@ -90,7 +98,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACE_ACL));
     }
 
-    /** HR: Globalna postavka jedina upravlja automatskom izradom. EN: The global setting alone controls automatic creation. */
+    /**
+     * EN: The global setting alone controls automatic creation.
+     *
+     * HR: Globalna postavka jedina upravlja automatskom izradom.
+     */
     public function testGlobalSettingControlsAutomaticCreation(): void
     {
         $first = $this->insertUser('disabled.global');
@@ -110,7 +122,13 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertTrue((bool)$acl[0]['can_manage']);
     }
 
-    /** HR: Korisnik može sam izraditi područje samo kada je to globalno dopušteno, a postojeće područje preživi kasnije isključenje. EN: A user can create their own Workspace only when globally allowed, and the existing Workspace survives later disabling. */
+    /**
+     * EN: A user can create their own Workspace only when globally allowed.
+     * The existing Workspace survives later disabling.
+     *
+     * HR: Korisnik može sam izraditi područje samo kada je to globalno dopušteno.
+     * Postojeće područje preživi kasnije isključenje.
+     */
     public function testSelfCreationIsExclusiveWithAutomationAndPreservesExistingWorkspace(): void
     {
         $userId = $this->insertUser('self.creator');
@@ -140,7 +158,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertFalse($this->service->userCreationEnabled());
     }
 
-    /** HR: Isključena samostalna izrada i administratorsko brisanje sprječavaju izradu ili povrat obrisanog područja. EN: Disabled self-creation and administrator deletion prevent creation or resurrection of a deleted Workspace. */
+    /**
+     * EN: Disabled self-creation and administrator deletion prevent creation or resurrection of a deleted Workspace.
+     *
+     * HR: Isključena samostalna izrada i administratorsko brisanje sprječavaju izradu ili povrat obrisanog područja.
+     */
     public function testSelfCreationCannotBypassDisabledPolicyOrDeletedWorkspace(): void
     {
         $userId = $this->insertUser('self.disabled');
@@ -171,7 +193,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertSame(1, $this->tableCount(ModuleWorkspace::TABLE_WORKSPACES));
     }
 
-    /** HR: Admin pregled sadrži samo korisnike s izrađenim osobnim područjem. EN: Admin overview contains only users with a created personal Workspace. */
+    /**
+     * EN: Admin overview contains only users with a created personal Workspace.
+     *
+     * HR: Admin pregled sadrži samo korisnike s izrađenim osobnim područjem.
+     */
     public function testAdministrationRowsContainOnlyCreatedPersonalWorkspaces(): void
     {
         $first = $this->insertUser('created.active');
@@ -191,7 +217,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertIsArray($rows[1]['personal_workspace']);
     }
 
-    /** HR: Generirani naziv i opis prate jezik sučelja bez promjene baze. EN: Generated name and description follow the UI locale without changing the database. */
+    /**
+     * EN: Generated name and description follow the UI locale without changing the database.
+     *
+     * HR: Generirani naziv i opis prate jezik sučelja bez promjene baze.
+     */
     public function testPresentationLocalizesExistingPersonalWorkspace(): void
     {
         $userId = $this->insertUser('ana.horvat');
@@ -247,7 +277,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $this->assertSame($userId, $renamed['personal_workspace_owner_user_id']);
     }
 
-    /** HR: Sprema minimalan Auth korisnički red. EN: Stores a minimal Auth user row. */
+    /**
+     * EN: Stores a minimal Auth user row.
+     *
+     * HR: Sprema minimalan Auth korisnički red.
+     */
     private function insertUser(string $login, bool $active = true): int
     {
         $now = '2026-08-20 15:00:00';
@@ -267,7 +301,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         return (int)$this->database->lastInsertId();
     }
 
-    /** HR: Broji retke jedne tablice. EN: Counts rows in one table. */
+    /**
+     * EN: Counts rows in one table.
+     *
+     * HR: Broji retke jedne tablice.
+     */
     private function tableCount(string $table): int
     {
         $row = $this->database->table($table)->select(['COUNT(*) AS total'])->first();
@@ -275,7 +313,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         return is_array($row) ? (int)($row['total'] ?? 0) : 0;
     }
 
-    /** HR: Izvršava prenosivu migraciju. EN: Runs a portable migration. */
+    /**
+     * EN: Runs a portable migration.
+     *
+     * HR: Izvršava prenosivu migraciju.
+     */
     private function runMigration(string $path): void
     {
         $migration = require $path;
@@ -283,7 +325,11 @@ final class PersonalWorkspaceServiceTest extends TestCase
         $migration->up($this->database);
     }
 
-    /** HR: Pronalazi migraciju ovisnosti u vendor ili sibling instalaciji. EN: Finds a dependency migration in vendor or sibling installation. */
+    /**
+     * EN: Finds a dependency migration in vendor or sibling installation.
+     *
+     * HR: Pronalazi migraciju ovisnosti u vendor ili sibling instalaciji.
+     */
     private function moduleMigration(string $className, string $file): string
     {
         $path = (new ReflectionClass($className))->getFileName();

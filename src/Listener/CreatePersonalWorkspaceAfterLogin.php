@@ -9,17 +9,29 @@ use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/** HR: Sigurno pokreće automatsku izradu nakon prijave. EN: Safely triggers automatic creation after sign-in. */
+/**
+ * EN: Safely triggers automatic creation after sign-in.
+ *
+ * HR: Sigurno pokreće automatsku izradu nakon prijave.
+ */
 final readonly class CreatePersonalWorkspaceAfterLogin
 {
-    /** HR: Prima poslovni servis i tehnički logger. EN: Receives the business service and technical logger. */
+    /**
+     * EN: Receives the business service and technical logger.
+     *
+     * HR: Prima poslovni servis i tehnički logger.
+     */
     public function __construct(
         private PersonalWorkspaceService $personalWorkspaces,
         private LoggerInterface $logger,
     ) {
     }
 
-    /** HR: Kvar izrade ne smije prekinuti već uspješnu prijavu. EN: A provisioning failure must not interrupt a successful sign-in. */
+    /**
+     * EN: A provisioning failure must not interrupt a successful sign-in.
+     *
+     * HR: Kvar izrade ne smije prekinuti već uspješnu prijavu.
+     */
     public function __invoke(UserAuthenticated $event): void
     {
         try {

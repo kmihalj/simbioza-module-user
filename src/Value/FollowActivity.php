@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser\Value;
 
 /**
- * HR: Neutralni opis jedne promjene koju modul može povezati s praćenjima.
  * EN: Neutral description of one change the module can match to follows.
+ *
+ * HR: Neutralni opis jedne promjene koju modul može povezati s praćenjima.
  */
 final readonly class FollowActivity
 {
     /**
-     * HR: Sprema samo identifikatore i sigurne sažetke, nikada cijeli sadržaj stranice.
      * EN: Stores identifiers and safe summaries only, never full page content.
+     *
+     * HR: Sprema samo identifikatore i sigurne sažetke, nikada cijeli sadržaj stranice.
      *
      * @param array<string,mixed> $context
      */

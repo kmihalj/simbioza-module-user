@@ -8,15 +8,27 @@ use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleWorkspace\Event\WorkspacePermanentlyDeleting;
 
-/** HR: Uklanja praćenja, čekajuće dostave i osobno mapiranje obrisanog područja. EN: Removes follows, pending deliveries, and personal mapping for a deleted Workspace. */
+/**
+ * EN: Removes follows, pending deliveries, and personal mapping for a deleted Workspace.
+ *
+ * HR: Uklanja praćenja, čekajuće dostave i osobno mapiranje obrisanog područja.
+ */
 final readonly class PurgeWorkspaceUserData
 {
-    /** HR: Prima spremište osobnih postavki. EN: Receives personal-settings storage. */
+    /**
+     * EN: Receives personal-settings storage.
+     *
+     * HR: Prima spremište osobnih postavki.
+     */
     public function __construct(private Database $database)
     {
     }
 
-    /** HR: Čisti samo korisničke retke vezane za zadani Workspace opseg. EN: Cleans only user rows related to the supplied Workspace scope. */
+    /**
+     * EN: Cleans only user rows related to the supplied Workspace scope.
+     *
+     * HR: Čisti samo korisničke retke vezane za zadani Workspace opseg.
+     */
     public function __invoke(WorkspacePermanentlyDeleting $event): void
     {
         $this->database->transaction(function (Database $database) use ($event): void {

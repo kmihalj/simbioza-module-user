@@ -24,12 +24,17 @@ use function str_contains;
 use function str_starts_with;
 use function trim;
 
-/** HR: Obrađuje potvrdu i isključivanje privremenih admin ovlasti. EN: Handles confirmation and disabling of temporary admin rights. */
+/**
+ * EN: Handles confirmation and disabling of temporary admin rights.
+ *
+ * HR: Obrađuje potvrdu i isključivanje privremenih admin ovlasti.
+ */
 final readonly class AdminElevationController
 {
     /**
-     * HR: Prima HTTP, prikazne, auth, elevacijske i navigacijske ovisnosti.
      * EN: Receives HTTP, view, auth, elevation, and navigation dependencies.
+     *
+     * HR: Prima HTTP, prikazne, auth, elevacijske i navigacijske ovisnosti.
      */
     public function __construct(
         private ResponseFactory $responses,
@@ -41,7 +46,11 @@ final readonly class AdminElevationController
     ) {
     }
 
-    /** HR: Prikazuje potvrdu lokalnom lozinkom. EN: Shows local-password confirmation. */
+    /**
+     * EN: Shows local-password confirmation.
+     *
+     * HR: Prikazuje potvrdu lokalnom lozinkom.
+     */
     public function form(ServerRequestInterface $request): ResponseInterface
     {
         $userId = $this->currentUserId();
@@ -63,7 +72,11 @@ final readonly class AdminElevationController
         return $this->renderForm($next);
     }
 
-    /** HR: Provjerava lokalnu lozinku i uključuje ovlasti u sessionu. EN: Verifies the local password and enables rights in the session. */
+    /**
+     * EN: Verifies the local password and enables rights in the session.
+     *
+     * HR: Provjerava lokalnu lozinku i uključuje ovlasti u sessionu.
+     */
     public function enable(ServerRequestInterface $request): ResponseInterface
     {
         $body = is_array($request->getParsedBody()) ? $request->getParsedBody() : [];
@@ -99,7 +112,11 @@ final readonly class AdminElevationController
         return $this->renderForm($next, $message, 422);
     }
 
-    /** HR: Isključuje ovlasti bez traženja lozinke. EN: Disables rights without another password prompt. */
+    /**
+     * EN: Disables rights without another password prompt.
+     *
+     * HR: Isključuje ovlasti bez traženja lozinke.
+     */
     public function disable(): ResponseInterface
     {
         $userId = $this->currentUserId();
@@ -116,7 +133,11 @@ final readonly class AdminElevationController
         return $this->responses->redirect($this->homePath());
     }
 
-    /** HR: Renderira obrazac za potvrdu lozinke. EN: Renders the password-confirmation form. */
+    /**
+     * EN: Renders the password-confirmation form.
+     *
+     * HR: Renderira obrazac za potvrdu lozinke.
+     */
     private function renderForm(string $next, string $error = '', int $status = 200): ResponseInterface
     {
         return $this->views->render('simbioza-user/admin_elevation', [
@@ -128,7 +149,11 @@ final readonly class AdminElevationController
         ], $status);
     }
 
-    /** HR: Renderira odgovor zabrane bez obrasca za potvrdu. EN: Renders a forbidden response without a confirmation form. */
+    /**
+     * EN: Renders a forbidden response without a confirmation form.
+     *
+     * HR: Renderira odgovor zabrane bez obrasca za potvrdu.
+     */
     private function renderDenied(string $message): ResponseInterface
     {
         return $this->views->render('simbioza-user/admin_elevation', [
@@ -140,7 +165,11 @@ final readonly class AdminElevationController
         ], 403);
     }
 
-    /** HR: Vraća ID trenutačno prijavljenog efektivnog korisnika. EN: Returns the current effective authenticated user ID. */
+    /**
+     * EN: Returns the current effective authenticated user ID.
+     *
+     * HR: Vraća ID trenutačno prijavljenog efektivnog korisnika.
+     */
     private function currentUserId(): int
     {
         $user = $this->authn->userData();
@@ -148,7 +177,11 @@ final readonly class AdminElevationController
         return is_array($user) && is_numeric($user['id'] ?? null) ? (int)$user['id'] : 0;
     }
 
-    /** HR: Prihvaća samo lokalnu relativnu putanju za povratak. EN: Accepts only a local relative return path. */
+    /**
+     * EN: Accepts only a local relative return path.
+     *
+     * HR: Prihvaća samo lokalnu relativnu putanju za povratak.
+     */
     private function safeNext(mixed $value): string
     {
         $path = is_scalar($value) ? trim((string)$value) : '';
@@ -167,13 +200,21 @@ final readonly class AdminElevationController
         return is_array($parts) && !isset($parts['scheme'], $parts['host']) ? $path : '';
     }
 
-    /** HR: Vraća početnu putanju aplikacije. EN: Returns the application home path. */
+    /**
+     * EN: Returns the application home path.
+     *
+     * HR: Vraća početnu putanju aplikacije.
+     */
     private function homePath(): string
     {
         return $this->path('home', '/');
     }
 
-    /** HR: Generira imenovanu rutu ili prenosivu zamjensku putanju. EN: Generates a named route or a portable fallback path. */
+    /**
+     * EN: Generates a named route or a portable fallback path.
+     *
+     * HR: Generira imenovanu rutu ili prenosivu zamjensku putanju.
+     */
     private function path(string $route, string $fallback): string
     {
         return $this->urls->namedRouteExists($route)

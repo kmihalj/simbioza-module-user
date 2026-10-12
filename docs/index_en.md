@@ -21,8 +21,6 @@ The module owns six active portable tables:
 - `simbioza_user_settings`: administrator provisioning settings;
 - `simbioza_user_personal_workspaces`: stable one-to-one mapping between a user and their personal Workspace;
 
-The legacy `simbioza_user_personal_workspace_policies` table may remain in an
-upgraded installation for migration compatibility, but it is no longer read or
-written. Only the global setting controls automatic creation.
+Only the global setting controls automatic creation.
 
 Notification text is stored by the generic Notification module. E-mail messages are passed to the optional E-mail module. The digest queue is operational state and is neither exposed as knowledge content nor archived in backup.

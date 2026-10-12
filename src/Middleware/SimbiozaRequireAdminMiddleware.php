@@ -21,14 +21,16 @@ use function is_array;
 use function is_numeric;
 
 /**
- * HR: Na Simbioza admin rutama zamjenjuje trajni admin status potvrdom lokalne lozinke.
  * EN: Replaces persistent admin status with a local-password challenge on Simbioza admin routes.
+ *
+ * HR: Na Simbioza admin rutama zamjenjuje trajni admin status potvrdom lokalne lozinke.
  */
 final readonly class SimbiozaRequireAdminMiddleware implements MiddlewareInterface
 {
     /**
-     * HR: Prima sirovi Auth kontekst, stanje elevacije i standardni fallback.
      * EN: Receives the raw Auth context, elevation state, and standard fallback.
+     *
+     * HR: Prima sirovi Auth kontekst, stanje elevacije i standardni fallback.
      */
     public function __construct(
         private AuthnHandlerInterface $authn,
@@ -43,8 +45,9 @@ final readonly class SimbiozaRequireAdminMiddleware implements MiddlewareInterfa
     }
 
     /**
-     * HR: Propušta samo aktivno potvrđenog administratora ili bootstrap instalaciju.
      * EN: Allows only an actively confirmed administrator or a bootstrap installation.
+     *
+     * HR: Propušta samo aktivno potvrđenog administratora ili bootstrap instalaciju.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

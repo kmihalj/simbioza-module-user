@@ -9,10 +9,11 @@ use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 
 return new class implements ReversibleMigrationInterface {
     /**
-     * HR: Kreira prenosivu shemu osobnih postavki, praćenja i odgođenih
-     *     dostava na SQLiteu, PostgreSQL-u i MySQL-u.
      * EN: Creates the portable personal-preference, follow, and deferred-delivery
      *     schema on SQLite, PostgreSQL, and MySQL.
+     *
+     * HR: Kreira prenosivu shemu osobnih postavki, praćenja i odgođenih
+     *     dostava na SQLiteu, PostgreSQL-u i MySQL-u.
      */
     public function up(Database $db): void
     {
@@ -144,8 +145,9 @@ return new class implements ReversibleMigrationInterface {
     }
 
     /**
-     * HR: Uklanja samo tablice u vlasništvu ovog modula, obrnutim redom.
      * EN: Removes only tables owned by this module, in reverse order.
+     *
+     * HR: Uklanja samo tablice u vlasništvu ovog modula, obrnutim redom.
      */
     public function down(Database $db): void
     {

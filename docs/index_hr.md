@@ -21,8 +21,6 @@ Modul posjeduje šest aktivnih prenosivih tablica:
 - `simbioza_user_settings`: administratorske postavke izrade;
 - `simbioza_user_personal_workspaces`: stabilno mapiranje korisnika na njegovo osobno Workspace područje;
 
-Starija tablica `simbioza_user_personal_workspace_policies` može ostati u već
-nadograđenoj instalaciji radi kompatibilnosti migracija, ali se više ne čita niti zapisuje.
 Automatsku izradu određuje samo globalna postavka.
 
 Tekst obavijesti sprema generički Notification modul. E-poruke se predaju opcionalnom E-mail modulu. Red sažetka je operativno stanje te se ne izlaže kao sadržaj znanja i ne arhivira u backupu.

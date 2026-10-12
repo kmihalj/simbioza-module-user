@@ -44,7 +44,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         'aaieduhr/simbioza-module-workspace',
     ];
 
-    /** HR: Zahtijeva samo temeljne module osobnog iskustva. EN: Requires only the core personal-experience modules. */
+    /**
+     * EN: Requires only the core personal-experience modules.
+     *
+     * HR: Zahtijeva samo temeljne module osobnog iskustva.
+     */
     public function canLoad(ContainerInterface $container): bool
     {
         $composer = $container->get(ComposerBridge::class);
@@ -77,13 +81,21 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         return true;
     }
 
-    /** HR: Učitavanje čeka obavezne module. EN: Loading waits for required modules. */
+    /**
+     * EN: Loading waits for required modules.
+     *
+     * HR: Učitavanje čeka obavezne module.
+     */
     public function requiresDeferredLoading(): bool
     {
         return true;
     }
 
-    /** HR: Učitava servisne definicije modula. EN: Loads module service definitions. */
+    /**
+     * EN: Loads module service definitions.
+     *
+     * HR: Učitava servisne definicije modula.
+     */
     public function getServices(): array
     {
         $services = require __DIR__ . '/config/services.php';
@@ -92,8 +104,9 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     }
 
     /**
-     * HR: Registrira samo autentificirane osobne radnje i javni CSS asset.
      * EN: Registers authenticated personal actions and the public CSS asset.
+     *
+     * HR: Registrira samo autentificirane osobne radnje i javni CSS asset.
      */
     public function getBaseRoutes(): array
     {
@@ -195,7 +208,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         ];
     }
 
-    /** HR: Registrira profilnu cjelinu te uklanja duplicirani generički e-mail prekidač. EN: Registers the profile section and removes the duplicated generic e-mail switch. */
+    /**
+     * EN: Registers the profile section and removes the duplicated generic e-mail switch.
+     *
+     * HR: Registrira profilnu cjelinu te uklanja duplicirani generički e-mail prekidač.
+     */
     public function getBootstrapCallables(): array
     {
         return [static function (ContainerInterface $container): void {
@@ -205,13 +222,18 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                     $registrar->register();
                 }
             } catch (ContainerExceptionInterface) {
-                // HR: Workspace će ponoviti registraciju ako se učitava nakon ovog modula.
                 // EN: Workspace retries the registration when it loads after this module.
+                //
+                // HR: Workspace će ponoviti registraciju ako se učitava nakon ovog modula.
             }
         }];
     }
 
-    /** HR: Veže obavezni Workspace i instalirane opcionalne domenske događaje. EN: Binds required Workspace and installed optional domain events. */
+    /**
+     * EN: Binds required Workspace and installed optional domain events.
+     *
+     * HR: Veže obavezni Workspace i instalirane opcionalne domenske događaje.
+     */
     public function getEventListeners(): array
     {
         $listeners = [
@@ -239,8 +261,9 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
     }
 
     /**
-     * HR: Registrira instalaciju migracije i worker dnevnog sažetka.
      * EN: Registers migration installation and the daily-digest worker.
+     *
+     * HR: Registrira instalaciju migracije i worker dnevnog sažetka.
      */
     public function getCommands(): array
     {
@@ -256,16 +279,6 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
                 [HpSimbiozaUserCommand::class, 'installMigration'],
             ),
             new CommandDefinition(
-                'simbioza-user:install-personal-workspaces-migration',
-                'Copy the Simbioza personal-space upgrade migration.',
-                [HpSimbiozaUserCommand::class, 'installPersonalWorkspacesMigration'],
-            ),
-            new CommandDefinition(
-                'simbioza-user:install-theme-mode-migration',
-                'Copy the Simbioza personal theme-mode upgrade migration.',
-                [HpSimbiozaUserCommand::class, 'installThemeModeMigration'],
-            ),
-            new CommandDefinition(
                 'simbioza-user:dispatch',
                 'Dispatch due followed-content digests.',
                 [HpSimbiozaUserCommand::class, 'dispatchDigests'],
@@ -273,7 +286,11 @@ return new class extends \HeartPhrame\Module\AbstractModuleManifest {
         ];
     }
 
-    /** HR: Vraća direktorij modularnih partiala. EN: Returns the modular partial directory. */
+    /**
+     * EN: Returns the modular partial directory.
+     *
+     * HR: Vraća direktorij modularnih partiala.
+     */
     public function getViewsPath(): string
     {
         return __DIR__ . '/views';

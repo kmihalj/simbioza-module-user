@@ -45,6 +45,27 @@ ali ne poznaje poslovna pravila praćenja.
 
 Nazivi u `label_snapshot` služe samo za prikaz. Nakon gubitka ACL prava nikada se ne vraćaju korisniku.
 
+## Skupna provjera vidljivosti inboxa
+
+`SimbiozaNotificationVisibilityProvider` implementira Notificationov opcionalni
+paketni ugovor. `FollowTargetService::canViewTargets()` učita aktivnog korisnika
+jednom po grupi, samo tražena područja/stranice i njihove aktivne pretke te
+skupne ACL retke. Koristi uobičajena Workspace pravila (importna ograničenja
+predaka, efektivne grupe, izravna prava krajnje stranice), bez stvaranja opisa
+naslova/poveznice za svaki kandidat. Nepostojeći ciljevi, nepotpuni/ciklični
+putovi, neaktivni korisnici i greške opcionalne integracije uskraćuju pristup.
+ID-evi kalendara provjeravaju se kroz
+`CalendarManagerInterface::readableCalendarIds()`; Calendar ostaje opcionalan,
+a njegov modul zadržava vlastitu politiku čitanja. Obavijest ugrađenog kalendara
+ili liste zadataka dodatno provjerava ciljnu stranicu.
+
+Nijedna odluka ne preživljava operaciju, pa uklanjanje cilja ili ACL-a u istom
+skupu servisa utječe na idući inbox/otvaranje/skupnu/API radnju. U aplikacijskom
+SQLite testu sa svježim servisima 100 različitih stranica traži devet upita i
+jedan dohvat korisnika, umjesto 504 upita i 100 dohvata. Veći inbox čita se u
+grupama od 128 redaka; točan zbroj i dalje pregledava sve grupe kandidata.
+To nije tvrdnja o konstantnom trošku za proizvoljno velik inbox.
+
 ## Backup
 
 Backup cijelog sitea i poslovne cjeline **Korisnici** sprema globalne postavke,

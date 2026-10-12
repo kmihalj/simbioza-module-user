@@ -13,17 +13,29 @@ use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use function is_array;
 use function is_numeric;
 
-/** HR: Povezuje komentare i odgovore s praćenom Workspace stranicom. EN: Connects comments and replies to a followed Workspace page. */
+/**
+ * EN: Connects comments and replies to a followed Workspace page.
+ *
+ * HR: Povezuje komentare i odgovore s praćenom Workspace stranicom.
+ */
 final readonly class CommentFollowActivityListener
 {
-    /** HR: Prima Workspace vezu i centralnu dostavu. EN: Receives the Workspace link and central delivery. */
+    /**
+     * EN: Receives the Workspace link and central delivery.
+     *
+     * HR: Prima Workspace vezu i centralnu dostavu.
+     */
     public function __construct(
         private FollowDeliveryService $delivery,
         private WorkspaceRepository $workspaces,
     ) {
     }
 
-    /** HR: Preskače dokumente izvan područja i reakcije bez poslovne važnosti. EN: Skips documents outside workspaces and reactions without business significance. */
+    /**
+     * EN: Skips documents outside workspaces and reactions without business significance.
+     *
+     * HR: Preskače dokumente izvan područja i reakcije bez poslovne važnosti.
+     */
     public function __invoke(CommentChanged $event): void
     {
         if (!in_array($event->action, ['created', 'replied'], true)) {

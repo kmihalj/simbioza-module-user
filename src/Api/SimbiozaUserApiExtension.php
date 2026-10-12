@@ -8,14 +8,16 @@ use AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterface;
 use AaiEduHr\HeartPhrameModuleApi\Contract\ApiRouteRegistry;
 
 /**
- * HR: Oglašava API rute osobnih praćenja zajedničkoj API jezgri.
  * EN: Advertises personal-follow routes to the shared API core.
+ *
+ * HR: Oglašava API rute osobnih praćenja zajedničkoj API jezgri.
  */
 final readonly class SimbiozaUserApiExtension implements ApiExtensionInterface
 {
     /**
-     * HR: Vraća stabilni identifikator API proširenja.
      * EN: Returns the stable API-extension identifier.
+     *
+     * HR: Vraća stabilni identifikator API proširenja.
      */
     public function id(): string
     {
@@ -23,8 +25,9 @@ final readonly class SimbiozaUserApiExtension implements ApiExtensionInterface
     }
 
     /**
-     * HR: Registrira sve rute modula u zajedničkom API registru.
      * EN: Registers every module route in the shared API registry.
+     *
+     * HR: Registrira sve rute modula u zajedničkom API registru.
      */
     public function register(ApiRouteRegistry $routes): void
     {
@@ -34,8 +37,9 @@ final readonly class SimbiozaUserApiExtension implements ApiExtensionInterface
     }
 
     /**
-     * HR: Vraća zatvoreni popis metoda, putanja, akcija i naziva ruta.
      * EN: Returns the closed list of methods, paths, actions, and route names.
+     *
+     * HR: Vraća zatvoreni popis metoda, putanja, akcija i naziva ruta.
      *
      * @return list<array{string,string,string,string}>
      */

@@ -23,10 +23,18 @@ use function is_numeric;
 use function is_scalar;
 use function trim;
 
-/** HR: Administratorski HTTP adapter za osobna područja. EN: Administrator HTTP adapter for personal Workspaces. */
+/**
+ * EN: Administrator HTTP adapter for personal Workspaces.
+ *
+ * HR: Administratorski HTTP adapter za osobna područja.
+ */
 final readonly class PersonalWorkspaceSettingsController
 {
-    /** HR: Prima samo javne poslovne i framework servise. EN: Receives only public business and framework services. */
+    /**
+     * EN: Receives only public business and framework services.
+     *
+     * HR: Prima samo javne poslovne i framework servise.
+     */
     public function __construct(
         private ResponseFactory $responses,
         private SimbiozaUserModuleViewRenderer $views,
@@ -38,7 +46,11 @@ final readonly class PersonalWorkspaceSettingsController
     ) {
     }
 
-    /** HR: Prikazuje globalna pravila i pregled izrađenih osobnih područja. EN: Displays global rules and the created personal-Workspace overview. */
+    /**
+     * EN: Displays global rules and the created personal-Workspace overview.
+     *
+     * HR: Prikazuje globalna pravila i pregled izrađenih osobnih područja.
+     */
     public function index(): ResponseInterface
     {
         $users = $this->personalWorkspaces->tablesReady()
@@ -75,7 +87,11 @@ final readonly class PersonalWorkspaceSettingsController
         ]);
     }
 
-    /** HR: Sprema globalna pravila automatske i korisničke izrade. EN: Saves global automatic and user-driven creation rules. */
+    /**
+     * EN: Saves global automatic and user-driven creation rules.
+     *
+     * HR: Sprema globalna pravila automatske i korisničke izrade.
+     */
     public function save(ServerRequestInterface $request): ResponseInterface
     {
         try {
@@ -94,8 +110,9 @@ final readonly class PersonalWorkspaceSettingsController
     }
 
     /**
-     * HR: Normalizira tijelo administratorske forme.
      * EN: Normalizes the administrator form body.
+     *
+     * HR: Normalizira tijelo administratorske forme.
      *
      * @return array<string,mixed>
      */
@@ -116,7 +133,11 @@ final readonly class PersonalWorkspaceSettingsController
         return $result;
     }
 
-    /** HR: Vraća ID prijavljenog administratora. EN: Returns the signed-in administrator ID. */
+    /**
+     * EN: Returns the signed-in administrator ID.
+     *
+     * HR: Vraća ID prijavljenog administratora.
+     */
     private function actorUserId(): int
     {
         $user = $this->authn->userData();
@@ -128,25 +149,41 @@ final readonly class PersonalWorkspaceSettingsController
         return $id;
     }
 
-    /** HR: Čita HTML checkbox. EN: Reads an HTML checkbox. */
+    /**
+     * EN: Reads an HTML checkbox.
+     *
+     * HR: Čita HTML checkbox.
+     */
     private function checked(mixed $value): bool
     {
         return is_scalar($value) && in_array(strtolower(trim((string)$value)), ['1', 'true', 'yes', 'on'], true);
     }
 
-    /** HR: Dodaje uspješnu toast/alert poruku. EN: Adds a successful toast/alert message. */
+    /**
+     * EN: Adds a successful toast/alert message.
+     *
+     * HR: Dodaje uspješnu toast/alert poruku.
+     */
     private function success(string $message): void
     {
         $this->alerts->add(new Alert($message, AlertLevelEnum::Success));
     }
 
-    /** HR: Dodaje poruku pogreške. EN: Adds an error message. */
+    /**
+     * EN: Adds an error message.
+     *
+     * HR: Dodaje poruku pogreške.
+     */
     private function danger(string $message): void
     {
         $this->alerts->add(new Alert($message, AlertLevelEnum::Danger));
     }
 
-    /** HR: Vraća se na administratorski pregled. EN: Returns to the administrator overview. */
+    /**
+     * EN: Returns to the administrator overview.
+     *
+     * HR: Vraća se na administratorski pregled.
+     */
     private function redirect(): ResponseInterface
     {
         return $this->responses->redirect(
@@ -154,7 +191,11 @@ final readonly class PersonalWorkspaceSettingsController
         );
     }
 
-    /** HR: Generira named rutu ili prenosivi fallback. EN: Generates a named route or portable fallback. */
+    /**
+     * EN: Generates a named route or portable fallback.
+     *
+     * HR: Generira named rutu ili prenosivi fallback.
+     */
     private function path(string $route, string $fallback): string
     {
         return $this->urls->namedRouteExists($route)
@@ -162,7 +203,11 @@ final readonly class PersonalWorkspaceSettingsController
             : rtrim($this->urls->getBasePath(), '/') . $fallback;
     }
 
-    /** HR: Vraća named javni URL područja uz prenosivi fallback. EN: Returns the named public Workspace URL with a portable fallback. */
+    /**
+     * EN: Returns the named public Workspace URL with a portable fallback.
+     *
+     * HR: Vraća named javni URL područja uz prenosivi fallback.
+     */
     private function workspacePath(string $slug): string
     {
         if ($this->urls->namedRouteExists('workspace.show')) {

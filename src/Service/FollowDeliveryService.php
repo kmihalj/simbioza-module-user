@@ -35,10 +35,11 @@ use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 
 /**
- * HR: Koordinira ACL, deduplikaciju, in-app zapis te neposrednu ili sažetu
- *     e-mail dostavu za sve vrste praćenja.
  * EN: Coordinates ACL, deduplication, in-app storage, and immediate or digest
  *     e-mail delivery for every follow type.
+ *
+ * HR: Koordinira ACL, deduplikaciju, in-app zapis te neposrednu ili sažetu
+ *     e-mail dostavu za sve vrste praćenja.
  */
 final readonly class FollowDeliveryService
 {
@@ -47,8 +48,9 @@ final readonly class FollowDeliveryService
     private const EMAIL_SERVICE = \AaiEduHr\HeartPhrameModuleEmail\Service\EmailService::class;
 
     /**
-     * HR: Prima generičke kanale i servise specifične za Simbioza pravila.
      * EN: Receives generic channels and services specific to Simbioza rules.
+     *
+     * HR: Prima generičke kanale i servise specifične za Simbioza pravila.
      */
     public function __construct(
         private Database $database,
@@ -63,10 +65,13 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Pretvara jedan domenski događaj u najviše jednu obavijest po korisniku.
      * EN: Turns one domain event into at most one notification per user.
-     * HR: Čita promjenjivu bazu i zapisuje dostave; rezultat nije čista funkcija argumenata.
-     * EN: Reads mutable database state and records deliveries; the result is not a pure function of arguments.
+     *
+     * Reads mutable database state and records deliveries; the result is not a pure function of arguments.
+     *
+     * HR: Pretvara jedan domenski događaj u najviše jednu obavijest po korisniku.
+     *
+     * Čita promjenjivu bazu i zapisuje dostave; rezultat nije čista funkcija argumenata.
      *
      * @phpstan-impure
      */
@@ -99,10 +104,11 @@ final readonly class FollowDeliveryService
             }
 
             /*
-             * HR: Cilj se ponovno razrješava za primatelja. Snapshot naziva iz
-             *     tablice praćenja nikada se ne koristi kada ACL više ne vrijedi.
              * EN: Resolve the target again for the recipient. The label snapshot
              *     from the follow table is never used after ACL access is lost.
+             *
+             * HR: Cilj se ponovno razrješava za primatelja. Snapshot naziva iz
+             *     tablice praćenja nikada se ne koristi kada ACL više ne vrijedi.
              */
             $descriptor = $this->targets->describe(
                 $activity->targetType,
@@ -127,12 +133,13 @@ final readonly class FollowDeliveryService
                 && ($followType !== $activity->targetType || $followId !== $activity->targetId);
             if ($relatedFollow) {
                 /*
-                 * HR: Pratitelj stranice ili područja mora proći i ACL izvornog
-                 *     kalendara/zadatka i ACL povezane stranice. Time ugrađena
-                 *     promjena ne može otkriti sadržaj nakon gubitka prava.
                  * EN: A page or workspace follower must pass both the source
                  *     calendar/task ACL and the related page ACL. This prevents
                  *     an embedded change from leaking content after access loss.
+                 *
+                 * HR: Pratitelj stranice ili područja mora proći i ACL izvornog
+                 *     kalendara/zadatka i ACL povezane stranice. Time ugrađena
+                 *     promjena ne može otkriti sadržaj nakon gubitka prava.
                  */
                 $followDescriptor = $this->targets->describe(
                     $followType,
@@ -183,13 +190,14 @@ final readonly class FollowDeliveryService
                 : $activity;
 
             /*
+             * EN: For related e-mail changes, store the page as the final
+             *     delivery target and the source calendar/list in context. The
+             *     daily worker can then re-check both ACLs and keep the page URL.
+             *
              * HR: Za e-poštu povezane promjene spremamo stranicu kao konačni
              *     cilj dostave, a izvorni kalendar/listu u kontekst. Dnevni
              *     worker tako može ponovno provjeriti oba ACL-a i zadržati
              *     poveznicu na stranicu.
-             * EN: For related e-mail changes, store the page as the final
-             *     delivery target and the source calendar/list in context. The
-             *     daily worker can then re-check both ACLs and keep the page URL.
              */
             $emailActivity = $effectiveActivity;
             if ($relatedFollow && $activity->pageId !== null && $activity->pageId > 0) {
@@ -249,8 +257,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Šalje dospjele dnevne sažetke nakon zadnje ACL provjere svake stavke.
      * EN: Sends due daily digests after a final ACL check of every item.
+     *
+     * HR: Šalje dospjele dnevne sažetke nakon zadnje ACL provjere svake stavke.
      */
     public function dispatchDueDigests(int $limit = 500): int
     {
@@ -351,10 +360,11 @@ final readonly class FollowDeliveryService
             }
 
             /*
-             * HR: Nedostupan ili privremeno neispravan E-mail modul ne smije
-             *     nepovratno označiti sažetak poslanim; sljedeći worker ga ponavlja.
              * EN: A missing or temporarily failing E-mail module must not mark
              *     a digest as delivered irreversibly; the next worker retries it.
+             *
+             * HR: Nedostupan ili privremeno neispravan E-mail modul ne smije
+             *     nepovratno označiti sažetak poslanim; sljedeći worker ga ponavlja.
              */
             if ($deliveryCompleted) {
                 $this->markDelivered($items);
@@ -365,10 +375,11 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Usmjerava dopuštenu promjenu u neposrednu e-poštu, dnevni sažetak
-     *     ili samo obavijest u aplikaciji prema osobnim postavkama.
      * EN: Routes an allowed change to immediate e-mail, a daily digest, or
      *     in-app notification only, according to personal preferences.
+     *
+     * HR: Usmjerava dopuštenu promjenu u neposrednu e-poštu, dnevni sažetak
+     *     ili samo obavijest u aplikaciji prema osobnim postavkama.
      *
      * @param array<string,mixed> $descriptor
      */
@@ -410,8 +421,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Dodaje ili objedinjuje jednu promjenu u redu dnevnog sažetka.
      * EN: Adds or coalesces one change in the daily-digest queue.
+     *
+     * HR: Dodaje ili objedinjuje jednu promjenu u redu dnevnog sažetka.
      *
      * @param array<string,mixed> $descriptor
      */
@@ -470,10 +482,11 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Sigurno predaje poruku opcionalnom Email modulu i bilježi tehničku
-     *     pogrešku bez prekidanja obavijesti u aplikaciji.
      * EN: Safely hands a message to the optional Email module and logs a
      *     technical failure without interrupting the in-app notification.
+     *
+     * HR: Sigurno predaje poruku opcionalnom Email modulu i bilježi tehničku
+     *     pogrešku bez prekidanja obavijesti u aplikaciji.
      */
     private function queueEmail(
         int $userId,
@@ -507,8 +520,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Označava uspješno obrađene redove sažetka dostavljenima.
      * EN: Marks successfully processed digest rows as delivered.
+     *
+     * HR: Označava uspješno obrađene redove sažetka dostavljenima.
      *
      * @param iterable<array<string,mixed>> $items
      */
@@ -527,8 +541,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Gradi ograničeni ključ za objedinjavanje istovrsnih promjena unutar pet minuta.
      * EN: Builds a bounded key for coalescing equivalent changes within five minutes.
+     *
+     * HR: Gradi ograničeni ključ za objedinjavanje istovrsnih promjena unutar pet minuta.
      */
     private function dedupKey(FollowActivity $activity, int $userId): string
     {
@@ -551,8 +566,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Kodira neosjetljivi kontekst sažetka u stabilan JSON.
      * EN: Encodes non-sensitive digest context as stable JSON.
+     *
+     * HR: Kodira neosjetljivi kontekst sažetka u stabilan JSON.
      *
      * @param array<string,mixed> $payload
      */
@@ -565,8 +581,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Dekodira kontekst sažetka, a oštećeni payload svodi na prazan objekt.
      * EN: Decodes digest context, reducing malformed payloads to an empty object.
+     *
+     * HR: Dekodira kontekst sažetka, a oštećeni payload svodi na prazan objekt.
      *
      * @return array<string,mixed>
      */
@@ -586,8 +603,9 @@ final readonly class FollowDeliveryService
     }
 
     /**
-     * HR: Filtrira dekodirani ili ORM redak na tekstualne ključeve.
      * EN: Filters a decoded or ORM row to string keys.
+     *
+     * HR: Filtrira dekodirani ili ORM redak na tekstualne ključeve.
      *
      * @param array<array-key,mixed> $row
      * @return array<string,mixed>
@@ -604,13 +622,21 @@ final readonly class FollowDeliveryService
         return $result;
     }
 
-    /** HR: Sigurno normalizira skalarni red ili payload. EN: Safely normalizes a scalar row or payload value. */
+    /**
+     * EN: Safely normalizes a scalar row or payload value.
+     *
+     * HR: Sigurno normalizira skalarni red ili payload.
+     */
     private function text(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';
     }
 
-    /** HR: Generira prenosivi UUID v4. EN: Generates a portable UUID v4. */
+    /**
+     * EN: Generates a portable UUID v4.
+     *
+     * HR: Generira prenosivi UUID v4.
+     */
     private function uuid(): string
     {
         $bytes = random_bytes(16);

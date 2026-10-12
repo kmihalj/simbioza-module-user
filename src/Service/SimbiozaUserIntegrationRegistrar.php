@@ -18,14 +18,19 @@ use AaiEduHr\SimbiozaModuleWorkspace\Contract\WorkspaceIntegrationRegistrarInter
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspacePresentationRegistry;
 
 /**
- * HR: Na jednome mjestu registrira sve prikazne integracije korisničkog modula.
- *     Poziv je idempotentan pa ga smije pokrenuti modul koji se učita posljednji.
  * EN: Registers every user-module presentation integration in one place. The
  *     call is idempotent so whichever module loads last may safely invoke it.
+ *
+ * HR: Na jednome mjestu registrira sve prikazne integracije korisničkog modula.
+ *     Poziv je idempotentan pa ga smije pokrenuti modul koji se učita posljednji.
  */
 final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegrationRegistrarInterface
 {
-    /** HR: Prima registre i providere koji se povezuju. EN: Receives the registries and providers to connect. */
+    /**
+     * EN: Receives the registries and providers to connect.
+     *
+     * HR: Prima registre i providere koji se povezuju.
+     */
     public function __construct(
         private WorkspacePresentationRegistry $workspacePresentations,
         private PersonalWorkspacePresentationProvider $personalWorkspacePresentation,
@@ -43,7 +48,11 @@ final readonly class SimbiozaUserIntegrationRegistrar implements WorkspaceIntegr
     ) {
     }
 
-    /** HR: Dovršava sve integracije bez dupliciranja zapisa. EN: Completes every integration without duplicates. */
+    /**
+     * EN: Completes every integration without duplicates.
+     *
+     * HR: Dovršava sve integracije bez dupliciranja zapisa.
+     */
     public function register(): void
     {
         $this->workspacePresentations->register($this->personalWorkspacePresentation);

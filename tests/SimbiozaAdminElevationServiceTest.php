@@ -61,7 +61,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->service = new SimbiozaAdminElevationService($this->session, $users);
     }
 
-    /** HR: Admin se bez potvrde prikazuje bez bypassa i admin grupe, a potvrda ih vraća. EN: An unconfirmed admin loses bypass and admin group until confirmation restores them. */
+    /**
+     * EN: An unconfirmed admin loses bypass and admin group until confirmation restores them.
+     *
+     * HR: Admin se bez potvrde prikazuje bez bypassa i admin grupe, a potvrda ih vraća.
+     */
     public function testEffectiveRightsFollowElevationState(): void
     {
         $userId = $this->insertUser('admin', true, 'tajna-lozinka');
@@ -104,7 +108,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->assertGreaterThanOrEqual(2, $this->session->regenerations);
     }
 
-    /** HR: Bez lokalne lozinke nema stavke ni aktivacije, a obični korisnik nikada nije podoban. EN: Missing local password hides elevation, and ordinary users are never eligible. */
+    /**
+     * EN: Missing local password hides elevation, and ordinary users are never eligible.
+     *
+     * HR: Bez lokalne lozinke nema stavke ni aktivacije, a obični korisnik nikada nije podoban.
+     */
     public function testEligibilityRequiresAdministratorAndLocalPassword(): void
     {
         $adminWithoutPassword = $this->insertUser('admin.no-password', true, null);
@@ -122,7 +130,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         );
     }
 
-    /** HR: Potvrđena lokalna prijava odmah elevatira samo gotov administratorski račun. EN: A verified local sign-in immediately elevates only a ready administrator account. */
+    /**
+     * EN: A verified local sign-in immediately elevates only a ready administrator account.
+     *
+     * HR: Potvrđena lokalna prijava odmah elevatira samo gotov administratorski račun.
+     */
     public function testVerifiedLocalLoginActivatesEligibleAdministrator(): void
     {
         $adminId = $this->insertUser('local-admin', true, 'admin-password');
@@ -142,7 +154,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->assertFalse($this->service->isElevated($temporaryAdminId));
     }
 
-    /** HR: Listener prihvaća samo Authovu potvrdu lokalne prijave. EN: The listener accepts only Auth's verified local sign-in event. */
+    /**
+     * EN: The listener accepts only Auth's verified local sign-in event.
+     *
+     * HR: Listener prihvaća samo Authovu potvrdu lokalne prijave.
+     */
     public function testLoginListenerDoesNotElevateExternalSignIn(): void
     {
         $adminId = $this->insertUser('provider-admin', true, 'admin-password');
@@ -156,7 +172,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->assertTrue($this->service->isElevated($adminId));
     }
 
-    /** HR: Pet pogrešnih potvrda zaključava i naknadno ispravnu lozinku. EN: Five invalid confirmations also lock a subsequent correct password. */
+    /**
+     * EN: Five invalid confirmations also lock a subsequent correct password.
+     *
+     * HR: Pet pogrešnih potvrda zaključava i naknadno ispravnu lozinku.
+     */
     public function testRepeatedFailuresTemporarilyLockElevation(): void
     {
         $userId = $this->insertUser('locked-admin', true, 'correct-password');
@@ -174,7 +194,11 @@ final class SimbiozaAdminElevationServiceTest extends TestCase
         $this->assertFalse($this->service->isElevated($userId));
     }
 
-    /** HR: Auth dekorator primjenjuje efektivna prava i resetira ih pri prijavi ili odjavi. EN: The Auth decorator applies effective rights and resets them on sign-in or sign-out. */
+    /**
+     * EN: The Auth decorator applies effective rights and resets them on sign-in or sign-out.
+     *
+     * HR: Auth dekorator primjenjuje efektivna prava i resetira ih pri prijavi ili odjavi.
+     */
     public function testAuthDecoratorResetsElevation(): void
     {
         $userId = $this->insertUser('decorated-admin', true, 'correct-password');

@@ -1,8 +1,9 @@
 <?php
 
 /**
- * HR: Backup modul otkriva osobne postavke i praćenja kao dio cjeline Korisnici.
  * EN: Backup discovers personal preferences and follows as part of the Users group.
+ *
+ * HR: Backup modul otkriva osobne postavke i praćenja kao dio cjeline Korisnici.
  */
 
 declare(strict_types=1);

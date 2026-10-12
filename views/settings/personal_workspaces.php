@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-// HR: Glavni orijentir daje aplikacijski raspored; ovaj je prikaz samo njegov sadržaj.
 // EN: The host layout owns the main landmark; this view only supplies its content.
-
-// phpcs:disable Generic.Files.LineLength.TooLong -- HR/EN: Prevedeni HTML atributi ostaju čitljivi. / Translated HTML attributes remain readable.
+//
+// phpcs:disable Generic.Files.LineLength.TooLong -- HR/
+// Prevedeni HTML atributi ostaju čitljivi. / Translated HTML attributes remain readable.
+//
+// HR: Glavni orijentir daje aplikacijski raspored; ovaj je prikaz samo njegov sadržaj.
 
 /**
- * HR: Administratorske postavke osobnih područja.
  * EN: Administrator settings for personal spaces.
+ *
+ * HR: Administratorske postavke osobnih područja.
  *
  * @var \HeartPhrame\View\View $this
  * @var string $title

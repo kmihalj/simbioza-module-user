@@ -11,7 +11,11 @@ use Throwable;
 use function is_object;
 use function method_exists;
 
-/** HR: Opcionalno dodaje osobna područja u zajedničke postavke. EN: Optionally adds personal Workspaces to shared Settings. */
+/**
+ * EN: Optionally adds personal Workspaces to shared Settings.
+ *
+ * HR: Opcionalno dodaje osobna područja u zajedničke postavke.
+ */
 final readonly class SimbiozaUserMenuIntegration
 {
     private const ITEM_ID = 'simbioza-user.personal-workspaces.settings';
@@ -20,14 +24,22 @@ final readonly class SimbiozaUserMenuIntegration
 
     private const MENU_REPOSITORY = 'AaiEduHr\\HeartPhrameModuleMenu\\Service\\MenuConfigRepository';
 
-    /** HR: Prima container i konfiguraciju bez ovisnosti o Menu klasama. EN: Receives the container and config without depending on Menu classes. */
+    /**
+     * EN: Receives the container and config without depending on Menu classes.
+     *
+     * HR: Prima container i konfiguraciju bez ovisnosti o Menu klasama.
+     */
     public function __construct(
         private ContainerInterface $container,
         private ConfigInterface $config,
     ) {
     }
 
-    /** HR: Dodaje stavku u postojeću grupu Područja i čuva korisnički redoslijed. EN: Adds the item to the existing Workspaces group and preserves user ordering. */
+    /**
+     * EN: Adds the item to the existing Workspaces group and preserves user ordering.
+     *
+     * HR: Dodaje stavku u postojeću grupu Područja i čuva korisnički redoslijed.
+     */
     public function register(): void
     {
         if (!$this->menuEnabled() || !class_exists(self::MENU_REPOSITORY)) {
@@ -42,14 +54,16 @@ final readonly class SimbiozaUserMenuIntegration
 
             $repository->upsertItemsForSection('settings', [$this->definition()]);
         } catch (Throwable) {
-            // HR: Opcionalni izbornik ne smije zaustaviti osobna područja.
             // EN: The optional menu must not stop personal-space functionality.
+            //
+            // HR: Opcionalni izbornik ne smije zaustaviti osobna područja.
         }
     }
 
     /**
-     * HR: Vraća prenosivu definiciju stavke osobnih područja.
      * EN: Returns the portable personal-spaces menu item definition.
+     *
+     * HR: Vraća prenosivu definiciju stavke osobnih područja.
      *
      * @return array<string,mixed>
      */
@@ -68,7 +82,11 @@ final readonly class SimbiozaUserMenuIntegration
         ];
     }
 
-    /** HR: Provjerava je li Menu stvarno uključen. EN: Checks whether Menu is actually enabled. */
+    /**
+     * EN: Checks whether Menu is actually enabled.
+     *
+     * HR: Provjerava je li Menu stvarno uključen.
+     */
     private function menuEnabled(): bool
     {
         return in_array(

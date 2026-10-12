@@ -5,8 +5,9 @@ declare(strict_types=1);
 // phpcs:disable Generic.Files.LineLength.TooLong -- HR/EN: HTML atributi i prijevodne poruke ostaju čitljivi u predlošku. / HTML attributes and translation messages remain readable in the template.
 
 /**
- * HR: Profilna cjelina za postavke i tablični pregled svih osobnih praćenja.
  * EN: Profile section for settings and a tabular overview of all personal follows.
+ *
+ * HR: Profilna cjelina za postavke i tablični pregled svih osobnih praćenja.
  *
  * @var \HeartPhrame\View\View $this
  * @var array<string,mixed> $preferences

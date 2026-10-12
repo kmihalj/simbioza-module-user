@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-// HR: Izvorni hrvatski ključevi i prijevodi jezika en.
 // EN: Canonical Croatian source keys and en translations.
+//
+// HR: Izvorni hrvatski ključevi i prijevodi jezika en.
 return array (
   'notification_datetime_format' => 'M j, Y, g:i A',
   'calendar_notification_date_format' => 'M j, Y',

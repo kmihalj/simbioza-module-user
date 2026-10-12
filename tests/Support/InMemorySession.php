@@ -9,7 +9,11 @@ use HeartPhrame\Session\SessionInterface;
 use function bin2hex;
 use function random_bytes;
 
-/** HR: Minimalni server-side session test double. EN: Minimal server-side session test double. */
+/**
+ * EN: Minimal server-side session test double.
+ *
+ * HR: Minimalni server-side session test double.
+ */
 final class InMemorySession implements SessionInterface
 {
     /** @var array<string,mixed> */

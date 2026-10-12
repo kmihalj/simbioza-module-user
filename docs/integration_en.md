@@ -46,6 +46,26 @@ as a leading action but does not know follow-domain rules.
 
 Labels stored in `label_snapshot` are presentation aids only. They are not returned after ACL is lost.
 
+## Batched inbox visibility
+
+`SimbiozaNotificationVisibilityProvider` implements Notification's optional batch
+contract. `FollowTargetService::canViewTargets()` loads the active user once per
+window, only requested Workspaces/pages and their enabled ancestors, and batch
+ACL rows. It reuses Workspace's normal permission rules (including imported
+ancestor restrictions, effective groups and direct leaf grants), without
+creating label/URL descriptors for every candidate. Missing targets, incomplete
+or cyclic paths, inactive users and failed optional integrations deny access.
+Calendar IDs are checked through `CalendarManagerInterface::readableCalendarIds()`;
+Calendar remains optional, and its owning module retains its read policy.
+An embedded Calendar/task-list notification also checks its destination page.
+
+No visibility decision survives an operation, so deleting a target or revoking
+ACL in the same service graph affects the next inbox/open/bulk/API read. In the
+application's cold SQLite fixture, 100 distinct page notifications require nine
+queries and one user read, rather than 504 queries and 100 user reads. Larger
+inboxes are streamed in 128-row windows; exact totals still examine every
+candidate window. This is not a constant-cost claim for arbitrarily large inboxes.
+
 ## Backup
 
 A full-site backup and the **Users** business component store global preferences,

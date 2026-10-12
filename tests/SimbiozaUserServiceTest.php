@@ -16,6 +16,7 @@ use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Migration\ReversibleMigrationInterface;
 use AaiEduHr\SimbiozaModuleUser\Backup\SimbiozaUserWorkspaceBackupProvider;
 use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
+use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetVisibilityResolverInterface;
 use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use AaiEduHr\SimbiozaModuleUser\Notification\SimbiozaNotificationVisibilityProvider;
 use AaiEduHr\SimbiozaModuleUser\Service\CalendarSubscriptionSynchronizer;
@@ -49,11 +50,12 @@ final class SimbiozaUserServiceTest extends TestCase
 {
     private Database $database;
 
-    private FollowTargetResolverInterface $targets;
+    private FollowTargetResolverInterface&FollowTargetVisibilityResolverInterface $targets;
 
     /**
-     * HR: Priprema prenosive SQLite tablice i kontrolirani ACL resolver.
      * EN: Prepares portable SQLite tables and a controlled ACL resolver.
+     *
+     * HR: Priprema prenosive SQLite tablice i kontrolirani ACL resolver.
      */
     protected function setUp(): void
     {
@@ -71,8 +73,17 @@ final class SimbiozaUserServiceTest extends TestCase
         );
         $notificationMigration = $this->resolveNotificationMigrationPath('initial_notification_schema.php');
         $this->runMigration($notificationMigration);
-        $this->targets = new class implements FollowTargetResolverInterface {
+        $this->targets = new class implements
+            FollowTargetResolverInterface,
+            \AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetVisibilityResolverInterface
+        {
             public bool $accessible = true;
+
+            /** {@inheritDoc} */
+            public function canViewTargets(int $userId, array $targets): array
+            {
+                return array_fill(0, count($targets), $this->accessible && $userId > 0);
+            }
 
             /** {@inheritDoc} */
             public function describe(string $type, string $id, int $userId, array $context = []): array
@@ -92,8 +103,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Potvrđuje spremanje, popis, pronalazak pretplatnika i prestanak praćenja.
      * EN: Verifies persistence, listing, subscriber matching, and unfollowing.
+     *
+     * HR: Potvrđuje spremanje, popis, pronalazak pretplatnika i prestanak praćenja.
      */
     public function testFollowLifecycleUsesCurrentAcl(): void
     {
@@ -114,8 +126,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Praćenje jedne liste ne smije uhvatiti promjene druge liste u istom dokumentu.
      * EN: Following one list must not match another list's changes in the same document.
+     *
+     * HR: Praćenje jedne liste ne smije uhvatiti promjene druge liste u istom dokumentu.
      */
     public function testTaskListFollowsRemainSeparatedInsideOneDocument(): void
     {
@@ -131,8 +144,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Potvrđuje zadane postavke, dnevni sažetak i osobni način teme.
      * EN: Verifies default preferences, daily digest, and personal theme mode.
+     *
+     * HR: Potvrđuje zadane postavke, dnevni sažetak i osobni način teme.
      */
     public function testPersonalPreferencesAreStoredPerUser(): void
     {
@@ -157,10 +171,11 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Komponentni i pojedinačni Workspace backup moraju imati samo ovisnosti
-     *     koje doista postoje u njihovu opsegu arhiva.
      * EN: Component and single-Workspace backups must declare only dependencies
      *     that actually exist in their respective archive scope.
+     *
+     * HR: Komponentni i pojedinačni Workspace backup moraju imati samo ovisnosti
+     *     koje doista postoje u njihovu opsegu arhiva.
      */
     public function testWorkspaceBackupMetadataKeepsScopeDependenciesSeparate(): void
     {
@@ -187,8 +202,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Potvrđuje prijenos starih pretplata i uklanjanje praćenja nakon odjave.
      * EN: Verifies legacy-subscription import and follow removal after unsubscription.
+     *
+     * HR: Potvrđuje prijenos starih pretplata i uklanjanje praćenja nakon odjave.
      */
     public function testCalendarSubscriptionsAreReconciledWithoutASecondFollowControl(): void
     {
@@ -241,10 +257,11 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Promjena ugrađenog sadržaja obavještava pratitelja stranice samo jednom
-     *     i vodi ga na ACL-provjerenu stranicu.
      * EN: An embedded-content change notifies a page follower only once and links
      *     to the ACL-checked page.
+     *
+     * HR: Promjena ugrađenog sadržaja obavještava pratitelja stranice samo jednom
+     *     i vodi ga na ACL-provjerenu stranicu.
      */
     public function testEmbeddedCalendarActivityUsesRelatedPageFollow(): void
     {
@@ -287,8 +304,9 @@ final class SimbiozaUserServiceTest extends TestCase
             dedupIdentity: 'calendar:900:updated',
         );
 
-        // HR: Provjeravaju se dva stvarna poziva, ne isti zapamćeni rezultat analizatora.
         // EN: Verify two real invocations, not the analyser's remembered result of one expression.
+        //
+        // HR: Provjeravaju se dva stvarna poziva, ne isti zapamćeni rezultat analizatora.
         $firstDelivery = $delivery->process($activity);
         $repeatedDelivery = $delivery->process($activity);
         $this->assertSame(1, $firstDelivery);
@@ -305,8 +323,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Potvrđuje jednu dedupliciranu in-app obavijest i ACL skrivanje nakon gubitka prava.
      * EN: Verifies one de-duplicated in-app notification and ACL hiding after access is lost.
+     *
+     * HR: Potvrđuje jednu dedupliciranu in-app obavijest i ACL skrivanje nakon gubitka prava.
      */
     public function testDeliveryDeduplicatesAndNotificationAclFailsClosed(): void
     {
@@ -344,8 +363,9 @@ final class SimbiozaUserServiceTest extends TestCase
             documentId: 'doc-55',
         );
 
-        // HR: Ponovljena dostava mora i dalje proći stvarnu provjeru deduplikacije.
         // EN: Repeated delivery must still run the actual deduplication assertion.
+        //
+        // HR: Ponovljena dostava mora i dalje proći stvarnu provjeru deduplikacije.
         $firstDelivery = $delivery->process($activity);
         $repeatedDelivery = $delivery->process($activity);
         $this->assertSame(1, $firstDelivery);
@@ -358,8 +378,9 @@ final class SimbiozaUserServiceTest extends TestCase
     }
 
     /**
-     * HR: Neuspjela e-mail predaja ostavlja dnevni sažetak spremnim za ponovni pokušaj.
      * EN: A failed e-mail handoff leaves the daily digest ready for retry.
+     *
+     * HR: Neuspjela e-mail predaja ostavlja dnevni sažetak spremnim za ponovni pokušaj.
      */
     public function testFailedDailyDigestIsNotMarkedAsDelivered(): void
     {
@@ -407,7 +428,11 @@ final class SimbiozaUserServiceTest extends TestCase
         $this->assertNull($pending['delivered_at'] ?? null);
     }
 
-    /** HR: Izvršava jednu migraciju kao u aplikaciji. EN: Runs one migration as the application does. */
+    /**
+     * EN: Runs one migration as the application does.
+     *
+     * HR: Izvršava jednu migraciju kao u aplikaciji.
+     */
     private function runMigration(string $path): void
     {
         $migration = require $path;
@@ -415,19 +440,31 @@ final class SimbiozaUserServiceTest extends TestCase
         $migration->up($this->database);
     }
 
-    /** HR: Vraća putanju migracije ovisnog modula neovisno o načinu instalacije. EN: Returns migration path of a dependency module regardless of install source. */
+    /**
+     * EN: Returns migration path of a dependency module regardless of install source.
+     *
+     * HR: Vraća putanju migracije ovisnog modula neovisno o načinu instalacije.
+     */
     private function resolveNotificationMigrationPath(string $file): string
     {
         return $this->resolveModuleMigrationPath(NotificationPreferenceService::class, $file);
     }
 
-    /** HR: Vraća putanju migracije kalendarskog modula neovisno o načinu instalacije. EN: Returns migration path for Calendar module regardless of installation source. */
+    /**
+     * EN: Returns migration path for Calendar module regardless of installation source.
+     *
+     * HR: Vraća putanju migracije kalendarskog modula neovisno o načinu instalacije.
+     */
     private function resolveCalendarMigrationPath(string $file): string
     {
         return $this->resolveModuleMigrationPath(ModuleCalendar::class, $file);
     }
 
-    /** HR: Pronalaženje migracije u direktoriju ovisnog modula kroz putanju klase. EN: Finds migration by walking up class file path. */
+    /**
+     * EN: Finds migration by walking up class file path.
+     *
+     * HR: Pronalaženje migracije u direktoriju ovisnog modula kroz putanju klase.
+     */
     private function resolveModuleMigrationPath(string $className, string $file): string
     {
         $basePath = (new ReflectionClass($className))->getFileName();
@@ -444,13 +481,21 @@ final class SimbiozaUserServiceTest extends TestCase
         throw new RuntimeException(sprintf('Module migration not found: %s', $file));
     }
 
-    /** HR: Mijenja kontroliranu ACL odluku testnog resolvera. EN: Changes the controlled ACL decision of the test resolver. */
+    /**
+     * EN: Changes the controlled ACL decision of the test resolver.
+     *
+     * HR: Mijenja kontroliranu ACL odluku testnog resolvera.
+     */
     private function setTargetAccess(bool $accessible): void
     {
         (new ReflectionProperty($this->targets, 'accessible'))->setValue($this->targets, $accessible);
     }
 
-    /** HR: Vraća container bez opcionalnih kanala. EN: Returns a container without optional channels. */
+    /**
+     * EN: Returns a container without optional channels.
+     *
+     * HR: Vraća container bez opcionalnih kanala.
+     */
     private function emptyContainer(): ContainerInterface
     {
         return new class implements ContainerInterface {

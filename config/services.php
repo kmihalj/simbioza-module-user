@@ -339,8 +339,9 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleCalendar\Event\CalendarFollowChanged
             new CalendarFollowChangedListener($container->get(CalendarSubscriptionSynchronizer::class));
 }
 
-// HR: Modul sam oglašava osobni API kada je generička API jezgra dostupna.
 // EN: The module advertises its personal API when the generic API core is available.
+//
+// HR: Modul sam oglašava osobni API kada je generička API jezgra dostupna.
 if (interface_exists(\AaiEduHr\HeartPhrameModuleApi\Contract\ApiExtensionInterface::class)) {
     $services[SimbiozaUserApiExtension::class] =
     static fn(): SimbiozaUserApiExtension => new SimbiozaUserApiExtension();

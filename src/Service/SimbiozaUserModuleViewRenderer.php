@@ -8,17 +8,26 @@ use AaiEduHr\SimbiozaModuleUser\ModuleSimbiozaUser;
 use HeartPhrame\Http\ResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 
-/** HR: Renderira pune stranice Simbioza User modula. EN: Renders full Simbioza User module pages. */
+/**
+ * EN: Renders full Simbioza User module pages.
+ *
+ * HR: Renderira pune stranice Simbioza User modula.
+ */
 final readonly class SimbiozaUserModuleViewRenderer
 {
-    /** HR: Prima zajedničku tvornicu odgovora. EN: Receives the shared response factory. */
+    /**
+     * EN: Receives the shared response factory.
+     *
+     * HR: Prima zajedničku tvornicu odgovora.
+     */
     public function __construct(private ResponseFactory $responses)
     {
     }
 
     /**
-     * HR: Renderira modularni predložak kroz glavni layout aplikacije.
      * EN: Renders a module template through the application's main layout.
+     *
+     * HR: Renderira modularni predložak kroz glavni layout aplikacije.
      *
      * @param array<string,mixed> $data
      */

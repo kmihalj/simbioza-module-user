@@ -15,14 +15,19 @@ use function sprintf;
 use function trim;
 
 /**
- * HR: Lokalizira generirani naziv i opis osobnih područja samo tijekom prikaza.
- *     Izvorni Workspace zapis i korisnički definirani slug ostaju nepromijenjeni.
  * EN: Localizes generated personal-space names and descriptions only during
  *     presentation. The source Workspace record and user-defined slug stay unchanged.
+ *
+ * HR: Lokalizira generirani naziv i opis osobnih područja samo tijekom prikaza.
+ *     Izvorni Workspace zapis i korisnički definirani slug ostaju nepromijenjeni.
  */
 final readonly class PersonalWorkspacePresentationProvider implements WorkspacePresentationProviderInterface
 {
-    /** HR: Prima mapiranja osobnih područja i prevoditelj. EN: Receives personal-space mappings and the translator. */
+    /**
+     * EN: Receives personal-space mappings and the translator.
+     *
+     * HR: Prima mapiranja osobnih područja i prevoditelj.
+     */
     public function __construct(
         private PersonalWorkspaceService $personalWorkspaces,
         private TranslatorInterface $translator,
@@ -30,8 +35,9 @@ final readonly class PersonalWorkspacePresentationProvider implements WorkspaceP
     }
 
     /**
-     * HR: Grupno lokalizira samo mapirana osobna područja.
      * EN: Localizes only mapped personal Workspaces in one batch.
+     *
+     * HR: Grupno lokalizira samo mapirana osobna područja.
      *
      * @param list<array<string,mixed>> $workspaces
      * @return list<array<string,mixed>>

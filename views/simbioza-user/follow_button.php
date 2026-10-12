@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 /**
- * HR: Diskretni tematski gumb za uključivanje ili isključivanje praćenja.
  * EN: Discreet themed button for enabling or disabling a follow.
+ *
+ * HR: Diskretni tematski gumb za uključivanje ili isključivanje praćenja.
  *
  * @var \HeartPhrame\View\View $this
  * @var string $targetType

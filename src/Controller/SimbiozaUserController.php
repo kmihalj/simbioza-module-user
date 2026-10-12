@@ -36,12 +36,17 @@ use function strtolower;
 use function trim;
 
 /**
- * HR: Sigurni HTTP adapter za osobne postavke i praćenja prijavljenog korisnika.
  * EN: Secure HTTP adapter for the authenticated user's personal preferences and follows.
+ *
+ * HR: Sigurni HTTP adapter za osobne postavke i praćenja prijavljenog korisnika.
  */
 final readonly class SimbiozaUserController
 {
-    /** HR: Prima poslovne servise, auth kontekst i standardne framework odgovore. EN: Receives business services, auth context, and standard framework responses. */
+    /**
+     * EN: Receives business services, auth context, and standard framework responses.
+     *
+     * HR: Prima poslovne servise, auth kontekst i standardne framework odgovore.
+     */
     public function __construct(
         private ResponseFactory $responses,
         private AuthnHandlerInterface $authn,
@@ -57,7 +62,11 @@ final readonly class SimbiozaUserController
     ) {
     }
 
-    /** HR: Sprema zadani kanal, ritam i pravilo vlastitih izmjena. EN: Saves the default channel, cadence, and own-change rule. */
+    /**
+     * EN: Saves the default channel, cadence, and own-change rule.
+     *
+     * HR: Sprema zadani kanal, ritam i pravilo vlastitih izmjena.
+     */
     public function savePreferences(ServerRequestInterface $request): ResponseInterface
     {
         $body = $this->body($request);
@@ -94,7 +103,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-preferences');
     }
 
-    /** HR: Sprema osobni izbor svijetle, tamne, automatske ili sistemske teme. EN: Saves the personal light, dark, automatic, or system theme choice. */
+    /**
+     * EN: Saves the personal light, dark, automatic, or system theme choice.
+     *
+     * HR: Sprema osobni izbor svijetle, tamne, automatske ili sistemske teme.
+     */
     public function saveThemeMode(ServerRequestInterface $request): ResponseInterface
     {
         if (!($this->userThemePolicy?->selectionAvailable() ?? false)) {
@@ -123,7 +136,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-appearance');
     }
 
-    /** HR: Izrađuje osobno područje isključivo za prijavljenog korisnika kada je to dopušteno. EN: Creates a personal Workspace only for the authenticated user when allowed. */
+    /**
+     * EN: Creates a personal Workspace only for the authenticated user when allowed.
+     *
+     * HR: Izrađuje osobno područje isključivo za prijavljenog korisnika kada je to dopušteno.
+     */
     public function createPersonalWorkspace(): ResponseInterface
     {
         try {
@@ -136,7 +153,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-personal-workspace');
     }
 
-    /** HR: Uključuje ili isključuje jedno praćenje bez pristupa tuđim zapisima. EN: Enables or disables one follow without accessing another user's rows. */
+    /**
+     * EN: Enables or disables one follow without accessing another user's rows.
+     *
+     * HR: Uključuje ili isključuje jedno praćenje bez pristupa tuđim zapisima.
+     */
     public function toggle(ServerRequestInterface $request): ResponseInterface
     {
         $body = $this->body($request);
@@ -176,7 +197,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($returnUrl !== '' ? $returnUrl : $this->profilePath());
     }
 
-    /** HR: Sprema način dostave jedne praćene stavke. EN: Saves one followed item's delivery mode. */
+    /**
+     * EN: Saves one followed item's delivery mode.
+     *
+     * HR: Sprema način dostave jedne praćene stavke.
+     */
     public function setMode(ServerRequestInterface $request): ResponseInterface
     {
         $body = $this->body($request);
@@ -209,7 +234,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-items');
     }
 
-    /** HR: Primjenjuje prestanak praćenja ili način e-pošte na odabrane stavke. EN: Applies unfollow or an e-mail mode to selected items. */
+    /**
+     * EN: Applies unfollow or an e-mail mode to selected items.
+     *
+     * HR: Primjenjuje prestanak praćenja ili način e-pošte na odabrane stavke.
+     */
     public function bulk(ServerRequestInterface $request): ResponseInterface
     {
         $body = $this->body($request);
@@ -263,7 +292,11 @@ final readonly class SimbiozaUserController
         return $this->responses->redirect($this->profilePath() . '#simbioza-user-items');
     }
 
-    /** HR: Vraća stanje gumba praćenja trenutačnog korisnika. EN: Returns follow-button state for the current user. */
+    /**
+     * EN: Returns follow-button state for the current user.
+     *
+     * HR: Vraća stanje gumba praćenja trenutačnog korisnika.
+     */
     public function status(ServerRequestInterface $request): ResponseInterface
     {
         $query = $request->getQueryParams();
@@ -276,7 +309,11 @@ final readonly class SimbiozaUserController
         ]);
     }
 
-    /** HR: Poslužuje mali tematski CSS profilne cjeline. EN: Serves the small themed CSS for the profile section. */
+    /**
+     * EN: Serves the small themed CSS for the profile section.
+     *
+     * HR: Poslužuje mali tematski CSS profilne cjeline.
+     */
     public function styles(): ResponseInterface
     {
         $path = dirname(__DIR__, 2) . '/resources/assets/simbioza-user.css';
@@ -288,8 +325,9 @@ final readonly class SimbiozaUserController
     }
 
     /**
-     * HR: Vraća POST objekt samo sa sigurnim tekstualnim nazivima polja.
      * EN: Returns the POST object with safe string field names only.
+     *
+     * HR: Vraća POST objekt samo sa sigurnim tekstualnim nazivima polja.
      *
      * @return array<string,mixed>
      */
@@ -310,7 +348,11 @@ final readonly class SimbiozaUserController
         return $result;
     }
 
-    /** HR: Vraća ID prijavljenog korisnika. EN: Returns the authenticated user's ID. */
+    /**
+     * EN: Returns the authenticated user's ID.
+     *
+     * HR: Vraća ID prijavljenog korisnika.
+     */
     private function currentUserId(): int
     {
         $user = $this->authn->userData();
@@ -319,20 +361,32 @@ final readonly class SimbiozaUserController
         return is_numeric($id) ? (int)$id : 0;
     }
 
-    /** HR: Pretvara checkbox vrijednost u boolean. EN: Converts a checkbox value to a boolean. */
+    /**
+     * EN: Converts a checkbox value to a boolean.
+     *
+     * HR: Pretvara checkbox vrijednost u boolean.
+     */
     private function checked(mixed $value): bool
     {
         return is_scalar($value)
             && in_array(strtolower(trim((string)$value)), ['1', 'true', 'yes', 'on'], true);
     }
 
-    /** HR: Vraća skalarni tekst bez whitespacea. EN: Returns trimmed scalar text. */
+    /**
+     * EN: Returns trimmed scalar text.
+     *
+     * HR: Vraća skalarni tekst bez whitespacea.
+     */
     private function text(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';
     }
 
-    /** HR: Dopušta samo lokalnu apsolutnu povratnu putanju. EN: Allows only a local absolute return path. */
+    /**
+     * EN: Allows only a local absolute return path.
+     *
+     * HR: Dopušta samo lokalnu apsolutnu povratnu putanju.
+     */
     private function safeReturnUrl(string $url): string
     {
         if ($url === '' || !str_starts_with($url, '/') || str_starts_with($url, '//')) {
@@ -344,14 +398,22 @@ final readonly class SimbiozaUserController
         return is_array($parts) && !isset($parts['scheme'], $parts['host']) ? $url : '';
     }
 
-    /** HR: Prepoznaje pozadinski zahtjev profilnog sučelja. EN: Detects a profile UI background request. */
+    /**
+     * EN: Detects a profile UI background request.
+     *
+     * HR: Prepoznaje pozadinski zahtjev profilnog sučelja.
+     */
     private function expectsJson(ServerRequestInterface $request): bool
     {
         return str_contains(strtolower($request->getHeaderLine('Accept')), 'application/json')
             || strtolower($request->getHeaderLine('X-Requested-With')) === 'xmlhttprequest';
     }
 
-    /** HR: Vraća putanju osobnog profila. EN: Returns the personal-profile path. */
+    /**
+     * EN: Returns the personal-profile path.
+     *
+     * HR: Vraća putanju osobnog profila.
+     */
     private function profilePath(): string
     {
         return $this->urls->namedRouteExists('auth.account.profile')
@@ -359,13 +421,19 @@ final readonly class SimbiozaUserController
             : rtrim($this->urls->getBasePath(), '/') . '/auth/account/profile';
     }
 
-    /** HR: Objavljuje opcionalni audit događaj bez utjecaja na poslovni ishod. EN: Dispatches an optional audit event without affecting the business outcome. */
+    /**
+     * EN: Dispatches an optional audit event without affecting the business outcome.
+     *
+     * HR: Objavljuje opcionalni audit događaj bez utjecaja na poslovni ishod.
+     */
     private function dispatch(UserFollowChanged $event): void
     {
         try {
             $this->events?->dispatch($event);
         } catch (\Throwable) {
-            // HR: Audit je sekundaran kanal. EN: Audit is a secondary channel.
+            // EN: Audit is a secondary channel.
+            //
+            // HR: Audit je sekundaran kanal.
         }
     }
 }

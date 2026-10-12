@@ -1,8 +1,9 @@
 <?php
 
 /**
- * HR: Simbioza User oglašava samo osobna praćenja vlasnika API ključa.
  * EN: Simbioza User advertises only follows owned by the API-key owner.
+ *
+ * HR: Simbioza User oglašava samo osobna praćenja vlasnika API ključa.
  */
 
 declare(strict_types=1);

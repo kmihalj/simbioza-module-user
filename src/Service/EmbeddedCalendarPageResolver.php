@@ -26,16 +26,21 @@ use const LIBXML_HTML_NODEFDTD;
 use const LIBXML_HTML_NOIMPLIED;
 
 /**
- * HR: Pronalazi objavljene Workspace stranice koje u trenutačnoj verziji
- *     ugrađuju zadani kalendar. Sadržaj nikada ne vraća korisniku; rezultat
- *     služi samo kasnijoj ACL provjeri dostave.
  * EN: Finds published Workspace pages whose current version embeds the requested
  *     calendar. It never returns page content to a user; the result only feeds
  *     the delivery layer's later ACL check.
+ *
+ * HR: Pronalazi objavljene Workspace stranice koje u trenutačnoj verziji
+ *     ugrađuju zadani kalendar. Sadržaj nikada ne vraća korisniku; rezultat
+ *     služi samo kasnijoj ACL provjeri dostave.
  */
 final readonly class EmbeddedCalendarPageResolver
 {
-    /** HR: Prima bazu i sigurni interni provider objavljenih verzija. EN: Receives the database and safe internal published-version provider. */
+    /**
+     * EN: Receives the database and safe internal published-version provider.
+     *
+     * HR: Prima bazu i sigurni interni provider objavljenih verzija.
+     */
     public function __construct(
         private Database $database,
         private EditorPublishedVersionProviderInterface $versions,
@@ -43,8 +48,9 @@ final readonly class EmbeddedCalendarPageResolver
     }
 
     /**
-     * HR: Vraća jedinstvene stranice povezane s kalendarom.
      * EN: Returns unique pages linked to the calendar.
+     *
+     * HR: Vraća jedinstvene stranice povezane s kalendarom.
      *
      * @return list<array{id:int,workspace_id:int,document_key:string,title:string}>
      */
@@ -58,10 +64,11 @@ final readonly class EmbeddedCalendarPageResolver
     }
 
     /**
-     * HR: Vraća kalendare koje trenutačno objavljene stranice područja ugrađuju.
-     *     Backup koristi rezultat bez izlaganja HTML sadržaja.
      * EN: Returns calendars embedded by currently published Workspace pages.
      *     Backup consumes the result without exposing HTML content.
+     *
+     * HR: Vraća kalendare koje trenutačno objavljene stranice područja ugrađuju.
+     *     Backup koristi rezultat bez izlaganja HTML sadržaja.
      *
      * @return list<int>
      */
@@ -75,8 +82,9 @@ final readonly class EmbeddedCalendarPageResolver
     }
 
     /**
-     * HR: Jednim batch prolazom povezuje kalendare s objavljenim stranicama.
      * EN: Maps calendars to published pages in one batched pass.
+     *
+     * HR: Jednim batch prolazom povezuje kalendare s objavljenim stranicama.
      *
      * @return array<int,list<array{id:int,workspace_id:int,document_key:string,title:string}>>
      */
@@ -187,8 +195,9 @@ final readonly class EmbeddedCalendarPageResolver
     }
 
     /**
-     * HR: Čita jedinstvene UUID-ove iz sigurnih calendar embed atributa.
      * EN: Reads unique UUIDs from safe calendar embed attributes.
+     *
+     * HR: Čita jedinstvene UUID-ove iz sigurnih calendar embed atributa.
      *
      * @return list<string>
      */
@@ -228,7 +237,11 @@ final readonly class EmbeddedCalendarPageResolver
         }
     }
 
-    /** HR: Sve tablice moraju postojati; u suprotnom integracija mirno ne radi. EN: All tables must exist; otherwise the integration fails closed. */
+    /**
+     * EN: All tables must exist; otherwise the integration fails closed.
+     *
+     * HR: Sve tablice moraju postojati; u suprotnom integracija mirno ne radi.
+     */
     private function tablesReady(): bool
     {
         $schema = $this->database->schema();

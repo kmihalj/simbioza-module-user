@@ -12,14 +12,19 @@ use function is_array;
 use function is_numeric;
 
 /**
- * HR: Izlaže spremljeni osobni način teme glavnom layoutu bez povezivanja
- *     korisničkog modula s konkretnom implementacijom Theme modula.
  * EN: Exposes the stored personal theme mode to the main layout without
  *     coupling the user module to a concrete Theme module implementation.
+ *
+ * HR: Izlaže spremljeni osobni način teme glavnom layoutu bez povezivanja
+ *     korisničkog modula s konkretnom implementacijom Theme modula.
  */
 final readonly class UserThemeViewIntegration
 {
-    /** HR: Prima osobne postavke, prijavljenog korisnika, prikaz i globalnu politiku. EN: Receives preferences, authenticated user, view, and global policy. */
+    /**
+     * EN: Receives preferences, authenticated user, view, and global policy.
+     *
+     * HR: Prima osobne postavke, prijavljenog korisnika, prikaz i globalnu politiku.
+     */
     public function __construct(
         private UserPreferenceService $preferences,
         private AuthnHandlerInterface $authn,
@@ -28,7 +33,11 @@ final readonly class UserThemeViewIntegration
     ) {
     }
 
-    /** HR: Registrira sigurnu zadanu vrijednost i osobni izbor prijavljenog korisnika. EN: Registers a safe default and the authenticated user's personal choice. */
+    /**
+     * EN: Registers a safe default and the authenticated user's personal choice.
+     *
+     * HR: Registrira sigurnu zadanu vrijednost i osobni izbor prijavljenog korisnika.
+     */
     public function register(): void
     {
         $mode = UserPreferenceService::THEME_AUTO;
@@ -39,8 +48,9 @@ final readonly class UserThemeViewIntegration
                 $mode = $this->preferences->forUser((int)$id)['theme_mode'];
             }
         } catch (Throwable) {
-            // HR: CLI i instalacijski bootstrap namjerno nemaju pokrenutu sesiju.
             // EN: CLI and installation bootstrap intentionally have no started session.
+            //
+            // HR: CLI i instalacijski bootstrap namjerno nemaju pokrenutu sesiju.
         }
 
         $this->view->addGlobal('userThemeMode', $mode);

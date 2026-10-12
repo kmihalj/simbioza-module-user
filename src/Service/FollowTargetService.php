@@ -7,6 +7,7 @@ namespace AaiEduHr\SimbiozaModuleUser\Service;
 use AaiEduHr\HeartPhrameModuleAuth\ModuleAuth;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
+use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetVisibilityResolverInterface;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceAccessService;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceConfig;
 use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
@@ -24,10 +25,11 @@ use function rtrim;
 use function trim;
 
 /**
- * HR: Jedino mjesto koje pretvara polimorfno praćenje u naziv, poveznicu i
- *     aktualnu ACL odluku bez otkrivanja nedostupnog sadržaja.
  * EN: The single place that turns a polymorphic follow into a label, link, and
  *     current ACL decision without disclosing inaccessible content.
+ *
+ * HR: Jedino mjesto koje pretvara polimorfno praćenje u naziv, poveznicu i
+ *     aktualnu ACL odluku bez otkrivanja nedostupnog sadržaja.
  *
  * @phpstan-type TargetDescriptor array{
  *     accessible:bool,
@@ -40,7 +42,9 @@ use function trim;
  *     document_id:?string
  * }
  */
-final readonly class FollowTargetService implements FollowTargetResolverInterface
+final readonly class FollowTargetService implements
+    FollowTargetResolverInterface,
+    FollowTargetVisibilityResolverInterface
 {
     public const TYPE_WORKSPACE = 'workspace';
 
@@ -54,8 +58,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     public const TYPES = [self::TYPE_WORKSPACE, self::TYPE_PAGE, self::TYPE_CALENDAR, self::TYPE_TASK_LIST];
 
     /**
-     * HR: Prima obavezne Workspace servise i container samo za opcionalne integracije.
      * EN: Receives required Workspace services and the container only for optional integrations.
+     *
+     * HR: Prima obavezne Workspace servise i container samo za opcionalne integracije.
      */
     public function __construct(
         private Database $database,
@@ -69,8 +74,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Vraća siguran opis cilja za određenog korisnika.
      * EN: Returns a safe target descriptor for a specific user.
+     *
+     * HR: Vraća siguran opis cilja za određenog korisnika.
      *
      * @param array<string,mixed> $context
      * @return array{accessible:bool,type:string,id:string,label:string,url:string,workspace_id:?int,page_id:?int,document_id:?string}
@@ -103,8 +109,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Učitava minimalni auth payload potreban ACL servisima.
      * EN: Loads the minimal auth payload required by ACL services.
+     *
+     * HR: Učitava minimalni auth payload potreban ACL servisima.
      *
      * @return array<string,mixed>|null
      */
@@ -123,8 +130,95 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Razrješava područje i primjenjuje njegovo trenutačno pravo pregleda.
+     * EN: Checks a bounded list using one active-user read, targeted ancestors and fresh batched ACL.
+     * No labels/content are needed and no user or target decision survives this call.
+     * Optional calendars are resolved by their owning manager, not reimplemented here.
+     *
+     * HR: Provjerava ograničenu listu uz jedan dohvat aktivnog korisnika, ciljane pretke i svježi skupni ACL.
+     * Nisu potrebne oznake/sadržaj i odluke o korisniku/cilju ne preživljavaju ovaj poziv.
+     * Opcionalne kalendare razrješava njihov manager, ne nova kopija kalendarskih pravila.
+     *
+     * @param list<array{type:string,id:string,document_id?:mixed}> $targets
+     * @return list<bool>
+     */
+    public function canViewTargets(int $userId, array $targets): array
+    {
+        $allowed = array_fill(0, count($targets), false);
+        $user = $this->userPayload($userId);
+        if (!is_array($user) || $targets === []) {
+            return $allowed;
+        }
+
+        $pages = [];
+        $workspaces = [];
+        $calendars = [];
+        $documents = [];
+        foreach ($targets as $target) {
+            $id = (int)$target['id'];
+            if ($target['type'] === self::TYPE_PAGE && $id > 0) {
+                $pages[$id] = $id;
+            } elseif ($target['type'] === self::TYPE_WORKSPACE && $id > 0) {
+                $workspaces[$id] = $id;
+            } elseif ($target['type'] === self::TYPE_CALENDAR && $id > 0) {
+                $calendars[$id] = $id;
+            } elseif ($target['type'] === self::TYPE_TASK_LIST && trim($target['id']) !== '') {
+                $key = is_scalar($target['document_id'] ?? null) ? trim((string)$target['document_id']) : '';
+                if ($key !== '') {
+                    $documents[$key] = $key;
+                }
+            }
+        }
+
+        $contexts = $this->workspaces->documentContextsByKeys(array_values($documents));
+        foreach ($contexts as $context) {
+            $id = is_numeric($context['node']['id'] ?? null) ? (int)$context['node']['id'] : 0;
+            $pages[$id] = $id;
+        }
+
+        $nodes = $this->workspaces->nodesWithAncestorsByIds(array_values($pages));
+        foreach ($nodes as $node) {
+            $id = is_numeric($node['workspace_id'] ?? null) ? (int)$node['workspace_id'] : 0;
+            $workspaces[$id] = $id;
+        }
+
+        $workspaceRows = $this->workspaces->workspacesByIds(array_values($workspaces));
+        $permissions = $this->access->viewPermissionsForTargets($workspaceRows, $nodes, $user);
+        $calendarIds = [];
+        $service = \AaiEduHr\HeartPhrameModuleCalendar\Service\CalendarManagerInterface::class;
+        if ($calendars !== [] && interface_exists($service)) {
+            try {
+                $manager = $this->container->get($service);
+                if ($manager instanceof \AaiEduHr\HeartPhrameModuleCalendar\Service\CalendarManagerInterface) {
+                    $calendarIds = array_fill_keys(
+                        $manager->readableCalendarIds(array_values($calendars), $user),
+                        true,
+                    );
+                }
+            } catch (\Throwable) {
+                $calendarIds = [];
+            }
+        }
+
+        foreach ($targets as $index => $target) {
+            $key = is_scalar($target['document_id'] ?? null) ? trim((string)$target['document_id']) : '';
+            $value = $contexts[$key]['node']['id'] ?? null;
+            $pageId = is_numeric($value) ? (int)$value : 0;
+            $allowed[$index] = match ($target['type']) {
+                self::TYPE_WORKSPACE => $permissions['workspaces'][(int)$target['id']] ?? false,
+                self::TYPE_PAGE => $permissions['nodes'][(int)$target['id']] ?? false,
+                self::TYPE_TASK_LIST => trim($target['id']) !== '' && ($permissions['nodes'][$pageId] ?? false),
+                self::TYPE_CALENDAR => $calendarIds[(int)$target['id']] ?? false,
+                default => false,
+            };
+        }
+
+        return array_values($allowed);
+    }
+
+    /**
      * EN: Resolves a workspace and applies its current view permission.
+     *
+     * HR: Razrješava područje i primjenjuje njegovo trenutačno pravo pregleda.
      *
      * @param TargetDescriptor $empty
      * @return TargetDescriptor
@@ -161,8 +255,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Razrješava stranicu, nadređeno područje i dodatni page ACL.
      * EN: Resolves a page, its workspace, and the additional page ACL.
+     *
+     * HR: Razrješava stranicu, nadređeno područje i dodatni page ACL.
      *
      * @param TargetDescriptor $empty
      * @return TargetDescriptor
@@ -211,8 +306,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Razrješava opcionalni kalendar kroz njegov vlasnički ACL servis.
      * EN: Resolves an optional calendar through its owning ACL service.
+     *
+     * HR: Razrješava opcionalni kalendar kroz njegov vlasnički ACL servis.
      *
      * @param TargetDescriptor $empty
      * @return TargetDescriptor
@@ -253,8 +349,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Veže listu zadataka uz čitljivu Workspace stranicu i nasljeđuje njezin ACL.
      * EN: Binds a task list to a readable Workspace page and inherits its ACL.
+     *
+     * HR: Veže listu zadataka uz čitljivu Workspace stranicu i nasljeđuje njezin ACL.
      *
      * @param array<string,mixed> $context
      * @param TargetDescriptor $empty
@@ -285,8 +382,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Gradi imenovanu putanju ili sigurni fallback pod instalacijskim prefiksom.
      * EN: Builds a named path or a safe fallback under the installation prefix.
+     *
+     * HR: Gradi imenovanu putanju ili sigurni fallback pod instalacijskim prefiksom.
      *
      * @param array<string,scalar> $parameters
      */
@@ -300,8 +398,9 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
     }
 
     /**
-     * HR: Filtrira ORM redak na tekstualne ključeve.
      * EN: Filters an ORM row to string keys.
+     *
+     * HR: Filtrira ORM redak na tekstualne ključeve.
      *
      * @param array<array-key,mixed> $row
      * @return array<string,mixed>
@@ -318,7 +417,11 @@ final readonly class FollowTargetService implements FollowTargetResolverInterfac
         return $result;
     }
 
-    /** HR: Sigurno normalizira skalarni ORM ili opcionalni podatak. EN: Safely normalizes scalar ORM or optional data. */
+    /**
+     * EN: Safely normalizes scalar ORM or optional data.
+     *
+     * HR: Sigurno normalizira skalarni ORM ili opcionalni podatak.
+     */
     private function text(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';

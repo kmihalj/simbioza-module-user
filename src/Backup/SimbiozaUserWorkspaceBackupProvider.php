@@ -23,19 +23,20 @@ use AaiEduHr\SimbiozaModuleUser\Service\EmbeddedCalendarPageResolver;
 use AaiEduHr\SimbiozaModuleWorkspace\ModuleWorkspace;
 
 /**
- * HR: Prenosi samo praćenja vezana uz područja, bez globalnih osobnih
- *     postavki korisnika i bez prolaznog reda dostave. Time upravitelj područja
- *     ne može izvesti postavke korisnika koje nisu dio njegova područja.
- *
  * EN: Transfers only Workspace-related follows, without users' global personal
  *     preferences or the transient delivery queue. A Workspace manager therefore
  *     cannot export user settings unrelated to that Workspace.
+ *
+ * HR: Prenosi samo praćenja vezana uz područja, bez globalnih osobnih
+ *     postavki korisnika i bez prolaznog reda dostave. Time upravitelj područja
+ *     ne može izvesti postavke korisnika koje nisu dio njegova područja.
  */
 final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProviderInterface
 {
     /**
-     * HR: Prima bazu, prenosive identitete i opcionalni resolver kalendara.
      * EN: Receives the database, portable identities, and optional calendar resolver.
+     *
+     * HR: Prima bazu, prenosive identitete i opcionalni resolver kalendara.
      *
      * @param list<string> $dependencies
      * @param list<string> $scopes
@@ -53,7 +54,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         }
     }
 
-    /** HR: Opisuje scoped praćenja područja. EN: Describes scoped Workspace follows. */
+    /**
+     * EN: Describes scoped Workspace follows.
+     *
+     * HR: Opisuje scoped praćenja područja.
+     */
     public function metadata(): BackupProviderMetadata
     {
         return new BackupProviderMetadata(
@@ -71,17 +76,19 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Izvozi izravna praćenja područja te postavke dostave i isključenja
-     *     kalendara ugrađenih u njegove objavljene stranice.
      * EN: Exports direct Workspace follows plus delivery overrides and exclusions
      *     for calendars embedded in its published pages.
+     *
+     * HR: Izvozi izravna praćenja područja te postavke dostave i isključenja
+     *     kalendara ugrađenih u njegove objavljene stranice.
      */
     public function export(BackupExportContext $context, BackupArchiveWriter $writer): void
     {
-        // HR: Ako je odabrana i cjelina Korisnici, njezin potpuni provider već
-        //     sadrži iste retke pa izbjegavamo dvostruki zapis.
         // EN: When Users is also selected, its complete provider already owns
         //     the same rows, so avoid writing them twice.
+        //
+        // HR: Ako je odabrana i cjelina Korisnici, njezin potpuni provider već
+        //     sadrži iste retke pa izbjegavamo dvostruki zapis.
         if (
             $context->scope->type === BackupScope::COMPONENT
             && in_array('simbioza-user', $context->selectedProviders, true)
@@ -189,7 +196,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         }
     }
 
-    /** HR: Provjerava tablice, oblik zapisa i korisničke identitete. EN: Checks tables, record shape, and user identities. */
+    /**
+     * EN: Checks tables, record shape, and user identities.
+     *
+     * HR: Provjerava tablice, oblik zapisa i korisničke identitete.
+     */
     public function preflight(BackupImportContext $context, BackupArchiveReader $reader): BackupPreflightResult
     {
         $errors = [];
@@ -230,12 +241,20 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         );
     }
 
-    /** HR: Scoped brisanje čeka mapiranja koja stvaraju raniji provideri. EN: Scoped deletion waits for mappings created by earlier providers. */
+    /**
+     * EN: Scoped deletion waits for mappings created by earlier providers.
+     *
+     * HR: Scoped brisanje čeka mapiranja koja stvaraju raniji provideri.
+     */
     public function prepareImport(BackupImportContext $context, BackupArchiveReader $reader): void
     {
     }
 
-    /** HR: Vraća praćenja uz prenosivo mapiranje područja, stranica i kalendara. EN: Restores follows with portable Workspace, page, and calendar mapping. */
+    /**
+     * EN: Restores follows with portable Workspace, page, and calendar mapping.
+     *
+     * HR: Vraća praćenja uz prenosivo mapiranje područja, stranica i kalendara.
+     */
     public function import(BackupImportContext $context, BackupArchiveReader $reader): void
     {
         if ($this->datasetCount($reader, 'delegated') > 0) {
@@ -255,12 +274,13 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
                 && is_array($existing)
                 && (int)($existing['workspace_id'] ?? 0) !== $workspaceId
             ) {
-                // HR: Korisnik može imati samo jedno osobno područje. Kod copy
-                //     importa postojeće mapiranje ima prednost, a kopija ostaje
-                //     obično privatno područje istog vlasnika.
                 // EN: A user can have only one personal Workspace. During copy
                 //     import the existing mapping wins and the copy remains an
                 //     ordinary private Workspace owned by the same user.
+                //
+                // HR: Korisnik može imati samo jedno osobno područje. Kod copy
+                //     importa postojeće mapiranje ima prednost, a kopija ostaje
+                //     obično privatno područje istog vlasnika.
                 continue;
             }
 
@@ -335,19 +355,28 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         }
     }
 
-    /** HR: Nema dodatnog stanja nakon DB importa. EN: There is no extra state after database import. */
+    /**
+     * EN: There is no extra state after database import.
+     *
+     * HR: Nema dodatnog stanja nakon DB importa.
+     */
     public function finalizeImport(BackupImportContext $context, BackupArchiveReader $reader): void
     {
     }
 
-    /** HR: DB transakcija obavlja rollback. EN: The database transaction performs rollback. */
+    /**
+     * EN: The database transaction performs rollback.
+     *
+     * HR: DB transakcija obavlja rollback.
+     */
     public function abortImport(BackupImportContext $context): void
     {
     }
 
     /**
-     * HR: Vraća područja uključena u odabrani opseg.
      * EN: Returns Workspaces included in the selected scope.
+     *
+     * HR: Vraća područja uključena u odabrani opseg.
      *
      * @return array<int,array<string,mixed>>
      */
@@ -378,8 +407,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Učitava stabilne UUID-ove stranica bez N+1 upita.
      * EN: Loads stable page UUIDs without N+1 queries.
+     *
+     * HR: Učitava stabilne UUID-ove stranica bez N+1 upita.
      *
      * @param list<int> $workspaceIds
      * @return array<int,array<string,mixed>>
@@ -401,8 +431,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Pretvara izravno praćenje u zapis bez lokalnih brojčanih identiteta.
      * EN: Converts a direct follow into a record without local numeric identities.
+     *
+     * HR: Pretvara izravno praćenje u zapis bez lokalnih brojčanih identiteta.
      *
      * @param array<string,mixed> $row
      * @param array<int,array<string,mixed>> $workspaces
@@ -438,8 +469,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Pretvara praćenje kalendara u zapis sa stabilnim UUID-em.
      * EN: Converts a calendar follow into a stable-UUID record.
+     *
+     * HR: Pretvara praćenje kalendara u zapis sa stabilnim UUID-em.
      *
      * @param array<string,mixed> $row
      * @param array<int,array<string,mixed>> $calendars
@@ -474,8 +506,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Razrješava cilj retka nakon što su raniji provideri izgradili mape.
      * EN: Resolves a row target after earlier providers built identity maps.
+     *
+     * HR: Razrješava cilj retka nakon što su raniji provideri izgradili mape.
      *
      * @param array<string,mixed> $row
      * @return array{type:string,id:int|string,workspace_id:?int,page_id:?int,document_id:?string}
@@ -537,8 +570,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Mapira područje osobnog zapisa nakon ranijeg Workspace providera.
      * EN: Maps a personal-space Workspace after the preceding Workspace provider.
+     *
+     * HR: Mapira područje osobnog zapisa nakon ranijeg Workspace providera.
      *
      * @param array<string,mixed> $row
      */
@@ -559,8 +593,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Mapira prenosivi kalendar za komponentni ili pojedinačni Workspace restore.
      * EN: Maps a portable calendar for component or single-Workspace restore.
+     *
+     * HR: Mapira prenosivi kalendar za komponentni ili pojedinačni Workspace restore.
      *
      * @param array<string,mixed> $row
      */
@@ -585,7 +620,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         return BackupValue::integer($mapped, 'follow.calendar_id');
     }
 
-    /** HR: Razrješava obveznog korisnika bez tihog prebacivanja na izvođača importa. EN: Resolves a required user without silently falling back to the importing actor. */
+    /**
+     * EN: Resolves a required user without silently falling back to the importing actor.
+     *
+     * HR: Razrješava obveznog korisnika bez tihog prebacivanja na izvođača importa.
+     */
     private function importUser(mixed $key): int
     {
         $key = is_scalar($key) ? trim((string)$key) : '';
@@ -599,7 +638,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         return $userId;
     }
 
-    /** HR: Replace uklanja samo izravna praćenja ciljnog područja. EN: Replace removes only direct follows of the target Workspace. */
+    /**
+     * EN: Replace removes only direct follows of the target Workspace.
+     *
+     * HR: Replace uklanja samo izravna praćenja ciljnog područja.
+     */
     private function clearDirectFollowsForReplace(
         BackupImportContext $context,
         BackupArchiveReader $reader,
@@ -623,8 +666,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Za scoped replace iz konteksta uzima izvorni ID koji je Workspace provider već mapirao.
      * EN: For scoped replace, reads the source ID already mapped by the Workspace provider.
+     *
+     * HR: Za scoped replace iz konteksta uzima izvorni ID koji je Workspace provider već mapirao.
      */
     private function firstDatasetWorkspaceSource(BackupArchiveReader $reader): int
     {
@@ -636,8 +680,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Spaja jedinstvene kalendare ugrađene u odabrana područja.
      * EN: Collects unique calendars embedded in the selected Workspaces.
+     *
+     * HR: Spaja jedinstvene kalendare ugrađene u odabrana područja.
      *
      * @param list<int> $workspaceIds
      * @return list<int>
@@ -659,8 +704,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Učitava stabilne identitete povezanih kalendara u jednom upitu.
      * EN: Loads stable identities of linked calendars in one query.
+     *
+     * HR: Učitava stabilne identitete povezanih kalendara u jednom upitu.
      *
      * @param list<int> $calendarIds
      * @return array<int,array<string,mixed>>
@@ -683,8 +729,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Učitava praćenja povezanih kalendara bez N+1 upita.
      * EN: Loads linked-calendar follows without N+1 queries.
+     *
+     * HR: Učitava praćenja povezanih kalendara bez N+1 upita.
      *
      * @param list<int> $calendarIds
      * @return list<array<string,mixed>>
@@ -701,8 +748,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Učitava izričita isključenja automatskog praćenja kalendara.
      * EN: Loads explicit exclusions from automatic calendar following.
+     *
+     * HR: Učitava izričita isključenja automatskog praćenja kalendara.
      *
      * @param list<int> $calendarIds
      * @return list<array<string,mixed>>
@@ -719,8 +767,9 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
     }
 
     /**
-     * HR: Gradi jedinstveni ključ praćenja radi deduplikacije izvoza.
      * EN: Builds a unique follow key for export deduplication.
+     *
+     * HR: Gradi jedinstveni ključ praćenja radi deduplikacije izvoza.
      *
      * @param array<string,mixed> $row
      */
@@ -731,7 +780,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
             . $this->scalarText($row['target_id'] ?? null);
     }
 
-    /** HR: Čita broj redaka iz manifesta. EN: Reads a dataset record count from the manifest. */
+    /**
+     * EN: Reads a dataset record count from the manifest.
+     *
+     * HR: Čita broj redaka iz manifesta.
+     */
     private function datasetCount(BackupArchiveReader $reader, string $dataset): int
     {
         $manifest = $reader->providerManifest($this->id);
@@ -749,13 +802,21 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         return is_numeric($definition['records'] ?? null) ? max(0, (int)$definition['records']) : 0;
     }
 
-    /** HR: Sigurno normalizira skalarnu vrijednost za složeni ključ. EN: Safely normalizes a scalar value for a compound key. */
+    /**
+     * EN: Safely normalizes a scalar value for a compound key.
+     *
+     * HR: Sigurno normalizira skalarnu vrijednost za složeni ključ.
+     */
     private function scalarText(mixed $value): string
     {
         return is_scalar($value) ? (string)$value : '';
     }
 
-    /** HR: Pretvara pozitivan broj ili dopuštenu praznu vrijednost. EN: Converts a positive number or an allowed empty value. */
+    /**
+     * EN: Converts a positive number or an allowed empty value.
+     *
+     * HR: Pretvara pozitivan broj ili dopuštenu praznu vrijednost.
+     */
     private function positiveInteger(mixed $value, bool $nullable = false): int
     {
         if ($nullable && ($value === null || $value === '')) {
@@ -769,7 +830,11 @@ final readonly class SimbiozaUserWorkspaceBackupProvider implements BackupProvid
         return (int)$value;
     }
 
-    /** HR: Stvara RFC 4122 v4 UUID za kopirano praćenje. EN: Creates an RFC 4122 v4 UUID for a copied follow. */
+    /**
+     * EN: Creates an RFC 4122 v4 UUID for a copied follow.
+     *
+     * HR: Stvara RFC 4122 v4 UUID za kopirano praćenje.
+     */
     private function uuid(): string
     {
         $bytes = random_bytes(16);

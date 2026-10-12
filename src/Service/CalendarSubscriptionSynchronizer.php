@@ -16,14 +16,19 @@ use function is_array;
 use function is_numeric;
 
 /**
- * HR: Usklađuje Calendar pretplate nastale prije ili izvan Simbioza modula s
- *     jedinstvenim popisom praćenja bez mijenjanja vlasničkih Calendar podataka.
  * EN: Reconciles Calendar subscriptions created before or outside the Simbioza
  *     module with the unified follow list without changing Calendar-owned data.
+ *
+ * HR: Usklađuje Calendar pretplate nastale prije ili izvan Simbioza modula s
+ *     jedinstvenim popisom praćenja bez mijenjanja vlasničkih Calendar podataka.
  */
 final readonly class CalendarSubscriptionSynchronizer
 {
-    /** HR: Prima izvorne tablice i javni servis praćenja. EN: Receives source tables and the public follow service. */
+    /**
+     * EN: Receives source tables and the public follow service.
+     *
+     * HR: Prima izvorne tablice i javni servis praćenja.
+     */
     public function __construct(
         private Database $database,
         private FollowService $follows,
@@ -31,10 +36,11 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Usklađuje sve kalendarske pretplate jednog korisnika, uključujući
-     *     uklanjanje praćenja nakon prestanka pretplate.
      * EN: Reconciles all calendar subscriptions for one user, including follow
      *     removal after unsubscription.
+     *
+     * HR: Usklađuje sve kalendarske pretplate jednog korisnika, uključujući
+     *     uklanjanje praćenja nakon prestanka pretplate.
      */
     public function syncUser(int $userId): int
     {
@@ -51,10 +57,11 @@ final readonly class CalendarSubscriptionSynchronizer
             }
 
             /*
-             * HR: Pretplata može postojati nakon naknadnog gubitka ACL-a. Takav
-             *     zastarjeli red ne smije stvoriti praćenje ni otkriti naziv.
              * EN: A subscription may remain after ACL access is later lost. Such
              *     a stale row must not create a follow or disclose its label.
+             *
+             * HR: Pretplata može postojati nakon naknadnog gubitka ACL-a. Takav
+             *     zastarjeli red ne smije stvoriti praćenje ni otkriti naziv.
              */
             try {
                 if (
@@ -67,8 +74,9 @@ final readonly class CalendarSubscriptionSynchronizer
                     ++$changed;
                 }
             } catch (Throwable) {
-                // HR: Nedostupna zastarjela pretplata ostaje preskočena.
                 // EN: An inaccessible stale subscription stays skipped.
+                //
+                // HR: Nedostupna zastarjela pretplata ostaje preskočena.
             }
         }
 
@@ -82,12 +90,13 @@ final readonly class CalendarSubscriptionSynchronizer
         }
 
         /*
-         * HR: Iznimka ima smisla samo dok izvorna pretplata postoji. Nakon
-         *     odjave je uklanjamo pa nova buduća pretplata ponovno koristi
-         *     očekivano automatsko praćenje.
          * EN: An exclusion is meaningful only while the source subscription
          *     exists. Remove it on unsubscribe so a future subscription again
          *     receives the expected automatic follow.
+         *
+         * HR: Iznimka ima smisla samo dok izvorna pretplata postoji. Nakon
+         *     odjave je uklanjamo pa nova buduća pretplata ponovno koristi
+         *     očekivano automatsko praćenje.
          */
         foreach (array_keys($this->excludedCalendarIds($userId)) as $calendarId) {
             if (!isset($subscribed[$calendarId])) {
@@ -103,10 +112,11 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Prije dostave jedne kalendarske promjene usklađuje sve njezine
-     *     pretplatnike, pa postojeće pretplate rade i bez otvaranja profila.
      * EN: Before delivering one calendar change, reconciles all its subscribers
      *     so existing subscriptions work without opening the profile first.
+     *
+     * HR: Prije dostave jedne kalendarske promjene usklađuje sve njezine
+     *     pretplatnike, pa postojeće pretplate rade i bez otvaranja profila.
      */
     public function syncCalendar(int $calendarId): int
     {
@@ -155,10 +165,11 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Vraća ID-eve kalendara na koje je korisnik pretplaćen neovisno o
-     *     odluci želi li za njih primati obavijesti.
      * EN: Returns calendar IDs the user subscribes to independently of the
      *     decision whether notifications for them are followed.
+     *
+     * HR: Vraća ID-eve kalendara na koje je korisnik pretplaćen neovisno o
+     *     odluci želi li za njih primati obavijesti.
      *
      * @return list<int>
      */
@@ -171,8 +182,9 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Vraća skup aktivnih Calendar pretplata korisnika.
      * EN: Returns the user's active Calendar-subscription set.
+     *
+     * HR: Vraća skup aktivnih Calendar pretplata korisnika.
      *
      * @return array<int,true>
      */
@@ -189,8 +201,9 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Vraća skup kalendarskih praćenja korisnika.
      * EN: Returns the user's calendar-follow set.
+     *
+     * HR: Vraća skup kalendarskih praćenja korisnika.
      *
      * @return array<int,true>
      */
@@ -211,8 +224,9 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Vraća kalendarske iznimke korisnika radi čišćenja nakon odjave.
      * EN: Returns the user's calendar exclusions for cleanup after unsubscribe.
+     *
+     * HR: Vraća kalendarske iznimke korisnika radi čišćenja nakon odjave.
      *
      * @return array<int,true>
      */
@@ -233,22 +247,21 @@ final readonly class CalendarSubscriptionSynchronizer
     }
 
     /**
-     * HR: Gradi upit koji poštuje noviji `is_subscribed`; stara Calendar shema
-     *     tretira svaki follower red kao pretplatu.
-     * EN: Builds a query honoring the newer `is_subscribed`; the legacy Calendar
-     *     schema treats every follower row as a subscription.
+     * EN: Selects explicitly subscribed rows from the current Calendar schema.
+     *
+     * HR: Odabire izričite pretplate iz aktualne Calendar sheme.
      */
     private function calendarFollowerQuery(): QueryBuilder
     {
-        $query = $this->database->table(ModuleCalendar::TABLE_CALENDAR_FOLLOWERS);
-        if ($this->database->schema()->hasColumn(ModuleCalendar::TABLE_CALENDAR_FOLLOWERS, 'is_subscribed')) {
-            $query->where('is_subscribed', '=', true);
-        }
-
-        return $query;
+        return $this->database->table(ModuleCalendar::TABLE_CALENDAR_FOLLOWERS)
+            ->where('is_subscribed', '=', true);
     }
 
-    /** HR: Provjerava obje strane sinkronizacije prije upita. EN: Checks both sides of the reconciliation before querying. */
+    /**
+     * EN: Checks both sides of the reconciliation before querying.
+     *
+     * HR: Provjerava obje strane sinkronizacije prije upita.
+     */
     private function ready(): bool
     {
         return $this->follows->tablesReady()

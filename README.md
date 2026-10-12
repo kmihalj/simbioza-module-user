@@ -1,5 +1,7 @@
 # Simbioza User module
 
+> Release 0.3.0 preparation: the tagged installation commands below apply after coordinated publication of the application and modules. Development verification uses local packages; older releases cannot replace this configuration and schema.
+
 Personal following, in-application notifications, and optional e-mail delivery for the Simbioza knowledge application.
 
 Croatian documentation: [README_hr.md](README_hr.md)
@@ -46,18 +48,13 @@ same live ACL visibility check and are no longer shown after the target vanishes
 ## Quick start
 
 ```bash
-composer require aaieduhr/simbioza-module-user:^0.1.0
+composer require aaieduhr/simbioza-module-user:^0.3.0
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```
 
-An existing installation upgrades with:
-
-```bash
-php vendor/bin/hph simbioza-user:install-personal-workspaces-migration
-php vendor/bin/hph simbioza-user:install-theme-mode-migration
-php vendor/bin/hph orm-migrate:up
-```
+The initial schema includes personal Workspace mappings and appearance preferences.
+No historical upgrade migration is distributed.
 
 Administrators configure personal Workspaces under **Settings → Workspaces → Personal Workspaces**. The default enables creation after a user's first successful local, SAML, OIDC, OAuth2, or CAS sign-in and grants the mapped user View, Add, Edit, Publish, Delete, and Manage. A batch action provisions eligible existing active users. Each user can be excluded without changing Workspace or Auth behavior.
 

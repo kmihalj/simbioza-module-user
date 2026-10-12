@@ -9,12 +9,17 @@ use AaiEduHr\SimbiozaModuleUser\Security\SimbiozaAdminElevationService;
 use HeartPhrame\Localization\TranslatorInterface;
 use HeartPhrame\Routing\UrlGenerator;
 
-/** HR: Dodaje Simbioza administratorski prekidač samo podobnim korisnicima. EN: Adds the Simbioza administrator switch only for eligible users. */
+/**
+ * EN: Adds the Simbioza administrator switch only for eligible users.
+ *
+ * HR: Dodaje Simbioza administratorski prekidač samo podobnim korisnicima.
+ */
 final readonly class AdminElevationAccountNavigationProvider implements AuthAccountNavigationProviderInterface
 {
     /**
-     * HR: Prima servis privremenih ovlasti, generator ruta i prevoditelj oznake.
      * EN: Receives the temporary-rights service, route generator, and label translator.
+     *
+     * HR: Prima servis privremenih ovlasti, generator ruta i prevoditelj oznake.
      */
     public function __construct(
         private SimbiozaAdminElevationService $elevation,
@@ -24,8 +29,9 @@ final readonly class AdminElevationAccountNavigationProvider implements AuthAcco
     }
 
     /**
-     * HR: Vraća prekidač samo administratoru koji ima lokalnu lozinku.
      * EN: Returns the switch only for an administrator who has a local password.
+     *
+     * HR: Vraća prekidač samo administratoru koji ima lokalnu lozinku.
      *
      * @return list<array{
      *     key:string,label:string,path:string,order:int,type:'switch',active:bool,method:'get'|'post'

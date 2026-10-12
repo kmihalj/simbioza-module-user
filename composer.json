@@ -62,10 +62,10 @@
     "require": {
         "php": ">=8.2",
         "aaieduhr/heartphrame-framework": "^0.0.25",
-        "aaieduhr/heartphrame-module-auth": "^0.1.14",
-        "aaieduhr/heartphrame-module-notification": "^0.1.6",
-        "aaieduhr/heartphrame-module-orm": "^0.1.7",
-        "aaieduhr/simbioza-module-workspace": "^0.1.35"
+        "aaieduhr/heartphrame-module-auth": "^0.3.0",
+        "aaieduhr/heartphrame-module-notification": "^0.3.0",
+        "aaieduhr/heartphrame-module-orm": "^0.3.0",
+        "aaieduhr/simbioza-module-workspace": "^0.3.0"
     },
     "suggest": {
         "aaieduhr/heartphrame-module-api": "Exposes the authenticated user's follows and notification preferences.",
@@ -78,13 +78,13 @@
         "aaieduhr/heartphrame-module-theme": "Applies the active light or dark theme to the profile controls."
     },
     "require-dev": {
-        "aaieduhr/heartphrame-module-api": "^0.1.6",
-        "aaieduhr/heartphrame-module-audit": "^0.1.5",
-        "aaieduhr/heartphrame-module-backup": "^0.1.8",
-        "aaieduhr/heartphrame-module-calendar": "^0.1.21",
-        "aaieduhr/heartphrame-module-comment": "^0.1.4",
-        "aaieduhr/heartphrame-module-email": "^0.1.4",
-        "aaieduhr/heartphrame-module-task": "^0.1.8",
+        "aaieduhr/heartphrame-module-api": "^0.3.0",
+        "aaieduhr/heartphrame-module-audit": "^0.3.0",
+        "aaieduhr/heartphrame-module-backup": "^0.3.0",
+        "aaieduhr/heartphrame-module-calendar": "^0.3.0",
+        "aaieduhr/heartphrame-module-comment": "^0.3.0",
+        "aaieduhr/heartphrame-module-email": "^0.3.0",
+        "aaieduhr/heartphrame-module-task": "^0.3.0",
         "phpstan/phpstan": "^2.2.15",
         "phpunit/phpunit": "^10.5.65 || ^11.5.56",
         "rector/rector": "^2.6.7",
@@ -135,7 +135,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "0.1.x-dev"
+            "dev-main": "0.3.x-dev"
         }
     }
 }

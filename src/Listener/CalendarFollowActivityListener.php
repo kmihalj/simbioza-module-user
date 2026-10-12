@@ -20,10 +20,18 @@ use function in_array;
 use function sprintf;
 use function trim;
 
-/** HR: Pretvara promjene kalendarskih događaja u obavijesti pratitelja. EN: Converts calendar-event changes into follower notifications. */
+/**
+ * EN: Converts calendar-event changes into follower notifications.
+ *
+ * HR: Pretvara promjene kalendarskih događaja u obavijesti pratitelja.
+ */
 final readonly class CalendarFollowActivityListener
 {
-    /** HR: Prima jedinstveni servis dostave. EN: Receives the unified delivery service. */
+    /**
+     * EN: Receives the unified delivery service.
+     *
+     * HR: Prima jedinstveni servis dostave.
+     */
     public function __construct(
         private FollowDeliveryService $delivery,
         private CalendarSubscriptionSynchronizer $subscriptions,
@@ -31,11 +39,16 @@ final readonly class CalendarFollowActivityListener
     ) {
     }
 
-    /** HR: Otkazivanje i promjena termina označava kao važnu promjenu. EN: Marks cancellation and schedule changes as important. */
+    /**
+     * EN: Marks cancellation and schedule changes as important.
+     *
+     * HR: Otkazivanje i promjena termina označava kao važnu promjenu.
+     */
     public function __invoke(CalendarEventChanged $event): void
     {
-        // HR: Uključuje i pretplate nastale prije instalacije modula.
         // EN: Includes subscriptions predating module installation.
+        //
+        // HR: Uključuje i pretplate nastale prije instalacije modula.
         $this->subscriptions->syncCalendar($event->calendarId);
         $important = in_array($event->action, ['deleted', 'schedule_changed'], true);
         $message = $this->message($event);
@@ -61,7 +74,11 @@ final readonly class CalendarFollowActivityListener
         }
     }
 
-    /** HR: Gradi konkretan opis radnje, događaja i termina. EN: Builds a concrete action, event, and schedule description. */
+    /**
+     * EN: Builds a concrete action, event, and schedule description.
+     *
+     * HR: Gradi konkretan opis radnje, događaja i termina.
+     */
     private function message(CalendarEventChanged $event): string
     {
         $title = trim($event->eventTitle) !== '' ? trim($event->eventTitle) : __('Događaj bez naslova');
@@ -127,8 +144,9 @@ final readonly class CalendarFollowActivityListener
     }
 
     /**
-     * HR: Lokalizira sažeti popis promijenjenih dijelova događaja.
      * EN: Localizes a concise list of changed event parts.
+     *
+     * HR: Lokalizira sažeti popis promijenjenih dijelova događaja.
      *
      * @param list<string> $fields
      */
@@ -152,7 +170,11 @@ final readonly class CalendarFollowActivityListener
         return implode(', ', array_map(trim(...), array_unique($labels)));
     }
 
-    /** HR: Formatira jednodnevni ili višednevni termin u aktivnom jeziku. EN: Formats a single-day or multi-day schedule in the active language. */
+    /**
+     * EN: Formats a single-day or multi-day schedule in the active language.
+     *
+     * HR: Formatira jednodnevni ili višednevni termin u aktivnom jeziku.
+     */
     private function period(string $startsAt, string $endsAt, bool $allDay, string $timezone): string
     {
         if (trim($startsAt) === '') {
@@ -197,7 +219,11 @@ final readonly class CalendarFollowActivityListener
         return $value;
     }
 
-    /** HR: Gradi jednu stranicom povezanu kalendarsku aktivnost. EN: Builds one page-related calendar activity. */
+    /**
+     * EN: Builds one page-related calendar activity.
+     *
+     * HR: Gradi jednu stranicom povezanu kalendarsku aktivnost.
+     */
     private function activity(
         CalendarEventChanged $event,
         string $message,

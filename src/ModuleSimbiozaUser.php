@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser;
 
 /**
- * HR: Sadrži stabilne identifikatore modula za praćenje korisničkog
- *     iskustva u Simbiozi.
  * EN: Contains stable identifiers for the module that manages the personal
  *     following experience in Simbioza.
+ *
+ * HR: Sadrži stabilne identifikatore modula za praćenje korisničkog
+ *     iskustva u Simbiozi.
  */
 final class ModuleSimbiozaUser
 {
@@ -29,7 +30,11 @@ final class ModuleSimbiozaUser
     /** @deprecated Zadržano samo radi povratne kompatibilnosti već objavljenih migracija. */
     public const TABLE_PERSONAL_WORKSPACE_POLICIES = 'simbioza_user_personal_workspace_policies';
 
-    /** HR: Statički katalog nije moguće instancirati. EN: The static catalog cannot be instantiated. */
+    /**
+     * EN: The static catalog cannot be instantiated.
+     *
+     * HR: Statički katalog nije moguće instancirati.
+     */
     private function __construct()
     {
     }

@@ -12,17 +12,29 @@ use function class_exists;
 use function is_callable;
 use function is_scalar;
 
-/** HR: Čita opcionalni globalni Theme policy bez obavezne Composer ovisnosti. EN: Reads the optional global Theme policy without a required Composer dependency. */
+/**
+ * EN: Reads the optional global Theme policy without a required Composer dependency.
+ *
+ * HR: Čita opcionalni globalni Theme policy bez obavezne Composer ovisnosti.
+ */
 final readonly class UserThemePolicy
 {
     private const REPOSITORY = 'AaiEduHr\\HeartPhrameModuleTheme\\Service\\ThemeConfigRepository';
 
-    /** HR: Prima aplikacijski container za sigurnu opcionalnu integraciju. EN: Receives the application container for safe optional integration. */
+    /**
+     * EN: Receives the application container for safe optional integration.
+     *
+     * HR: Prima aplikacijski container za sigurnu opcionalnu integraciju.
+     */
     public function __construct(private ContainerInterface $container)
     {
     }
 
-    /** HR: Osobni izbor dopušten je samo uz globalni automatski policy. EN: Personal selection is allowed only with the global automatic policy. */
+    /**
+     * EN: Personal selection is allowed only with the global automatic policy.
+     *
+     * HR: Osobni izbor dopušten je samo uz globalni automatski policy.
+     */
     public function selectionAvailable(): bool
     {
         if (!class_exists(self::REPOSITORY) || !$this->container->has(self::REPOSITORY)) {

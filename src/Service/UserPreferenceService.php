@@ -18,8 +18,9 @@ use function strtolower;
 use function trim;
 
 /**
- * HR: Upravlja zadanim osobnim pravilima dostave obavijesti praćenog sadržaja.
  * EN: Manages default personal delivery rules for followed-content notifications.
+ *
+ * HR: Upravlja zadanim osobnim pravilima dostave obavijesti praćenog sadržaja.
  */
 final readonly class UserPreferenceService
 {
@@ -31,14 +32,22 @@ final readonly class UserPreferenceService
 
     public const EMAIL_IMPORTANT = 'important';
 
-    /** HR: Koristi administratorovu site-wide postavku teme. EN: Uses the administrator's site-wide theme policy. */
+    /**
+     * EN: Uses the administrator's site-wide theme policy.
+     *
+     * HR: Koristi administratorovu site-wide postavku teme.
+     */
     public const THEME_AUTO = 'auto';
 
     public const THEME_LIGHT = 'light';
 
     public const THEME_DARK = 'dark';
 
-    /** HR: Izričito prati postavku svijetlo/tamno operacijskog sustava. EN: Explicitly follows the operating-system light/dark setting. */
+    /**
+     * EN: Explicitly follows the operating-system light/dark setting.
+     *
+     * HR: Izričito prati postavku svijetlo/tamno operacijskog sustava.
+     */
     public const THEME_SYSTEM = 'system';
 
     /** @var list<string> */
@@ -57,20 +66,29 @@ final readonly class UserPreferenceService
         self::THEME_SYSTEM,
     ];
 
-    /** HR: Prima ORM bazu radi prenosivih upita. EN: Receives the ORM database for portable queries. */
+    /**
+     * EN: Receives the ORM database for portable queries.
+     *
+     * HR: Prima ORM bazu radi prenosivih upita.
+     */
     public function __construct(private Database $database)
     {
     }
 
-    /** HR: Provjerava je li migracija primijenjena. EN: Checks whether the migration is applied. */
+    /**
+     * EN: Checks whether the migration is applied.
+     *
+     * HR: Provjerava je li migracija primijenjena.
+     */
     public function tableReady(): bool
     {
         return $this->database->schema()->hasTable(ModuleSimbiozaUser::TABLE_PREFERENCES);
     }
 
     /**
-     * HR: Vraća spremljene ili sigurne zadane postavke korisnika.
      * EN: Returns stored or safe default user preferences.
+     *
+     * HR: Vraća spremljene ili sigurne zadane postavke korisnika.
      *
      * @return array{user_id:int,email_mode:string,notify_own_changes:bool,theme_mode:string,updated_at:?string}
      */
@@ -104,8 +122,9 @@ final readonly class UserPreferenceService
     }
 
     /**
-     * HR: Sprema pravila dostave bez dupliciranja retka korisnika.
      * EN: Saves delivery rules without duplicating the user's row.
+     *
+     * HR: Sprema pravila dostave bez dupliciranja retka korisnika.
      *
      * @return array{user_id:int,email_mode:string,notify_own_changes:bool,theme_mode:string,updated_at:?string}
      */
@@ -149,8 +168,9 @@ final readonly class UserPreferenceService
     }
 
     /**
-     * HR: Sprema samo osobni način teme bez promjene postavki obavijesti.
      * EN: Saves only the personal theme mode without changing notification preferences.
+     *
+     * HR: Sprema samo osobni način teme bez promjene postavki obavijesti.
      *
      * @return array{user_id:int,email_mode:string,notify_own_changes:bool,theme_mode:string,updated_at:?string}
      */
@@ -173,7 +193,11 @@ final readonly class UserPreferenceService
         );
     }
 
-    /** HR: Normalizira dopušteni način e-pošte. EN: Normalizes an allowed e-mail mode. */
+    /**
+     * EN: Normalizes an allowed e-mail mode.
+     *
+     * HR: Normalizira dopušteni način e-pošte.
+     */
     public function emailMode(mixed $value): string
     {
         $value = is_scalar($value) ? strtolower(trim((string)$value)) : '';
@@ -181,7 +205,11 @@ final readonly class UserPreferenceService
         return in_array($value, self::EMAIL_MODES, true) ? $value : self::EMAIL_OFF;
     }
 
-    /** HR: Normalizira osobni način teme. EN: Normalizes the personal theme mode. */
+    /**
+     * EN: Normalizes the personal theme mode.
+     *
+     * HR: Normalizira osobni način teme.
+     */
     public function themeMode(mixed $value): string
     {
         $value = is_scalar($value) ? strtolower(trim((string)$value)) : '';
@@ -189,7 +217,11 @@ final readonly class UserPreferenceService
         return in_array($value, self::THEME_MODES, true) ? $value : self::THEME_AUTO;
     }
 
-    /** HR: Normalizira boolean iz svih podržanih baza i formi. EN: Normalizes booleans from all supported databases and forms. */
+    /**
+     * EN: Normalizes booleans from all supported databases and forms.
+     *
+     * HR: Normalizira boolean iz svih podržanih baza i formi.
+     */
     private function boolValue(mixed $value): bool
     {
         if (is_bool($value)) {

@@ -13,17 +13,29 @@ use AaiEduHr\SimbiozaModuleWorkspace\Service\WorkspaceRepository;
 use function is_array;
 use function is_numeric;
 
-/** HR: Povezuje promjenu zadatka s njegovom listom, stranicom i pratiteljima. EN: Connects a task change to its list, page, and followers. */
+/**
+ * EN: Connects a task change to its list, page, and followers.
+ *
+ * HR: Povezuje promjenu zadatka s njegovom listom, stranicom i pratiteljima.
+ */
 final readonly class TaskFollowActivityListener
 {
-    /** HR: Prima Workspace vezu i dostavu. EN: Receives the Workspace link and delivery. */
+    /**
+     * EN: Receives the Workspace link and delivery.
+     *
+     * HR: Prima Workspace vezu i dostavu.
+     */
     public function __construct(
         private FollowDeliveryService $delivery,
         private WorkspaceRepository $workspaces,
     ) {
     }
 
-    /** HR: Stvara važnu obavijest za završetak i promjenu nositelja. EN: Creates an important notification for completion and assignee changes. */
+    /**
+     * EN: Creates an important notification for completion and assignee changes.
+     *
+     * HR: Stvara važnu obavijest za završetak i promjenu nositelja.
+     */
     public function __invoke(TaskChanged $event): void
     {
         $page = $this->workspaces->findNodeByDocumentKey($event->documentId);
@@ -51,7 +63,11 @@ final readonly class TaskFollowActivityListener
         ));
     }
 
-    /** HR: Vraća lokalizirani sažetak promjene. EN: Returns a localized change summary. */
+    /**
+     * EN: Returns a localized change summary.
+     *
+     * HR: Vraća lokalizirani sažetak promjene.
+     */
     private function message(string $action, string $label): string
     {
         $verb = match ($action) {

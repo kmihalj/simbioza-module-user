@@ -16,10 +16,18 @@ use function is_array;
 use function is_scalar;
 use function trim;
 
-/** HR: Pretvara neutralne Workspace promjene u događaje praćenja. EN: Converts neutral Workspace changes into follow activities. */
+/**
+ * EN: Converts neutral Workspace changes into follow activities.
+ *
+ * HR: Pretvara neutralne Workspace promjene u događaje praćenja.
+ */
 final readonly class WorkspaceFollowActivityListener
 {
-    /** HR: Prima dostavu i repozitorij samo radi sigurnog naziva. EN: Receives delivery and the repository only for a safe label. */
+    /**
+     * EN: Receives delivery and the repository only for a safe label.
+     *
+     * HR: Prima dostavu i repozitorij samo radi sigurnog naziva.
+     */
     public function __construct(
         private FollowDeliveryService $delivery,
         private WorkspaceRepository $workspaces,
@@ -27,7 +35,11 @@ final readonly class WorkspaceFollowActivityListener
     ) {
     }
 
-    /** HR: Obrađuje promjene koje imaju korisničko značenje. EN: Processes changes that carry user-facing meaning. */
+    /**
+     * EN: Processes changes that carry user-facing meaning.
+     *
+     * HR: Obrađuje promjene koje imaju korisničko značenje.
+     */
     public function __invoke(WorkspaceContentChanged $event): void
     {
         if (in_array($event->reason, ['workspace_created', 'unpublished_node_deleted'], true)) {
@@ -78,7 +90,11 @@ final readonly class WorkspaceFollowActivityListener
         ));
     }
 
-    /** HR: Prevodi tehnički razlog u kratak korisnički opis. EN: Translates a technical reason into a concise user description. */
+    /**
+     * EN: Translates a technical reason into a concise user description.
+     *
+     * HR: Prevodi tehnički razlog u kratak korisnički opis.
+     */
     private function action(string $reason): string
     {
         return match ($reason) {
@@ -93,7 +109,11 @@ final readonly class WorkspaceFollowActivityListener
         };
     }
 
-    /** HR: Sigurno normalizira tekst iz ORM retka. EN: Safely normalizes text from an ORM row. */
+    /**
+     * EN: Safely normalizes text from an ORM row.
+     *
+     * HR: Sigurno normalizira tekst iz ORM retka.
+     */
     private function text(mixed $value): string
     {
         return is_scalar($value) ? trim((string)$value) : '';
