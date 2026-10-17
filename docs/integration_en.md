@@ -15,6 +15,21 @@ Owning modules remain usable without Simbioza User. They dispatch events through
 
 ## Personal-space presentation
 
+An explicit migration/administration call can provision a Personal Workspace for
+an inactive owner without activating that account:
+
+```php
+$workspace = $personalWorkspaces->ensureForUser($mappedOwnerId, $administratorId, false);
+```
+
+The caller must authorize the administrative operation first. The inactive-owner
+fallback additionally requires an existing active `is_admin` actor different
+from the owner and `automatic=false`. Automatic creation and self-service cannot
+use it. The account's state, credentials, providers and global privileges remain
+unchanged; the service creates only its restricted Workspace, owner ACL and mapping.
+Importers must separately reject an unrelated existing Personal Workspace before
+destructive replacement. No Auth module change or database migration is required.
+
 Workspace exposes a generic `WorkspacePresentationRegistry`. Simbioza User
 registers its provider during module bootstrap and localizes generated personal-
 space names and descriptions for the current interface language. Presentation

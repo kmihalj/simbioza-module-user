@@ -1,6 +1,6 @@
 # Simbioza User module
 
-> Release 0.3.0 preparation: the tagged installation commands below apply after coordinated publication of the application and modules. Development verification uses local packages; older releases cannot replace this configuration and schema.
+> Unpublished 0.3.1 candidate: tagged installation commands apply after coordinated publication. Local preflight uses candidate packages. Auth and Framework remain unchanged.
 
 Personal following, in-application notifications, and optional e-mail delivery for the Simbioza knowledge application.
 
@@ -22,6 +22,7 @@ Optional integrations are detected at runtime: `heartphrame-module-api`, `heartp
 
 - follow an individual Workspace page, a complete workspace, a calendar, or a complete embedded task list;
 - provision one ordinary restricted personal Workspace per user after the first successful sign-in, with the user's complete ACL, an administrator-controlled global rule, and per-user exceptions;
+- let explicit administrator-led migration provision an inactive owner's Personal Workspace without activating the account; see [integration and security](docs/integration_en.md);
 - automatically reconcile both new and pre-existing Calendar subscriptions, while allowing notifications to be disabled and re-enabled without cancelling the subscription;
 - use a separated icon-and-label follow action styled by light/dark Theme document-action tokens;
 - manage follows in an ACL-safe profile table with search, state filters, a per-item follow toggle, and compact delivery icon buttons saved without a page reload;
@@ -48,7 +49,7 @@ same live ACL visibility check and are no longer shown after the target vanishes
 ## Quick start
 
 ```bash
-composer require aaieduhr/simbioza-module-user:^0.3.0
+composer require aaieduhr/simbioza-module-user:^0.3.1
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```

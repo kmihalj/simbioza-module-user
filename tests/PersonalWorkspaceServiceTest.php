@@ -123,6 +123,33 @@ final class PersonalWorkspaceServiceTest extends TestCase
     }
 
     /**
+     * EN: Migration provisioning needs an explicit active administrator and never activates the owner.
+     * Automatic login and self-service retain their active-account requirement.
+     *
+     * HR: Priprema migracije zahtijeva izričitog aktivnog administratora i nikada ne aktivira vlasnika.
+     * Automatska prijava i samostalne radnje zadržavaju zahtjev aktivnog računa.
+     */
+    public function testAdministratorCanProvisionInactiveOwnerWithoutChangingAuth(): void
+    {
+        $owner = $this->insertUser('inactive.owner', false);
+        $ordinary = $this->insertUser('ordinary.actor');
+        $admin = $this->insertUser('migration.admin');
+        $this->database->table(ModuleAuth::TABLE_AUTH_USERS)->where('id', '=', $admin)->update(['is_admin' => true]);
+        $before = $this->database->table(ModuleAuth::TABLE_AUTH_USERS)->where('id', '=', $owner)->first();
+        $this->assertNull($this->service->ensureForUser($owner, $owner, true));
+        $this->assertNull($this->service->ensureForUser($owner, $owner, false));
+        $this->assertNull($this->service->ensureForUser($owner, $ordinary, false));
+        $this->assertNull($this->service->ensureForUser($owner, $admin, true));
+        $this->assertNull($this->service->ensureForUser($owner, 0, false));
+        $created = $this->service->ensureForUser($owner, $admin, false);
+        $this->assertIsArray($created);
+        $this->assertFalse((bool)$created['created_automatically']);
+        $this->assertSame($owner, (int)$created['user_id']);
+        $after = $this->database->table(ModuleAuth::TABLE_AUTH_USERS)->where('id', '=', $owner)->first();
+        $this->assertSame($before, $after);
+    }
+
+    /**
      * EN: A user can create their own Workspace only when globally allowed.
      * The existing Workspace survives later disabling.
      *

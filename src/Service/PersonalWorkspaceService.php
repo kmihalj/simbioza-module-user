@@ -223,9 +223,11 @@ final readonly class PersonalWorkspaceService
     /**
      * EN: Creates a missing personal Workspace and stores a mapping separate from
      *     general Workspaces while immediately granting its user every permission.
+     *     Explicit administration may provision an inactive owner without activating their account.
      *
      * HR: Izrađuje nedostajuće osobno područje, njegovu korisniku odmah daje
      *     sva prava i sprema mapiranje odvojeno od općih područja.
+     *     Izričita administracija smije pripremiti neaktivnog vlasnika bez aktivacije njegova računa.
      *
      * @return array<string,mixed>|null
      */
@@ -240,6 +242,13 @@ final readonly class PersonalWorkspaceService
         }
 
         $user = $this->users->findById($userId);
+        if (!is_array($user) && !$automatic && $actorUserId > 0 && $actorUserId !== $userId) {
+            $actor = $this->users->findById($actorUserId);
+            if (is_array($actor) && (bool)($actor['is_admin'] ?? false)) {
+                $user = $this->users->findByIdIncludingInactive($userId);
+            }
+        }
+
         if (!is_array($user)) {
             return null;
         }

@@ -15,6 +15,21 @@ Vlasnički moduli ostaju uporabivi bez Simbioza User modula. Događaje šalju kr
 
 ## Prikaz osobnog područja
 
+Izričiti migracijski/administratorski poziv može pripremiti osobno područje
+neaktivnog vlasnika bez aktiviranja njegova računa:
+
+```php
+$workspace = $personalWorkspaces->ensureForUser($mappedOwnerId, $administratorId, false);
+```
+
+Pozivatelj prvo mora odobriti administratorsku radnju. Dodatni dohvat neaktivnog
+vlasnika zahtijeva postojećeg aktivnog `is_admin` izvršitelja različitog od vlasnika
+i `automatic=false`. Automatska izrada i samostalne radnje to ne mogu koristiti.
+Stanje računa, vjerodajnice, provideri i globalne ovlasti ostaju nepromijenjeni;
+servis izrađuje samo ograničeno područje, vlasnički ACL i mapiranje. Importer prije
+destruktivne zamjene zasebno mora odbiti nepovezano postojeće osobno područje.
+Nije potrebna promjena Auth modula ni migracija baze.
+
 Workspace izlaže generički `WorkspacePresentationRegistry`. Simbioza User pri
 pokretanju modula registrira svoj provider i lokalizira generirani naziv i opis
 osobnog područja prema trenutačnom jeziku sučelja. Prilagodba se radi grupno,

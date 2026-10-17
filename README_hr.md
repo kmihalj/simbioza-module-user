@@ -1,6 +1,6 @@
 # Modul Simbioza User
 
-> Priprema izdanja 0.3.0: navedene naredbe za označena izdanja vrijede nakon koordinirane objave aplikacije i modula. Razvojna provjera koristi lokalne pakete; starija izdanja nisu zamjena za ovu konfiguraciju i shemu.
+> Neobjavljeni kandidat 0.3.1: naredbe za tagiranu instalaciju vrijede nakon koordinirane objave. Lokalni prihvat koristi pakete kandidata. Auth i Framework ostaju nepromijenjeni.
 
 Osobno praćenje sadržaja, obavijesti u aplikaciji i opcionalna dostava e-poštom za aplikaciju znanja Simbioza.
 
@@ -22,6 +22,7 @@ Opcionalne integracije otkrivaju se tijekom rada: `heartphrame-module-api`, `hea
 
 - praćenje pojedinačne Workspace stranice, cijelog područja, kalendara ili cijele ugrađene liste zadataka;
 - izrada jednog običnog ograničenog osobnog područja po korisniku nakon prve uspješne prijave, uz automatski puni korisnički ACL, globalnu administratorsku postavku i iznimke po korisniku;
+- priprema osobnog područja neaktivnog vlasnika izričitom administratorskom migracijom, bez aktiviranja računa; pogledajte [integraciju i sigurnost](docs/integration_hr.md);
 - automatsko usklađivanje novih i postojećih Calendar pretplata, uz mogućnost isključivanja i ponovnog uključivanja obavijesti bez prekida pretplate;
 - izdvojena akcija praćenja s ikonom i tekstom, stilizirana svijetlim/tamnim Theme tokenima akcija dokumenta;
 - ACL-sigurna tablica u profilu s pretragom, filtrima stanja, prekidačem praćenja po stavci i kompaktnim ikon-gumbima načina dostave bez osvježavanja stranice;
@@ -48,7 +49,7 @@ provjera pa se više ne prikazuju nakon nestanka cilja.
 ## Brzi početak
 
 ```bash
-composer require aaieduhr/simbioza-module-user:^0.3.0
+composer require aaieduhr/simbioza-module-user:^0.3.1
 php vendor/bin/hph simbioza-user:install-migration
 php vendor/bin/hph orm-migrate:up
 ```
