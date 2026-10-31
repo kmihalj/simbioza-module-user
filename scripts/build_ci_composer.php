@@ -32,7 +32,10 @@ if (!$stable) {
     $repositories = $manifest['repositories'] ?? [];
     foreach ($packages as $package => $url) {
         $section = isset($manifest['require'][$package]) ? 'require' : 'require-dev';
-        $manifest[$section][$package] = 'dev-main as 0.3.0';
+        // EN: Workspace rejects Backup versions before the compatible restore format.
+        // HR: Workspace odbija Backup verzije prije kompatibilnog formata vraćanja.
+        $version = $package === 'aaieduhr/heartphrame-module-backup' ? '0.3.4' : '0.3.0';
+        $manifest[$section][$package] = 'dev-main as ' . $version;
         $found = false;
         foreach ($repositories as $repository) {
             if (($repository['url'] ?? null) === $url) {
