@@ -153,7 +153,7 @@ $text = static fn(mixed $value): string => is_scalar($value) ? (string)$value : 
     </div>
 </div>
 
-<script>
+<script nonce="<?= $this->escape(is_string($scriptNonce ?? null) ? $scriptNonce : '') ?>">
 (() => {
     const form = document.querySelector('[data-personal-workspace-settings]');
     const automatic = form?.querySelector('#personal-workspaces-auto-create');

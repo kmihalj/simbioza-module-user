@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AaiEduHr\SimbiozaModuleUser\Tests;
 
 use AaiEduHr\HeartPhrameModuleAuth\Backup\AuthBackupIdentityResolver;
-use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
 use AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope;
 use AaiEduHr\HeartPhrameModuleCalendar\ModuleCalendar;
 use AaiEduHr\HeartPhrameModuleNotification\Service\NotificationEmailBridge;
@@ -179,7 +178,7 @@ final class SimbiozaUserServiceTest extends TestCase
      */
     public function testWorkspaceBackupMetadataKeepsScopeDependenciesSeparate(): void
     {
-        $identities = new AuthBackupIdentityResolver($this->database, new AuthUserService($this->database));
+        $identities = new AuthBackupIdentityResolver($this->database);
         $component = new SimbiozaUserWorkspaceBackupProvider(
             $this->database,
             $identities,

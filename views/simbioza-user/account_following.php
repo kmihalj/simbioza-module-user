@@ -415,7 +415,7 @@ $icon = static function (string $name): string {
     </div>
 </section>
 
-<script>
+<script nonce="<?= $this->escape(is_string($scriptNonce ?? null) ? $scriptNonce : '') ?>">
 document.addEventListener('DOMContentLoaded', function () {
     const toastTitle = <?= json_encode(__('Uspjeh'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     const toastErrorTitle = <?= json_encode(__('Greška'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;

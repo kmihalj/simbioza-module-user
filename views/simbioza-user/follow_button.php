@@ -55,7 +55,7 @@ $compact = $compact === true || $compact === '1';
         <span data-follow-button-label><?= __('Prati') ?></span>
     </button>
 </form>
-<script>
+<script nonce="<?= $this->escape(is_string($scriptNonce ?? null) ? $scriptNonce : '') ?>">
 (function () {
     const form = document.getElementById(<?= json_encode(
         $instanceId,

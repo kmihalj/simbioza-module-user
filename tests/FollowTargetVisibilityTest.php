@@ -149,6 +149,12 @@ final class FollowTargetVisibilityTest extends TestCase
         $page = $this->workspaces->saveNode($wid, ['title' => 'Granted page', 'node_type' => 'document',
             'document_key' => 'granted-page'], $this->adminId);
         $pid = (int)$page['id'];
+        $hidden = $this->workspaces->saveNode($wid, ['title' => 'Hidden page', 'node_type' => 'document',
+            'document_key' => 'hidden-page'], $this->adminId);
+        $this->assertSame([false], $this->resolver()->canViewTargets(
+            $this->userId,
+            [['type' => 'workspace', 'id' => (string)$wid]],
+        ));
         $this->workspaces->replaceNodeDirectPermissions($wid, $pid, [$this->userId => ['can_view' => true]]);
         $calendar = $this->calendars->saveCalendar(['calendar_type' => 'team', 'name' => 'Public calendar',
             'is_enabled' => true, 'is_public_read' => true], ['id' => $this->adminId, 'is_admin' => true]);
@@ -157,10 +163,13 @@ final class FollowTargetVisibilityTest extends TestCase
             ['type' => 'task_list', 'id' => 'tasks', 'document_id' => 'granted-page'],
             ['type' => 'calendar', 'id' => $cid],
             ['type' => 'page', 'id' => '999999'], ['type' => 'task_list', 'id' => 'tasks', 'document_id' => 'missing'],
-            ['type' => 'unknown', 'id' => '1']];
+            ['type' => 'unknown', 'id' => '1'], ['type' => 'page', 'id' => (string)$hidden['id']]];
         $resolver = $this->resolver();
+        // EN: A page exception exposes the Workspace entry, while unrelated private pages remain inaccessible.
+        //
+        // HR: Iznimka stranice otvara ulaz u područje, dok ostale privatne stranice ostaju nedostupne.
         $this->assertSame(
-            [false, true, true, true, false, false, false],
+            [true, true, true, true, false, false, false, false],
             $resolver->canViewTargets($this->userId, $targets),
         );
         $withoutCalendar = $this->resolver(false);
@@ -175,12 +184,12 @@ final class FollowTargetVisibilityTest extends TestCase
         $this->workspaces->replaceNodeDirectPermissions($wid, $pid, []);
         $this->assertSame([false, false], $provider->canViewBatch($this->userId, $rows));
         $this->assertSame(
-            [false, false, false, true, false, false, false],
+            [false, false, false, true, false, false, false, false],
             $resolver->canViewTargets($this->userId, $targets),
         );
         $this->database->table('auth_users')->where('id', '=', $this->userId)->update(['is_active' => false]);
-        $this->assertSame(array_fill(0, 7, false), $resolver->canViewTargets($this->userId, $targets));
-        $this->assertSame(array_fill(0, 7, false), $resolver->canViewTargets(999999, $targets));
+        $this->assertSame(array_fill(0, 8, false), $resolver->canViewTargets($this->userId, $targets));
+        $this->assertSame(array_fill(0, 8, false), $resolver->canViewTargets(999999, $targets));
         $this->assertSame([], $resolver->canViewTargets($this->userId, []));
     }
 

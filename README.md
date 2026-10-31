@@ -1,6 +1,6 @@
 # Simbioza User module
 
-> Release 0.3.0 preparation: the tagged installation commands below apply after coordinated publication of the application and modules. Development verification uses local packages; older releases cannot replace this configuration and schema.
+> Release 0.3.1 supports host Content Security Policy nonces for existing interface scripts while preserving standalone behavior.
 
 Personal following, in-application notifications, and optional e-mail delivery for the Simbioza knowledge application.
 

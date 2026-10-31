@@ -1,6 +1,6 @@
 # Modul Simbioza User
 
-> Priprema izdanja 0.3.0: navedene naredbe za označena izdanja vrijede nakon koordinirane objave aplikacije i modula. Razvojna provjera koristi lokalne pakete; starija izdanja nisu zamjena za ovu konfiguraciju i shemu.
+> Izdanje 0.3.1 podržava Content Security Policy nonce domaćina za postojeće skripte sučelja, uz očuvanje samostalnog rada.
 
 Osobno praćenje sadržaja, obavijesti u aplikaciji i opcionalna dostava e-poštom za aplikaciju znanja Simbioza.
 
