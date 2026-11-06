@@ -16,6 +16,7 @@ use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Migration\ReversibleMigrationInterface;
 use AaiEduHr\SimbiozaModuleUser\Api\SimbiozaUserResourceController;
 use AaiEduHr\SimbiozaModuleUser\Contract\FollowTargetResolverInterface;
+use AaiEduHr\SimbiozaModuleUser\Event\PersonalWorkspaceChanged;
 use AaiEduHr\SimbiozaModuleUser\Service\FollowService;
 use AaiEduHr\SimbiozaModuleUser\Service\PersonalWorkspaceService;
 use AaiEduHr\SimbiozaModuleUser\Service\UserPreferenceService;
@@ -44,6 +45,9 @@ use RuntimeException;
 #[UsesClass(ApiScopeRegistry::class)]
 #[UsesClass(AuthApiKeyService::class)]
 #[UsesClass(PersonalWorkspaceService::class)]
+#[UsesClass(PersonalWorkspaceChanged::class)]
+#[UsesClass(FollowService::class)]
+#[UsesClass(UserPreferenceService::class)]
 final class PersonalWorkspaceApiTest extends TestCase
 {
     private Database $database;
