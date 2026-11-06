@@ -212,7 +212,7 @@ final class PersonalWorkspaceApiTest extends TestCase
         $payload = json_decode((string)$response->getBody(), true, flags: JSON_THROW_ON_ERROR);
         $this->assertSame(403, $response->getStatusCode());
         $this->assertSame('insufficient_scope', $payload['code']);
-        $this->assertStringContainsString('workspace:read', $payload['detail']);
+        $this->assertStringContainsString('workspace:read', (string)$payload['detail']);
         $this->assertArrayNotHasKey('workspace', $payload);
     }
 
