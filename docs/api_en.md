@@ -6,7 +6,7 @@ Scopes:
 
 - `follows:read`
 - `follows:write`
-- `workspaces:read` for the personal-space status endpoint
+- `workspace:read` for the personal-space status endpoint
 
 ## Personal space status
 

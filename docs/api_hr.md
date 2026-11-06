@@ -6,7 +6,7 @@ Scopeovi:
 
 - `follows:read`
 - `follows:write`
-- `workspaces:read` za stanje osobnog područja
+- `workspace:read` za stanje osobnog područja
 
 ## Stanje osobnog područja
 
