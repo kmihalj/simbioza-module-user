@@ -7,8 +7,8 @@ Auth objavljuje `UserAuthenticated` nakon uspješne lokalne, SAML, OIDC, OAuth2 
 Modul sluša događaje u vlasništvu drugih modula:
 
 - Workspace objave te promjene stabla stranica i područja;
-- nove Comment zapise i buduće događaje odgovora;
-- Task završavanje i ponovno otvaranje te buduće događaje kreiranja ili promjene nositelja koje objavi Task;
+- nove Comment zapise i odgovore;
+- Task događaje kreiranja, dovršavanja, ponovnog otvaranja i promjene nositelja;
 - Calendar kreiranje, izmjenu, promjenu termina, brisanje događaja i promjenu pretplate.
 
 Vlasnički moduli ostaju uporabivi bez Simbioza User modula. Događaje šalju kroz opcionalnu PSR-14 integraciju i nikada ne pozivaju ovaj modul izravno.

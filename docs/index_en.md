@@ -12,7 +12,7 @@ The Croatian documentation is available in [index_hr.md](index_hr.md).
 
 ## Data ownership
 
-The module owns six active portable tables:
+The module owns seven active portable tables:
 
 - `simbioza_user_preferences`: one default delivery policy per user;
 - `simbioza_user_follows`: durable polymorphic follows;
@@ -20,7 +20,10 @@ The module owns six active portable tables:
 - `simbioza_user_pending_deliveries`: transient daily-digest queue.
 - `simbioza_user_settings`: administrator provisioning settings;
 - `simbioza_user_personal_workspaces`: stable one-to-one mapping between a user and their personal Workspace;
+- `simbioza_user_personal_workspace_policies`: per-user exceptions to automatic creation;
 
-Only the global setting controls automatic creation.
+The global automatic-creation setting and any per-user policy decide whether a
+personal Workspace is created. These policies do not change the ACL of an
+existing Workspace merely because automatic creation is disabled.
 
 Notification text is stored by the generic Notification module. E-mail messages are passed to the optional E-mail module. The digest queue is operational state and is neither exposed as knowledge content nor archived in backup.

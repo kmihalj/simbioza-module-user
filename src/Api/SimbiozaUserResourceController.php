@@ -219,7 +219,7 @@ final readonly class SimbiozaUserResourceController
      */
     public function getPersonalWorkspace(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->execute($request, 'workspaces:read', function (int $userId): array {
+        return $this->execute($request, 'workspace:read', function (int $userId): array {
             $mapping = $this->personalWorkspaces->forUser($userId);
             $workspace = is_array($mapping['workspace'] ?? null) ? $mapping['workspace'] : null;
             if (is_array($workspace)) {

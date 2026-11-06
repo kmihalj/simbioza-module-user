@@ -7,8 +7,8 @@ Auth publishes `UserAuthenticated` after successful local, SAML, OIDC, OAuth2, o
 The module listens to events owned by other modules:
 
 - Workspace publication, page-tree, and workspace changes;
-- new Comment entries and future reply events;
-- Task completion/reopen events and any future creation/assignee events emitted by Task;
+- newly created Comment entries and replies;
+- Task creation, completion, reopening and assignee-change events;
 - Calendar event creation, update, schedule change, deletion, and subscription change.
 
 Owning modules remain usable without Simbioza User. They dispatch events through optional PSR-14 integration and never call this module directly.
