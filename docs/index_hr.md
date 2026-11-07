@@ -12,18 +12,21 @@ Engleska dokumentacija dostupna je u [index_en.md](index_en.md).
 
 ## Vlasništvo podataka
 
-Modul posjeduje sedam aktivnih prenosivih tablica:
+Modul posjeduje šest aktivnih tablica i jednu zadržanu radi kompatibilnosti:
 
 - `simbioza_user_preferences`: jedno zadano pravilo dostave po korisniku;
 - `simbioza_user_follows`: trajna polimorfna praćenja;
 - `simbioza_user_follow_exclusions`: izričita isključenja automatskog praćenja, trenutačno za pretplaćene kalendare;
-- `simbioza_user_pending_deliveries`: privremeni red dnevnog sažetka.
+- `simbioza_user_pending_deliveries`: privremeni red dnevnog sažetka;
 - `simbioza_user_settings`: administratorske postavke izrade;
 - `simbioza_user_personal_workspaces`: stabilno mapiranje korisnika na njegovo osobno Workspace područje;
-- `simbioza_user_personal_workspace_policies`: iznimke automatske izrade za pojedinog korisnika;
+- `simbioza_user_personal_workspace_policies`: zastarjela tablica pravila, zadržana radi kompatibilnosti već objavljenih migracija; aktualni servis ne primjenjuje njezine retke.
 
-Globalna postavka automatske izrade i eventualna politika pojedinog korisnika
-određuju izradu osobnog Područja. Isključivanje automatske izrade samo po sebi
-ne mijenja ACL već postojećeg Područja.
+Izradu osobnog područja određuju dvije globalne postavke u **Postavke → Osobna
+područja**. Automatska izrada pri uspješnoj prijavi zadano je uključena. Ako je
+isključena, administrator može omogućiti korisniku samostalnu izradu kroz
+**Moj profil → Praćenje i obavijesti**. Tablica izrađenih područja služi samo
+pregledu: nema aktivne kontrole iznimaka po korisniku ni masovne izrade.
+Isključivanje mogućnosti izrade ne briše postojeća područja ni njihova prava.
 
 Tekst obavijesti sprema generički Notification modul. E-poruke se predaju opcionalnom E-mail modulu. Red sažetka je operativno stanje te se ne izlaže kao sadržaj znanja i ne arhivira u backupu.

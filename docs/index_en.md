@@ -12,18 +12,21 @@ The Croatian documentation is available in [index_hr.md](index_hr.md).
 
 ## Data ownership
 
-The module owns seven active portable tables:
+The module owns six active tables and one retained for compatibility:
 
 - `simbioza_user_preferences`: one default delivery policy per user;
 - `simbioza_user_follows`: durable polymorphic follows;
 - `simbioza_user_follow_exclusions`: explicit opt-outs from automatic follows, currently used for subscribed calendars;
-- `simbioza_user_pending_deliveries`: transient daily-digest queue.
+- `simbioza_user_pending_deliveries`: transient daily-digest queue;
 - `simbioza_user_settings`: administrator provisioning settings;
 - `simbioza_user_personal_workspaces`: stable one-to-one mapping between a user and their personal Workspace;
-- `simbioza_user_personal_workspace_policies`: per-user exceptions to automatic creation;
+- `simbioza_user_personal_workspace_policies`: legacy policy table retained for compatibility with published migrations; the current service does not apply its rows.
 
-The global automatic-creation setting and any per-user policy decide whether a
-personal Workspace is created. These policies do not change the ACL of an
-existing Workspace merely because automatic creation is disabled.
+Two global settings under **Settings → Personal Workspaces** control creation.
+Automatic creation on successful sign-in is enabled by default. When it is off,
+an administrator may allow users to create their own workspace through **My
+profile → Following and notifications**. The created-workspace table is
+read-only: there is no active per-user exception control or bulk creation.
+Disabling creation does not delete existing workspaces or their permissions.
 
 Notification text is stored by the generic Notification module. E-mail messages are passed to the optional E-mail module. The digest queue is operational state and is neither exposed as knowledge content nor archived in backup.

@@ -342,7 +342,14 @@ final readonly class SimbiozaUserResourceController
         }
 
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        if (!is_array($decoded)) {
+        // EN: Associative decoding makes {} and [] identical; retain the object token and named-field contract.
+        //
+        // HR: Asocijativno dekodiranje izjednačuje {} i []; zadrži objektni token i ugovor imenovanih polja.
+        if (
+            !is_array($decoded)
+            || !str_starts_with($body, '{')
+            || array_filter(array_keys($decoded), is_int(...)) !== []
+        ) {
             throw new RuntimeException(__('JSON tijelo mora biti objekt.'));
         }
 
